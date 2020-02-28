@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ title }}{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/freelancer.css')}}">
+</head>
+
+<body>
+<nav class="nav nav-pills nav-justified">
+    {% if title == 'RAIN BLOG' %}
+        <a class="nav-item nav-link active" href="{{url_for('main.home')}}">WEBSITE NAME</a>
+        <a class="nav-item nav-link" href="{{url_for('main.home')}}">Home</a>
+        <a class="nav-item nav-link" href="{{url_for('main.signup')}}">Signup</a>
+    {% endif %}
+
+    {% if title == 'Home' %}
+        <a class="nav-item nav-link" href="{{url_for('main.home')}}">RAIN BLOG</a>
+        <a class="nav-item nav-link active" href="{{url_for('main.home')}}">Home</a>
+        <a class="nav-item nav-link" href="{{url_for('main.signup')}}">Signup</a>
+    {% endif %}
+
+    {% if title == 'Signup' %}
+        <a class="nav-item nav-link" href="{{url_for('main.home')}}">RAIN BLOG</a>
+        <a class="nav-item nav-link" href="{{url_for('main.home')}}">Home</a>
+        <a class="nav-item nav-link active" href="{{url_for('main.signup')}}">Signup</a>
+    {% endif %}
+</nav>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="alert alert-info">
+                <ul class="list-unstyled">
+                    {% for message in messages %}
+                    <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+    {% endwith %}
+
+<main role="main" class="container-fluid">
+    <h1 class="page-title">
+        {% block header %}{{ title }}{% endblock %}
+    </h1>
+    {% block content %}{% endblock %}
+</main>
+
+</body>
+</html>
