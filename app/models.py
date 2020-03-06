@@ -75,10 +75,17 @@ class PersonalInfo(db.Model):
     carer_email = db.Column(db.String, nullable=False)
     carer_name = db.Column(db.String, nullable=False)
     ## personality ##
-    share = db.Column(db.Boolean, nullable=False)
+    share_performance = db.Column(db.Boolean)
+    status = db.Column(db.String(1))
+    xperience = db.Column(db.String(3), nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=)
     unique_id = db.relationship("User", foreign_keys=[user_id])
 
+
+class PersonalIssues(db.Column):
+    form_id = foreign key
+    user_id = foreign key
+    share_personal_issues = db.Column(db.Boolean, nullable=False)
 
 
 class Hobbies(db.Column):
@@ -88,13 +95,28 @@ class Hobbies(db.Column):
 
 
 class MedicalCond(db.Model):
+    share_med_cond = db.Column(db.Boolean, nullable=False)
     form_id = foreign key
     user_id = foreign key
 
 
 class OccupationalField(db.Model):
-    form_id foreign key
-    user_id = foreign key
+    occupation_id = db.Column(db.Integer, primary_key=True, nullable=False)
+    form_id = db.Column(db.Integer, db.ForeignKey('personalinfo.form_id'), nullable=False)
+    form = db.relationship("PersonalInfo", foreign_keys=[form_id])
+    user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
+    unique_id = db.relationship("User", foreign_keys=[user_id])
+    eng = db.Column(db.Boolean)
+    maths = db.Column(db.Boolean)
+    med = db.Column(db.Boolean)
+    pharm = db.Column(db.Boolean)
+    chem = db.Column(db.Boolean)
+    phys = db.Column(db.Boolean)
+    bio = db.Column(db.Boolean)
+    law = db.Column(db.Boolean)
+    finance = db.Column(db.Boolean)
+    hist = db.Column(db.Boolean)
+    geo = db.Column(db.Boolean)
 
 
 class StudentReview(db.Model):

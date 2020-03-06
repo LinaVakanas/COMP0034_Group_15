@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% from "_formhelpers.html" import render_field %}
+{% block title %}{{title}}{% endblock %}
+
+{% block header%}{{ title }}{% endblock %}
+{% block content %}
+    <div class="container vh-70 d-flex mt-6 col justify-content-center">
+        <div class="col-3"></div>
+        <div class="col-6">
+            <form action="" method="post" novalidate>
+
+                {{ form.hidden_tag() }}
+                    <dl>
+                        {% if applicant == 'mentee' %}
+                            {{ render_field(form.carer_name) }}
+                            {{ render_field(form.carer_email) }}
+                        {% endif %}
+                        {{ render_field(form.hobbies) }}
+                        {{ render_field(form.personal_issues) }}
+                        {{ render_field(form.share_personal_issues) }}
+                        {% if applicant == 'mentor' %}
+                            {{ render_field(form.mentor_occupation) }}
+                            {{ render_field(form.mentor_xperience)}}
+                            {{ render_field(form.mentor_field) }}
+                        {% endif %}
+                        {% if applicant== 'mentee'%}
+                            <label for="mentee_field">What field are you interested in for further studies/career?</label>
+                            {{ render_field(form.mentee_field, value="mentee_field") }}
+                        {% endif %}
+                        {{ render_field(form.medical_cond) }}
+                        {{ render_field(form.share_med_cond) }}
+                        <hr>
+                            {{ render_field(form.share_performance) }}
+                        {% endif %}
+                        <dd><input type="submit" value="Submit" class="btn btn-primary"> </dd>
+                    </dl>
+            </form>
+        </div>
+    </div>
+{% endblock %}
