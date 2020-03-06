@@ -11,19 +11,19 @@
     {% if title == 'RAIN BLOG' %}
         <a class="nav-item nav-link active" href="{{url_for('main.home')}}">WEBSITE NAME</a>
         <a class="nav-item nav-link" href="{{url_for('main.home')}}">Home</a>
-        <a class="nav-item nav-link" href="{{url_for('main.signup')}}">Signup</a>
+{#        <a class="nav-item nav-link" href="{{url_for('main.personal_form')}}">Signup</a>#}
     {% endif %}
 
     {% if title == 'Home' %}
         <a class="nav-item nav-link" href="{{url_for('main.home')}}">RAIN BLOG</a>
         <a class="nav-item nav-link active" href="{{url_for('main.home')}}">Home</a>
-        <a class="nav-item nav-link" href="{{url_for('main.signup')}}">Signup</a>
+{#        <a class="nav-item nav-link" href="{{url_for('main.personal_form')}}">Signup</a>#}
     {% endif %}
 
     {% if title == 'Signup' %}
         <a class="nav-item nav-link" href="{{url_for('main.home')}}">RAIN BLOG</a>
         <a class="nav-item nav-link" href="{{url_for('main.home')}}">Home</a>
-        <a class="nav-item nav-link active" href="{{url_for('main.signup')}}">Signup</a>
+{#        <a class="nav-item nav-link active" href="{{url_for('main.personal_form')}}">Signup</a>#}
     {% endif %}
 </nav>
 
