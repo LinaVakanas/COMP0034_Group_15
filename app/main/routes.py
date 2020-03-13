@@ -3,8 +3,8 @@ from sqlalchemy.exc import IntegrityError
 
 from app import db
 from app.main.forms import PersonalForm, MenteeSignUpForm, MentorSignUpForm
-from app.models import User, MedicalCond, Mentor, Message, Chatroom, OccupationalField, Hobbies, School, StudentReview, \
-    Pair, PersonalInfo, Report, PersonalIssues, Mentee
+from app.models2 import User, MedicalCond, Message, Chatroom, OccupationalField, Hobbies, School, StudentReview, \
+    Pair, PersonalInfo, Report, PersonalIssues, Mentee, Mentor
 
 bp_main = Blueprint('main', __name__)
 
@@ -22,24 +22,22 @@ def personal_form(applicant, school_id):
     if request.method == 'POST':
         if applicant == 'mentee':
 
-            new_mentee = Mentee(first_name=form2.first_name.data, last_name=form2.last_name.data,
-                                school_id=school_id)
-            new_user = User(email=form2.email.data, user_type=1)
+            new_user = User(email=form2.email.data, school_id=school_id)
+            new_mentee = Mentee(school_id=school_id, first_name=form2.first_name.data)
 
             new_info = PersonalInfo(carer_email=form.carer_email.data, carer_name=form.carer_name.data,
                                     status="S", xperience=None, share_performance=form.share_performance.data)
-            db.session.add(new_info, new_mentee, new_user)
+            db.session.add([new_info, new_user, new_mentee])
             # db.session.commit()
 
         elif applicant == 'mentor':
 
-            new_mentor = Mentor(first_name=form3.first_name.data, last_name=form3.last_name.data,
-                                school_id=school_id)
-            new_user = User(email=form3.email.data, user_type=2)
+            new_user = User(email=form3.email.data, school_id=school_id)
+            new_mentor = Mentor(school_id=0, first_name=form3.first_name.data, last_name=form3.last_name.data)
             new_info = PersonalInfo(carer_email=None, carer_name=None,
                                     status=form.mentor_occupation.data, xperience=form.mentor_xperience.data,
                                     share_performance=None)
-            db.session.add(new_info, new_user, new_mentor)
+            db.session.add([new_info, new_user, new_mentor])
             # db.session.commit()
 
         response1 = form.personal_issues.data

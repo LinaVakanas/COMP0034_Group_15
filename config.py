@@ -4,6 +4,7 @@ from os.path import dirname, abspath, join
 
 class Config(object):
     """Set Flask base configuration"""
+    CSRF_ENABLED = True
     SECRET_KEY = '93b35eaab44cb731d5ea79c9032f4d71f3d4510b9e72'
 
     #General Config

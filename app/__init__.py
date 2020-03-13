@@ -17,9 +17,9 @@ def create_app(config_class=DevConfig):
     db.init_app(app)
 
     # The following is needed if you want to map classes to an existing database
-    with app.app_context():
-        # db.Model.metadata.reflect(db.engine)
-        db.create_all()
+    # with app.app_context():
+    #     # db.Model.metadata.reflect(db.engine)
+    #     db.create_all()
 
 
     # Register Blueprints
