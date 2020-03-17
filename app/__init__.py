@@ -17,9 +17,10 @@ def create_app(config_class=DevConfig):
     db.init_app(app)
 
     # The following is needed if you want to map classes to an existing database
-    # with app.app_context():
-    #     # db.Model.metadata.reflect(db.engine)
-    #     db.create_all()
+    # from app.models2 import User, Mentee, Mentor, Teacher, School, Report, Message, Chatroom, Pair, PersonalIssues, \
+    #     PersonalInfo, Hobbies, MedicalCond, Location, OccupationalField, StudentReview
+    with app.app_context():
+        db.create_all()
 
 
     # Register Blueprints

@@ -9,33 +9,98 @@
         <div class="col-6">
             <form action="" method="post" novalidate>
 
-{#                {{ form.hidden_tag() }}#}
+                {{ form.hidden_tag() }}
                     <dl>
-                        {% if applicant == 'mentee' %}
-                            {{ render_field(form2.first_name) }}
-                            {{ render_field(form2.last_name) }}
-                            {{ render_field(form.carer_name) }}
-                            {{ render_field(form.carer_email) }}
-                        {% endif %}
-                        {{ render_field(form.hobbies) }}
-                        {{ render_field(form.personal_issues) }}
-                        {{ render_field(form.share_personal_issues) }}
-                        {% if applicant == 'mentor' %}
-                            {{ render_field(form3.first_name) }}
-                            {{ render_field(form3.last_name) }}
-                            {{ render_field(form.mentor_occupation) }}
-                            {{ render_field(form.mentor_xperience)}}
-                            <label for="mentor_field">What field does your occupation lie in?</label>
-                            {{ render_field(form.field, value="mentor_field") }}
-                        {% endif %}
-                        {% if applicant== 'mentee'%}
-                            <label for="mentee_field">What field are you interested in for further studies/career?</label>
-                            {{ render_field(form.field, value="mentee_field") }}
-                        {% endif %}
-                        {{ render_field(form.medical_cond) }}
-                        {{ render_field(form.share_med_cond) }}
-                        <hr>
+                        <div class="form">
+                            <div class="row">
+                                {{ render_field(form2.first_name) }} {{ render_field(form2.last_name) }}
+                            </div>
+                            {{ render_field(form2.email) }}
+                            {% if applicant == 'mentee' %}
+
+                                {{ render_field(form.carer_name) }} {{ render_field(form.carer_email) }}
+                            {% endif %}
+
+                            {% if applicant == 'mentor' %}
+                                {{ render_field(form.mentor_occupation) }}
+                                {{ render_field(form.mentor_xperience)}}
+
+                                <div class="form-check">
+                                    <div class="form-check form-check-inline">
+                                        <label class="form-check-label" for="mentor_field">What field does your occupation lie in?</label>
+                                        {{ render_field(form.eng, value="mentor_field") }}
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        {{ render_field(form.phys) }}
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        {{ render_field(form.bio) }}
+                                    </div>
+                                </div>
+                                <div class="form-check">
+                                    <div class="form-check form-check-inline">
+                                        {{ render_field(form.chem) }}
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        {{ render_field(form.med) }}
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        {{ render_field(form.pharm) }}
+                                    </div>
+                                </div>
+                                <div class="form-check">
+                                    <div class="form-check form-check-inline">
+                                        {{ render_field(form.maths) }}
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        {{ render_field(form.geo) }}
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        {{ render_field(form.hist) }}
+                                    </div>
+                                </div>
+                                <div class="form-check">
+                                    <div class="form-check form-check-inline">
+                                        {{ render_field(form.law)}}
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        {{ render_field(form.finance) }}
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        {{ render_field(form.engl) }}
+                                    </div>
+                                </div>
+
+                            {% endif %}
+
+                            <div class="form-check">>
+                                <div class="form-check form-check-inline">
+                                    <label for="hobbies">What are your hobbies?</label>
+                                    {{ render_field(form.football, value="hobbies") }}
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    {{ render_field(form.drawing) }}
+                                </div>
+                            </div>
+                            <label>Which of the following do you relate to?</label>
+                            {{ render_field(form.depression) }} {{ render_field(form.self_harm) }}
+                            {{ render_field(form.family) }} {{ render_field(form.drugs) }}
+                            {{ render_field(form.ed) }}
+
+                            {% if applicant== 'mentee'%}
+                                <label for="mentee_field">What field are you interested in for further studies/career?</label>
+                                {{ render_field(form.eng, value="mentee_field") }} {{ render_field(form.phys) }} {{ render_field(form.bio) }}
+                                {{ render_field(form.chem) }} {{ render_field(form.med) }} {{ render_field(form.pharm) }}
+                                {{ render_field(form.maths) }} {{ render_field(form.geo) }} {{ render_field(form.hist) }}
+                                {{ render_field(form.law)}} {{ render_field(form.finance) }} {{ render_field(form.engl) }}
+                            {% endif %}
+                            <label for="medical_form">Please select  all the medical conditions'
+                                   'which apply to you:</label>
+                            {{ render_field(form.med1, value="medical_form") }}
+                            {{ render_field(form.share_med_cond) }}
+                            <hr>
                             {{ render_field(form.share_performance) }}
+                        </div>
                         <dd><input type="submit" value="Submit" class="btn btn-primary"> </dd>
                     </dl>
             </form>

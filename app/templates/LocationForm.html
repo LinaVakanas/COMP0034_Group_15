@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% from "_formhelpers.html" import render_field %}
+{% block title %}{{title}}{% endblock %}
+
+{% block header%}{{ title }}{% endblock %}
+{% block content %}
+    <div class="container vh-70 d-flex mt-6 col justify-content-center">
+        <div class="col-3"></div>
+        <div class="col-6">
+            <form action="" method="post" novalidate>
+
+{#                {{ form.hidden_tag() }}#}
+                    <dl>
+                        {{ render_field(form.address) }}
+                        {{ render_field(form.city) }}
+                        {{ render_field(form.postcode) }}
+                        {{ render_field(form.avoid_area) }}
+                    <dd><input type="submit" value="Submit" class="btn btn-primary"> </dd>
+                    </dl>
+            </form>
+        </div>
+    </div>
+{% endblock %}

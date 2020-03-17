@@ -16,7 +16,7 @@ class Config(object):
 
     # Database config
     CWD = dirname(abspath(__file__))
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///'+join(CWD, 'users.db')
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///'+join(CWD, 'webapp_sqlite.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
