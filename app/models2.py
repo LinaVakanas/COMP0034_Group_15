@@ -187,3 +187,4 @@ class Location(db.Model):
     city = db.Column(db.String, nullable=False)
     postcode = db.Column(db.String, nullable=False)
     avoid_area = db.Column(db.String)
+    user_type = db.Column(db.String)
