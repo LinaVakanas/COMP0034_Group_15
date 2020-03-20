@@ -25,6 +25,7 @@ class Mentor(User):
     first_name = db.Column(db.String, nullable=False)
     last_name = db.Column(db.String, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
+    paired_status = db.Column(db.Boolean, nullable=False)
     # unique_id = db.relationship("User", foreign_keys=[user_id])
 
     __mapper_args__ = {

@@ -51,7 +51,7 @@ def personal_form(applicant, school_id):
                                 bio="", password=password)
 
                 new_mentor = Mentor(school_id=0, first_name=form2.first_name.data,
-                                    last_name=form2.last_name.data, email=new_user.email)
+                                    last_name=form2.last_name.data, email=new_user.email, paired_status=False)
                 new_info = PersonalInfo(carer_email=None, carer_name=None,
                                         status=form.mentor_occupation.data, xperience=form.mentor_xperience.data, share_performance=None)
                 db.session.add_all([new_info, new_user, new_mentor])
@@ -79,7 +79,7 @@ def personal_form(applicant, school_id):
         if applicant == 'mentee':
             return redirect(url_for('main.location_form', applicant=applicant, applicant_id=new_mentee.user_id))
         elif applicant == 'mentor':
-            redirect(url_for(home))
+            return render_template('home_mentor_pending.html', title='Pending Approval', mentor=new_mentor)
 
 
         # new_medical = MedicalCond()
@@ -93,24 +93,45 @@ def location_form(applicant, applicant_id):
         if applicant == 'mentor' and form.city.data.lower() != 'london':
             flash("Sadly we are only based at London for now. \nWe'll keep you on a waiting list and email you if we expand "
                   "to your city. We hope you understand.")
-            return render_template('home.html', title='Home')
+            return redirect(url_for('main.home', title='Home'))
 
-        elif applicant== 'mentee' and form.city.data.lower() != 'london':
+        elif applicant == 'mentee' and form.city.data.lower() != 'london':
             flash("Hm... are you sure that's the right city? We only send out application forms to students from London.")
 
         else:
-            new_location = Location(user_id=applicant_id, address=form.address.data, city=form.city.data, postcode=form.postcode.data,
+            new_location = Location(user_id=applicant_id, address=form.address.data, city=form.city.data.capitalize(), postcode=form.postcode.data,
                                     avoid_area=form.avoid_area.data)
             db.session.add(new_location)
             db.session.commit()
-            return redirect(url_for('main.load_pairing', applicant=applicant, applicant_id=applicant_id))
+            return redirect(url_for('main.load_pairing', applicant=applicant, applicant_id=applicant_id, location=new_location))
 
     return render_template('LocationForm.html', title='Signup', form=form, applicant=applicant)
 
 
-@bp_main.route('/pairing/', methods=['POST', 'GET'])
-def load_pairing(applicant, applicant_id):
-    return render_template('pairing_load_page.html', title='Load Pairing')
+@bp_main.route('/pairing/<applicant>/<applicant_id>/<location>/', methods=['POST', 'GET'])
+def load_pairing(applicant, applicant_id, location):
+    render_template('pairing_load_page.html', title='Pairing . . . ')
+    if applicant == 'mentee':
+        mentor = Mentor.query.join(Location).filter_by(city=location.city, user_type='mentor').first()
+        if not mentor:
+            flash("Unfortunately there are no mentors signed up in {} just yet! Sorry for the inconvenience, "
+                  "you'll be put on a waiting list and we'll let you know as soon as a mentor is found.\n"
+                  "For now, you can edit your profile, and get used to the website.".format(location.city))
+            return redirect(url_for('main.edit_profile', title='Edit Profile'))
+        mentee = Mentee.query.join(User).filter_by(user_id=applicant_id).all()
+        new_pair = Pair(mentor_id=mentor.mentor_id, mentee_id=mentee.mentee_id)
+
+    elif applicant == 'mentor':
+        mentee = Mentee.query.join(Location).filter_by(city='London', user_type='mentee').first()
+        if not mentee:
+            flash("Unfortunately there are no mentors signed up in {} yet. Sorry for the inconvenience, "
+                  "you'll be put on a waiting list and we will let you know as soon as a mentee is found.\n"
+                  "For now, you can edit your profile, and get used to the website.".format(location.city))
+        mentor = Mentor.query.join(User).filter_by(user_id=applicant_id).all()
+        new_pair = Pair(mentor_id=mentor.mentor_id, mentee_id=mentee.mentee_id)
+    return render_template(url_for('mentor_profile', pair=new_pair))
+
+
 
 
 

@@ -25,6 +25,10 @@
         <a class="nav-item nav-link" href="{{url_for('main.home')}}">Home</a>
 {#        <a class="nav-item nav-link active" href="{{url_for('main.personal_form')}}">Signup</a>#}
     {% endif %}
+
+    {% else %}
+        <a class="nav-item nav-link" href="{{url_for('main.home')}}">WEBSITE NAME</a>
+        <a class="nav-item nav-link" href="{{url_for('main.home')}}">Home</a>
 </nav>
 
     {% with messages = get_flashed_messages() %}
