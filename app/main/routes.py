@@ -62,8 +62,7 @@ def personal_form(applicant, school_id):
                 return redirect(url_for('main.home'))
 
         print("depression ="+str(form.depression.data))
-        new_issues = PersonalIssues(depression=form.depression.data, self_harm=form.self_harm.data, family=form.family.data, drugs=form.drugs.data, ed=form.ed.data, user_id=new_user.user_id, share_personal_issues=True)
-        ## ADD SHARE PERSONAL ISSUES TO HTML
+        new_issues = PersonalIssues(depression=form.depression.data, self_harm=form.self_harm.data, family=form.family.data, drugs=form.drugs.data, ed=form.ed.data, user_id=new_user.user_id, share_personal_issues=form.share_personal_issues)
         db.session.add(new_issues)
 
         new_hobbies = Hobbies(football=form.football.data, drawing=form.drawing.data, user_id=new_user.user_id)
