@@ -14,6 +14,10 @@ bp_main = Blueprint('main', __name__)
 def home():
     return render_template('home.html', title="Home")
 
+@bp_main.route('/testing')
+def testing():
+    mahdi = Mentor(first_name= "Mahdi", last_name= "Shah")
+    return render_template('home_mentor_pending.html', mentor=mahdi)
 
 @bp_main.route('/personal_form/<applicant>/<school_id>/', methods=['POST', 'GET'])
 def personal_form(applicant, school_id):
@@ -28,17 +32,17 @@ def personal_form(applicant, school_id):
                             bio="", password=password)
             db.session.add(new_user)
             db.session.flush()
-            print(new_user.user_id)
+            print("user id 1 ="+str(new_user.user_id))
             new_mentee = Mentee(user_id=new_user.user_id, school_id=school_id, first_name=form2.first_name.data,
                                 last_name=form2.last_name.data, email=new_user.email)
 
-            new_info = PersonalInfo(carer_email=form.carer_email.data, carer_name=form.carer_name.data,
+            new_info = PersonalInfo(user_id=new_user.user_id, carer_email=form.carer_email.data, carer_name=form.carer_name.data,
                                     status="S", xperience=None, share_performance=form.share_performance.data)
             db.session.flush()
-            print(new_mentee.user_id)
-            print(new_info.user_id)
+            print("mentee id ="+ str(new_mentee.user_id))
+            print("user id 2 ="+str(new_info.user_id))
             db.session.add_all([new_info, new_mentee])
-            print(new_user.email)
+            print("user email ="+str(new_user.email))
 
         elif applicant == 'mentor':
 
@@ -57,11 +61,12 @@ def personal_form(applicant, school_id):
                       'We want to ensure mentors have enough experience to help the mentees. \nWe hope you understand!')
                 return redirect(url_for('main.home'))
 
-        print(form.depression.data)
-        new_issues = PersonalIssues(depression=form.depression.data, self_harm=form.self_harm.data, family=form.family.data, drugs=form.drugs.data, ed=form.ed.data)
+        print("depression ="+str(form.depression.data))
+        new_issues = PersonalIssues(depression=form.depression.data, self_harm=form.self_harm.data, family=form.family.data, drugs=form.drugs.data, ed=form.ed.data, user_id=new_user.user_id, share_personal_issues=True)
+        ## ADD SHARE PERSONAL ISSUES TO HTML
         db.session.add(new_issues)
 
-        new_hobbies = Hobbies(football=form.football.data, drawing=form.drawing.data)
+        new_hobbies = Hobbies(football=form.football.data, drawing=form.drawing.data, user_id=new_user.user_id)
         db.session.add(new_hobbies)
 
         new_occupation = OccupationalField(eng=form.eng.data, phys=form.phys.data, chem=form.chem.data,

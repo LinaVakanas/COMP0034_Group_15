@@ -1,53 +1,6 @@
 from app import db
 
 
-class Mentor(db.Model):
-    __tablename__ = 'mentor'
-    mentor_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    school_id = db.Column(db.Integer, nullable=False)
-    first_name = db.Column(db.String, nullable=False)
-    last_name = db.Column(db.String, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
-    # unique_id = db.relationship("User", foreign_keys=[user_id])
-    email = db.Column(db.Text, db.ForeignKey('user.email'), nullable=False)
-    user_email = db.relationship("User", foreign_keys=[email])
-
-
-class Mentee(db.Model):
-    __tablename__ = 'mentee'
-    mentee_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    school_id = db.Column(db.Integer, nullable=False)
-    first_name = db.Column(db.String, nullable=False)
-    last_name = db.Column(db.String, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
-    # unique_id = db.relationship("User", foreign_keys=[user_id])
-    email = db.Column(db.Text, db.ForeignKey('user.email'), nullable=False)
-    user_email = db.relationship("User", foreign_keys=[email])
-
-
-class Teacher(db.Model):
-    __tablename__ = 'teacher'
-    teacher_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    school_id = db.Column(db.Integer, nullable=False)
-    first_name = db.Column(db.String, nullable=False)
-    last_name = db.Column(db.String, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
-    # unique_id = db.relationship("User", foreign_keys=[user_id])
-    email = db.Column(db.Text, db.ForeignKey('user.email'), nullable=False)
-    user_email = db.relationship("User", foreign_keys=[email])
-
-
-class School(db.Model):
-    __tablename__ = 'school'
-    school_status = db.Column(db.Boolean, nullable=False)
-    school_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    school_name = db.Column(db.Text, nullable=False)
-    school_email = db.Column(db.Text, db.ForeignKey('user.email'), nullable=False)
-    email = db.relationship("User", foreign_keys=[school_email])
-    ofsted_ranking = db.Column(db.Integer)
-    ofsted_report = db.Column(db.BLOB) #not sure about how blob works
-
-
 class User(db.Model):
     __tablename__ = 'user'
     email = db.Column(db.Text, nullable=False, primary_key=True)
@@ -59,6 +12,56 @@ class User(db.Model):
     active = db.Column(db.Boolean)
     profile_pic = db.Column(db.BLOB) #don't know if its acc blob
     creation_date = db.Column(db.String)
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'user',
+        'polymorphic_on':user_type
+    }
+
+
+class Mentor(User):
+    __tablename__ = 'mentor'
+    mentor_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    first_name = db.Column(db.String, nullable=False)
+    last_name = db.Column(db.String, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
+    # unique_id = db.relationship("User", foreign_keys=[user_id])
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'mentor'
+    }
+
+
+class Mentee(User):
+    __tablename__ = 'mentee'
+    mentee_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    first_name = db.Column(db.String, nullable=False)
+    last_name = db.Column(db.String, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
+    # unique_id = db.relationship("User", foreign_keys=[user_id])
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'mentee'
+    }
+
+class Teacher(User):
+    __tablename__ = 'teacher'
+    teacher_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    first_name = db.Column(db.String, nullable=False)
+    last_name = db.Column(db.String, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
+    # unique_id = db.relationship("User", foreign_keys=[user_id])
+
+
+class School(db.Model):
+    __tablename__ = 'school'
+    school_status = db.Column(db.Boolean, nullable=False)
+    school_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    school_name = db.Column(db.Text, nullable=False)
+    school_email = db.Column(db.Text, db.ForeignKey('user.email'), nullable=False)
+    email = db.relationship("User", foreign_keys=[school_email])
+    ofsted_ranking = db.Column(db.Integer)
+    ofsted_report = db.Column(db.BLOB) #not sure about how blob works
 
 
 class Report(db.Model):
@@ -122,8 +125,7 @@ class PersonalIssues(db.Model):
     family = db.Column(db.Boolean)
     drugs = db.Column(db.Boolean)
     ed = db.Column(db.Boolean)
-
-    share_personal_issues = db.Column(db.Boolean, nullable=False)
+    share_personal_issues = db.Column(db.Boolean, nullable=True)
 
 
 class Hobbies(db.Model):

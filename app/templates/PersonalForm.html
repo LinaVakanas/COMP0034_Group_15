@@ -13,11 +13,15 @@
                     <dl>
                         <div class="form">
                             <div class="row">
-                                {{ render_field(form2.first_name) }} {{ render_field(form2.last_name) }}
+                                <div class = "col-3">
+                                    {{ render_field(form2.first_name) }}
+                                </div>
+                                <div class = "col-3">
+                                    {{ render_field(form2.last_name) }}
+                                </div>
                             </div>
                             {{ render_field(form2.email) }}
                             {% if applicant == 'mentee' %}
-
                                 {{ render_field(form.carer_name) }} {{ render_field(form.carer_email) }}
                             {% endif %}
 
@@ -73,26 +77,51 @@
 
                             {% endif %}
 
-                            <div class="form-check">>
-                                <div class="form-check form-check-inline">
-                                    <label for="hobbies">What are your hobbies?</label>
+                            <label for="hobbies">What are your hobbies?</label>
+                            <div class = "row">
+                                <div class = "col-3">
                                     {{ render_field(form.football, value="hobbies") }}
                                 </div>
-                                <div class="form-check form-check-inline">
+                                <div class = "col-3">
                                     {{ render_field(form.drawing) }}
                                 </div>
                             </div>
+
                             <label>Which of the following do you relate to?</label>
-                            {{ render_field(form.depression) }} {{ render_field(form.self_harm) }}
-                            {{ render_field(form.family) }} {{ render_field(form.drugs) }}
-                            {{ render_field(form.ed) }}
+                            <div class = "row">
+                                <div class = "col-3">
+                                    {{ render_field(form.depression) }}
+                                    {{ render_field(form.family) }}
+                                    {{ render_field(form.ed) }}
+                                </div>
+                                <div class = "col-3">
+                                    {{ render_field(form.self_harm) }}
+                                    {{ render_field(form.drugs) }}
+                                </div>
+                            </div>
 
                             {% if applicant== 'mentee'%}
                                 <label for="mentee_field">What field are you interested in for further studies/career?</label>
-                                {{ render_field(form.eng, value="mentee_field") }} {{ render_field(form.phys) }} {{ render_field(form.bio) }}
-                                {{ render_field(form.chem) }} {{ render_field(form.med) }} {{ render_field(form.pharm) }}
-                                {{ render_field(form.maths) }} {{ render_field(form.geo) }} {{ render_field(form.hist) }}
-                                {{ render_field(form.law)}} {{ render_field(form.finance) }} {{ render_field(form.engl) }}
+                                <div class="row">
+                                    <div class = "col-3">
+                                        {{ render_field(form.eng, value="mentee_field") }}
+                                        {{ render_field(form.chem) }}
+                                        {{ render_field(form.maths) }}
+                                        {{ render_field(form.law)}}
+                                    </div>
+                                    <div class = "col-3">
+                                        {{ render_field(form.phys) }}
+                                        {{ render_field(form.med) }}
+                                        {{ render_field(form.geo) }}
+                                        {{ render_field(form.finance) }}
+                                    </div>
+                                    <div class="col-3">
+                                        {{ render_field(form.bio) }}
+                                        {{ render_field(form.pharm) }}
+                                        {{ render_field(form.hist) }}
+                                        {{ render_field(form.engl) }}
+                                    </div>
+                                </div>
                             {% endif %}
                             <label for="medical_form">Please select  all the medical conditions'
                                    'which apply to you:</label>
