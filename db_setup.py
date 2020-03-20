@@ -178,6 +178,7 @@ c.execute('''
           postcode TEXT NOT NULL,
           avoid_area TEXT,
           user_id INTEGER NOT NULL,
+          user_type TEXT NOT NULL REFERENCES  user(user_type),
           FOREIGN KEY (user_id) REFERENCES user(user_id))
           ''')
 

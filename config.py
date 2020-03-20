@@ -9,7 +9,7 @@ class Config(object):
 
     #General Config
     DEBUG = False
-    TESTING = True
+    TESTING = False
 
     #Forms config
     WTF_CSRF_SECRET_KEY = 'this-is-not-random-but-should-be'
@@ -20,14 +20,24 @@ class Config(object):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
+class TestConfig(Config):
+    DEBUG = True
+    TESTING = True
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
+    WTF_CSRF_ENABLED = False
+
+
 class ProductConfig(Config):
     DEBUG = False
     TESTING = False
 
 
-class TestConfig(Config):
-    TESTING = True
-
-
 class DevConfig(Config):
     DEBUG = True
+
+
+app_config = {
+    'development': DevConfig,
+    'production': ProductConfig,
+    'testing': TestConfig
+}
