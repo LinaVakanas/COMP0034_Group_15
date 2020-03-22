@@ -15,5 +15,11 @@ whether it says mentor or mentee, and the if statement ==> define separate funct
     - When to pass mentee/mentor and user? 
 * Should we have the personal form after the general signup? (name, last name, email)
 it could make testing more specific, and the form.validate_on_submit
+
+To ask Miss:
+* Updating user id
+* Passing in applicant type (for real would be in url)
+* None or ''
+* Using an externally downloaded file --> how to reference (directory)
     
 

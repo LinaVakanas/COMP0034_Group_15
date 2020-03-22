@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% from "_formhelpers.html" import render_field %}
+{% block content %}
+    <form action="" method="post" novalidate>
+        {{ form.hidden_tag() }}
+        {{ render_field(form2.first_name) }}
+        {{ render_field(form2.last_name) }}
+        {{ render_field(form2.email) }}
+        {% if applicant == 'mentee' %}
+            {{ render_field(form.carer_name) }} {{ render_field(form.carer_email) }}
+        {% endif %}
+
+        {% if applicant == 'mentor' %}
+            {{ render_field(form.mentor_occupation) }}
+            {{ render_field(form.mentor_xperience)}}
+
+        {% endif %}
+        <input type="submit" value="Submit" class="btn btn-primary">
+    </form>
+{% endblock %}
