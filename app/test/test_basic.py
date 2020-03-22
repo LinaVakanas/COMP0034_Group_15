@@ -6,7 +6,7 @@ from flask_testing import TestCase
 
 from app import create_app, db
 
-from app.models2 import Mentor, Mentee, User, PersonalInfo, PersonalIssues
+from app.models2_backup import Mentor, Mentee, User, PersonalInfo, PersonalIssues
 
 
 class BaseTest(TestCase):

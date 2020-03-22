@@ -50,7 +50,7 @@ class School(db.Model):
 
 class User(db.Model):
     __tablename__ = 'user'
-    email = db.Column(db.Text, nullable=False, primary_key=True)
+    email = db.Column(db.Text, nullable=False, unique=True)
     user_type = db.Column(db.String, nullable=False)
     user_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     school_id = db.Column(db.Integer, nullable=False)
