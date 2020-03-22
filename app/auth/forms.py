@@ -9,20 +9,11 @@ class SignUpForm(FlaskForm):
     email = StringField('Email address', validators=[DataRequired(), Email()])
 
 
-class PersonalForm(FlaskForm):
+class PersonalInfoForm(FlaskForm):
     carer_name = StringField("Carer's full name:", validators=[DataRequired()])
     carer_email = StringField("Carer's email address:", validators=[DataRequired(), Email()])
-    football = BooleanField('Football', default="unchecked")
-    drawing = BooleanField('Drawing', default="unchecked")
-    blob = BooleanField()
+    share_performance = BooleanField(label='Share school performance', default="unchecked")
 
-    depression = BooleanField(label='Depression', default="unchecked")
-    self_harm = BooleanField(label='Self-harm', default="unchecked")
-    family = BooleanField(label='Family Problems', default="unchecked")
-    drugs = BooleanField(label='Drugs', default="unchecked")
-    ed = BooleanField(label='Eating Disorder', default="unchecked")
-
-    share_personal_issues = BooleanField('Permission to share your problems with mentor', default="unchecked")
     choices4 = [('S', 'University student'),
                 ('W', 'Working'),
                 ('N', 'Neither')]
@@ -30,3 +21,16 @@ class PersonalForm(FlaskForm):
     choices5 = [('<2', 'Less than 2 years'),
                 ('>=2', '2 years or longer')]
     mentor_xperience = SelectField('How long have you had this occupation for?', choices=choices5)
+
+
+football = BooleanField('Football', default="unchecked")
+drawing = BooleanField('Drawing', default="unchecked")
+blob = BooleanField()
+
+depression = BooleanField(label='Depression', default="unchecked")
+self_harm = BooleanField(label='Self-harm', default="unchecked")
+family = BooleanField(label='Family Problems', default="unchecked")
+drugs = BooleanField(label='Drugs', default="unchecked")
+ed = BooleanField(label='Eating Disorder', default="unchecked")
+
+share_personal_issues = BooleanField('Permission to share your problems with mentor', default="unchecked")
