@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% from "_formhelpers.html" import render_field %}
+{% block title %}Pending Mentors{% endblock %}
+
+{% block header%}Administrator Control Panel{% endblock %}
+{% block content %}
+     {% if users|length %}
+{#         Variable is not empty #}
+        <div class="row">
+            User Statistics<br>
+            Total Users: {{ users_total }}<br>
+            Total Unapproved: NOT DONE YET
+        </div>
+        <div class="container d-flex h-100 align-items-center">
+            <div class="mx-auto text-center">
+                <table class="table">
+                    <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">Total Mentors</th>
+                        <th scope="col">Unapproved Mentors</th>
+                        <th scope="col">Total Mentees</th>
+                        <th scope="col">Unapproved Mentees</th>
+                        <th scope="col">Total Schools</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>{{ mentors_total }}</td>
+                        <td>NOT DONE</td>
+                        <td>{{ mentees_total }}</td>
+                        <td>NOT DONE</td>
+                        <td>{{ schools_total }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="mx-auto text-center">
+            <table class="buttons">
+                <tr>
+                    <td><a href=# >
+                        <input type="button" value="View Mentors" class="btn btn-primary">
+                    </a></td>
+                    <td><a href=# >
+                        <input type="button" value="View Mentees" class="btn btn-primary">
+                    </a></td>
+                </tr>
+                <tr>
+                    <td><a href="{{url_for('main.controlpanel_mentor')}}" >
+                        <input type="button" value="Approve Mentors" class="btn btn-primary">
+                    </a></td>
+                    <td><a href="{{url_for('main.controlpanel_mentee')}}" >
+                        <input type="button" value="Approve Mentees" class="btn btn-primary">
+                    </a></td>
+                </tr>
+                <tr>
+                    <td><a href=# >
+                        <input type="button" value="View Schools" class="btn btn-primary">
+                    </a></td>
+                    <td><a href=# >
+                        <input type="button" value="Add School" class="btn btn-primary">
+                    </a></td>
+                </tr>
+                <tr>
+                    <td><a href=# >
+                        <input type="button" value="Begin Pairing" class="btn btn-primary">
+                    </a></td>
+                    <td><a href=# >
+                        <input type="button" value="View locations" class="btn btn-primary">
+                    </a></td>
+                </tr>
+            </table>
+        </div>
+
+     {% else %}
+         Variable is empty
+        <p>Sorry, no users found</p>
+    {% endif %}
+{% endblock %}
