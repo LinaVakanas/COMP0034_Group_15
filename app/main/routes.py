@@ -38,7 +38,7 @@ def controlpanel_home():
 def controlpanel_mentee():
     # mentees = Mentee.query.all() ## Either add active to mentee and mentor or maybe query users
     # mentees = User.query.join(Mentee, User.user_id==Mentee.user_id).all() ### Works but empty columns for things not in user table e.g mentee id
-    mentees = Mentee.query.join(User, User.user_id==Mentee.user_id).filter(User.active==False).all() ### Works but need to query for active
+    mentees = Mentee.query.join(User, User.user_id==Mentee.user_id).filter(User.active==False).all()
     return render_template('admin_pending_mentees.html', mentees=mentees)
 
 
