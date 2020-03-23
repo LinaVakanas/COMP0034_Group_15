@@ -67,9 +67,9 @@ class TestAuth(BaseTest):
 
     def test_mentee_personal_info_form_saved(self):
         count = PersonalInfo.query.count()
+        print(self.mentee_data.get('user_id'))
         response = self.client.post(url_for('auth.personal_info',
-                                            applicant='mentee',
-                                            user_id=self.mentee_data.get('user_id')), data=dict(
+                                            applicant='mentee', user_id=self.mentee_data.get('user_id')), data=dict(
             carer_email=self.mentee_personal_issues_data.get('carer_email'),
             carer_name=self.mentee_personal_issues_data.get('carer_name'),
             share_performance=self.mentee_personal_issues_data.get('share_performance')
@@ -118,7 +118,7 @@ class TestAuth(BaseTest):
         print(count2)
         self.assertEqual(count2 - count, 1)
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b'Signup', response.data)
+        self.assertIn(b'Personal Info', response.data)
 
     def test_register_mentee_user_success(self):
         count = User.query.count()

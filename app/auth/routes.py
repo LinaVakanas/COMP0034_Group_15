@@ -55,7 +55,7 @@ def mentor_signup(applicant,school_id):
         db.session.add(new_mentor)
         db.session.commit()
         return redirect(url_for('auth.personal_info', applicant=applicant, user_id=new_user.user_id))
-    return render_template('auth/signup.html', form=form)
+    return render_template('auth/signup.html', form=form, title='Signup')
 
 
 @bp_auth.route('/personal_info/<applicant>/<user_id>/', methods=['POST', 'GET'])
@@ -84,7 +84,7 @@ def personal_info(applicant, user_id):
                 flash('Sorry, you must have a minimum of two years of experience to sign up as a mentor. '
                       'We want to ensure mentors have enough experience to help the mentees. \nWe hope you understand!')
                 return redirect(url_for('auth.home'))
-    return render_template('auth/personal_info_form.html', form=form)
+    return render_template('auth/personal_info_form.html', form=form, title='Personal Info')
 
 
 
