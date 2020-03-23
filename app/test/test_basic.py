@@ -72,10 +72,10 @@ class TestAuth(BaseTest):
                                             user_id=self.mentee_data.get('user_id')), data=dict(
             carer_email=self.mentee_personal_issues_data.get('carer_email'),
             carer_name=self.mentee_personal_issues_data.get('carer_name'),
-            status=self.mentee_personal_issues_data.get('status'),
             share_performance=self.mentee_personal_issues_data.get('share_performance')
         ), follow_redirects=True)
         count2 = PersonalInfo.query.count()
+        print(count2)
         self.assertEqual(count2 - count, 1)
         self.assertEqual(response.status_cod, 200)
 
@@ -96,51 +96,64 @@ class TestAuth(BaseTest):
         self.assertEqual(response.status_cod, 200)
 
     def test_registration_form_displays(self):
-        target_url = url_for('auth.personal_forms', school_id=self.mentee_data.get('school_id'))
+        target_url = url_for('auth.mentee_signup', applicant='mentee',
+                             school_id=self.mentee_data.get('school_id'))
         response = self.client.get(target_url)
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'Signup', response.data)
 
     def test_register_mentee_success(self):
         count = Mentee.query.count()
-        response = self.client.post(url_for('auth.signup'), data=dict(
-            user_email=self.mentee_data.get('email'),
+        print(count)
+        response = self.client.post(url_for('auth.mentee_signup',
+                                            applicant='mentee',
+                                            school_id=self.mentee_data.get('school_id')), data=dict(
+            email=self.mentee_data.get('email'),
             first_name=self.mentee_data.get('first_name'),
             last_name=self.mentee_data.get('last_name'),
             user_id=self.mentee_data.get('user_id'),
             school_id=self.mentee_data.get('school_id')
         ), follow_redirects=True)
         count2 = Mentee.query.count()
+        print(count2)
         self.assertEqual(count2 - count, 1)
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b'Personal Info', response.data)
+        self.assertIn(b'Signup', response.data)
 
     def test_register_mentee_user_success(self):
         count = User.query.count()
-        response = self.client.post(url_for('auth.mentee_signup'), data=dict(
+        print(count)
+        response = self.client.post(url_for('auth.mentee_signup',
+                                            applicant='mentee',
+                                            school_id=self.mentee_data.get('school_id')), data=dict(
             email=self.mentee_data.get('email'),
-            password=self.mentee_data.get('password'),
             first_name=self.mentee_data.get('first_name'),
             last_name=self.mentee_data.get('last_name'),
+            user_id=self.mentee_data.get('user_id'),
+            school_id=self.mentee_data.get('school_id')
         ), follow_redirects=True)
         count2 = User.query.count()
+        print(count2)
         self.assertEqual(count2 - count, 1)
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b'Personal Info', response.data)
+        self.assertIn(b'Signup', response.data)
 
-    # def test_register_mentor_success(self):
-    #     count = Mentor.query.count()
-    #     response = self.client.post(url_for('auth.signup'), data=dict(
-    #         user_email=self.mentor_data.get('email'),
-    #         first_name=self.mentor_data.get('first_name'),
-    #         last_name=self.mentor_data.get('last_name'),
-    #         user_id=self.mentor_data.get('user_id'),
-    #         school_id = self.mentor_data.get('school_id')
-    #     ), follow_redirects=True)
-    #     count2 = Mentor.query.count()
-    #     self.assertEqual(count2 - count, 1)
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertIn(b'Address', response.data)
+    def test_register_mentor_success(self):
+        count = Mentor.query.count()
+        response = self.client.post(url_for('auth.mentor_signup',
+                                            applicant='mentor',
+                                            school_id=self.mentor_data.get('school_id')), data=dict(
+            user_email=self.mentor_data.get('email'),
+            first_name=self.mentor_data.get('first_name'),
+            last_name=self.mentor_data.get('last_name'),
+            user_id=self.mentor_data.get('user_id'),
+            school_id = self.mentor_data.get('school_id')
+        ), follow_redirects=True)
+        count2 = Mentor.query.count()
+        print(count2)
+        self.assertEqual(count2 - count, 1)
+        self.assertEqual(response.status_code, 200)
+        # self.assertIn(b'Address', response.data)
     #
     #
     # def test_register_mentor_user_success(self):

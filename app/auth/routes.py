@@ -21,40 +21,41 @@ def testing():
     return render_template('home_mentor_pending.html', mentor=mahdi)
 
 
-@bp_auth.route('/mentee_signup/', methods=['POST', 'GET'])
-def mentee_signup():
-    form2 = SignUpForm(request.form)
-    if request.method == 'POST'and form2.validate():
+@bp_auth.route('/mentee_signup/<applicant>/<school_id>/', methods=['POST', 'GET'])
+def mentee_signup(applicant,school_id):
+    form = SignUpForm(request.form)
+    if request.method == 'POST'and form.validate():
         creation_date = str(datetime.date(datetime.now()))
         password = secrets.token_hex(8)
-        new_user = User(email=form2.email.data, user_type='mentee', school_id=1, password=password,
-                        bio="", creation_date=creation_date)
+        new_user = User(email=form.email.data, user_type=applicant, school_id=school_id, password=password,
+                        bio="", creation_date=creation_date, active=False)
         db.session.add(new_user)
         db.session.flush()
-        new_mentee = Mentee(school_id=1, first_name=form2.first_name.data,
-                            last_name=form2.last_name.data)
+
+        new_mentee = Mentee(school_id=school_id, first_name=form.first_name.data,
+                            last_name=form.last_name.data, user_id=new_user.user_id, email=new_user.email)
         db.session.add(new_mentee)
         db.session.commit()
-        return redirect(url_for('auth.personal_info', applicant='mentee'))
-    return render_template('auth/signup.html', form=form2)
+        return redirect(url_for('auth.personal_info', applicant=applicant, user_id=new_user.user_id))
+    return render_template('auth/signup.html', form=form)
 
 
-@bp_auth.route('/mentor_signup/<school_id>', methods=['POST', 'GET'])
-def MentorSignup(school_id):
-    form2 = SignUpForm(request.form)
-    if request.method == 'POST' and form2.validate():
+@bp_auth.route('/mentor_signup/<applicant>/<school_id>/', methods=['POST', 'GET'])
+def mentor_signup(applicant,school_id):
+    form = SignUpForm(request.form)
+    if request.method == 'POST' and form.validate():
         creation_date = str(datetime.date(datetime.now()))
         password = secrets.token_hex(8)
-        new_user = User(email=form2.email.data, user_type='mentor', school_id=school_id, password=password, bio="",
-                        creation_date=creation_date)
+        new_user = User(email=form.email.data, user_type=applicant, school_id=school_id, password=password, bio="",
+                        creation_date=creation_date, active=False)
         db.session.add(new_user)
         db.session.flush()
-        new_mentor = Mentor(school_id=0, first_name=form2.first_name.data,
-                            last_name=form2.last_name.data, email=new_user.email, paired_status=False)
+        new_mentor = Mentor(school_id=school_id, first_name=form.first_name.data,
+                            last_name=form.last_name.data, user_id=new_user.user_id, email=new_user.email, paired_status=False)
         db.session.add(new_mentor)
         db.session.commit()
-        return redirect(url_for('auth.personal_info', applicant='mentor'))
-    return render_template('auth/signup.html', form=form2)
+        return redirect(url_for('auth.personal_info', applicant=applicant, user_id=new_user.user_id))
+    return render_template('auth/signup.html', form=form)
 
 
 @bp_auth.route('/personal_info/<applicant>/<user_id>/', methods=['POST', 'GET'])
@@ -65,7 +66,7 @@ def personal_info(applicant, user_id):
             new_user = User(user_id=3, email='hermione@hogwarts.ac.uk', user_type='mentee', school_id=1, password='password3')
             db.session.add(new_user)
             db.session.commit()
-            new_info = PersonalInfo(user_id=user_id, carer_email=form.carer_email.data, carer_name=form.carer_name.data,
+            new_info = PersonalInfo(user_id=new_user.user_id, carer_email=form.carer_email.data, carer_name=form.carer_name.data,
                                     status="S", xperience=None, share_performance=form.share_performance.data)
             db.session.add(new_info)
             db.session.commit()

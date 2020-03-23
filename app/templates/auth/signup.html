@@ -4,9 +4,9 @@
 {% block content %}
     <form action="" method="post" novalidate>
         {{ form.hidden_tag() }}
-        {{ render_field(form2.first_name) }}
-        {{ render_field(form2.last_name) }}
-        {{ render_field(form2.email) }}
+        {{ render_field(form.first_name) }}
+        {{ render_field(form.last_name) }}
+        {{ render_field(form.email) }}
         <input type="submit" value="Submit" class="btn btn-primary">
     </form>
 {% endblock %}
