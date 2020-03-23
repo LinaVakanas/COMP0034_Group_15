@@ -136,14 +136,14 @@ class TestAuth(BaseTest):
         print(count2)
         self.assertEqual(count2 - count, 1)
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b'Signup', response.data)
+        self.assertIn(b'Personal Info', response.data)
 
     def test_register_mentor_success(self):
         count = Mentor.query.count()
         response = self.client.post(url_for('auth.mentor_signup',
                                             applicant='mentor',
                                             school_id=self.mentor_data.get('school_id')), data=dict(
-            user_email=self.mentor_data.get('email'),
+            email=self.mentor_data.get('email'),
             first_name=self.mentor_data.get('first_name'),
             last_name=self.mentor_data.get('last_name'),
             user_id=self.mentor_data.get('user_id'),
@@ -153,22 +153,24 @@ class TestAuth(BaseTest):
         print(count2)
         self.assertEqual(count2 - count, 1)
         self.assertEqual(response.status_code, 200)
-        # self.assertIn(b'Address', response.data)
-    #
-    #
-    # def test_register_mentor_user_success(self):
-    #     count = User.query.count()
-    #     response = self.client.post(url_for('auth.signup'), data=dict(
-    #         user_email=self.mentor_data.get('email'),
-    #         first_name=self.mentor_data.get('first_name'),
-    #         last_name=self.mentor_data.get('last_name'),
-    #         school_id=self.mentor_data.get('school_id')
-    #     ), follow_redirects=True)
-    #     count2 = User.query.count()
-    #     self.assertEqual(count2 - count, 1)
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertIn(b'Address', response.data)
+        self.assertIn(b'Personal Info', response.data)
 
+    def test_register_mentor_user_success(self):
+        count = User.query.count()
+        response = self.client.post(url_for('auth.mentor_signup',
+                                            applicant='mentor',
+                                            school_id=self.mentor_data.get('school_id')), data=dict(
+            email=self.mentor_data.get('email'),
+            first_name=self.mentor_data.get('first_name'),
+            last_name=self.mentor_data.get('last_name'),
+            user_id=self.mentor_data.get('user_id'),
+            school_id = self.mentor_data.get('school_id')
+        ), follow_redirects=True)
+        count2 = User.query.count()
+        print(count2)
+        self.assertEqual(count2 - count, 1)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Personal Info', response.data)
 
 if __name__ == '__main__':
     unittest.main()

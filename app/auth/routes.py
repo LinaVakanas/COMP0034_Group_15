@@ -37,7 +37,7 @@ def mentee_signup(applicant,school_id):
         db.session.add(new_mentee)
         db.session.commit()
         return redirect(url_for('auth.personal_info', applicant=applicant, user_id=new_user.user_id))
-    return render_template('auth/signup.html', form=form)
+    return render_template('auth/signup.html', form=form, title='Signup')
 
 
 @bp_auth.route('/mentor_signup/<applicant>/<school_id>/', methods=['POST', 'GET'])
@@ -51,7 +51,7 @@ def mentor_signup(applicant,school_id):
         db.session.add(new_user)
         db.session.flush()
         new_mentor = Mentor(school_id=school_id, first_name=form.first_name.data,
-                            last_name=form.last_name.data, user_id=new_user.user_id, email=new_user.email, paired_status=False)
+                            last_name=form.last_name.data, user_id=new_user.user_id, email=new_user.email)
         db.session.add(new_mentor)
         db.session.commit()
         return redirect(url_for('auth.personal_info', applicant=applicant, user_id=new_user.user_id))
