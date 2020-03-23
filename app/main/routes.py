@@ -4,7 +4,7 @@ import secrets
 
 from app import db
 from app.main.forms import PersonalForm, SignUpForm, LocationForm
-from app.models2 import User, MedicalCond, Message, Chatroom, OccupationalField, Hobbies, School, StudentReview, \
+from app.models2_backup import User, MedicalCond, Message, Chatroom, OccupationalField, Hobbies, School, StudentReview, \
     Pair, PersonalInfo, Report, PersonalIssues, Mentee, Mentor, Location
 
 bp_main = Blueprint('main', __name__)
@@ -14,10 +14,39 @@ bp_main = Blueprint('main', __name__)
 def home():
     return render_template('home.html', title="Home")
 
+
 @bp_main.route('/testing')
 def testing():
     mahdi = Mentor(first_name= "Mahdi", last_name= "Shah")
     return render_template('home_mentor_pending.html', mentor=mahdi)
+
+
+@bp_main.route('/admin')
+def controlpanel_home():
+    users = User.query.all()
+    users_total = User.query.count()
+    mentees = Mentee.query.all()
+    mentees_total = Mentee.query.count()
+    mentors = Mentor.query.all() ## will need filtering for specific numbers such as unapproved etc
+    mentors_total = Mentor.query.count()
+    # schools_total = School.query.count() ###### ACTUAL
+    schools_total = Mentee.query.group_by(Mentee.school_id).count() ### Dummy bc using mentee instead of schools cuz we havent added schools
+    return render_template('admin_home.html', users=users, users_total=users_total, mentees=mentees, mentees_total=mentees_total, mentors=mentors, mentors_total=mentors_total, schools_total=schools_total)
+
+
+@bp_main.route('/admin/pending_mentees', methods=['POST','GET'])
+def controlpanel_mentee():
+    # mentees = Mentee.query.all() ## Either add active to mentee and mentor or maybe query users
+    # mentees = User.query.join(Mentee, User.user_id==Mentee.user_id).all() ### Works but empty columns for things not in user table e.g mentee id
+    mentees = Mentee.query.join(User, User.user_id==Mentee.user_id).filter(User.active==False).all() ### Works but need to query for active
+    return render_template('admin_pending_mentees.html', mentees=mentees)
+
+
+@bp_main.route('/admin/pending_mentors')
+def controlpanel_mentor():
+    mentors = Mentor.query.all()
+    ####mentors = db.session.query(Mentee).filter(mentees.... change for actual filtering for approved)
+    return render_template('admin_pending_mentors.html', mentors=mentors)
 
 @bp_main.route('/personal_form/<applicant>/<school_id>/', methods=['POST', 'GET'])
 def personal_form(applicant, school_id):
@@ -29,7 +58,7 @@ def personal_form(applicant, school_id):
         if applicant == 'mentee':
 
             new_user = User(email=form2.email.data, school_id=school_id, user_type=applicant, creation_date=creation_date,
-                            bio="", password=password)
+                            bio="", password=password, active=False)
             db.session.add(new_user)
             db.session.flush()
             print("user id 1 ="+str(new_user.user_id))
@@ -39,22 +68,24 @@ def personal_form(applicant, school_id):
             new_info = PersonalInfo(user_id=new_user.user_id, carer_email=form.carer_email.data, carer_name=form.carer_name.data,
                                     status="S", xperience=None, share_performance=form.share_performance.data)
             db.session.flush()
-            print("mentee id ="+ str(new_mentee.user_id))
-            print("user id 2 ="+str(new_info.user_id))
+            # print("mentee id ="+ str(new_mentee.user_id))
+            # print("user id 2 ="+str(new_info.user_id))
             db.session.add_all([new_info, new_mentee])
-            print("user email ="+str(new_user.email))
+            # print("user email ="+str(new_user.email))
 
         elif applicant == 'mentor':
 
             if form.mentor_xperience.data == '>=2' and form.mentor_occupation.data != 'N':
-                new_user = User(email=form2.email.data, school_id=school_id, user_type=applicant, creation_date=creation_date,
-                                bio="", password=password)
-
-                new_mentor = Mentor(school_id=0, first_name=form2.first_name.data,
-                                    last_name=form2.last_name.data, email=new_user.email, paired_status=False)
-                new_info = PersonalInfo(carer_email=None, carer_name=None,
+                new_user = User(email=form2.email.data, school_id=0, user_type=applicant, creation_date=creation_date,
+                                bio="", password=password, active=False)
+                db.session.add(new_user)
+                db.session.flush()
+                print("user id =" + str(new_user.user_id))
+                new_mentor = Mentor(user_id=new_user.user_id, school_id=0, first_name=form2.first_name.data,
+                                    last_name=form2.last_name.data, email=new_user.email) #### REMOVED PAIRED STATUS=False
+                new_info = PersonalInfo(user_id=new_user.user_id, carer_email="N/A", carer_name="N/A",
                                         status=form.mentor_occupation.data, xperience=form.mentor_xperience.data, share_performance=None)
-                db.session.add_all([new_info, new_user, new_mentor])
+                db.session.add_all([new_info, new_mentor])
 
             else:
                 flash('Sorry, you must have a minimum of two years of experience to sign up as a mentor. '
@@ -62,7 +93,8 @@ def personal_form(applicant, school_id):
                 return redirect(url_for('main.home'))
 
         print("depression ="+str(form.depression.data))
-        new_issues = PersonalIssues(depression=form.depression.data, self_harm=form.self_harm.data, family=form.family.data, drugs=form.drugs.data, ed=form.ed.data, user_id=new_user.user_id, share_personal_issues=form.share_personal_issues)
+        print("share personal issues ="+str(form.share_personal_issues.data))
+        new_issues = PersonalIssues(depression=form.depression.data, self_harm=form.self_harm.data, family=form.family.data, drugs=form.drugs.data, ed=form.ed.data, user_id=new_user.user_id, share_personal_issues=form.share_personal_issues.data)
         db.session.add(new_issues)
 
         new_hobbies = Hobbies(football=form.football.data, drawing=form.drawing.data, user_id=new_user.user_id)
