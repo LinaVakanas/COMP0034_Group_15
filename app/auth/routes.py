@@ -15,55 +15,65 @@ def home():
     return render_template('home.html', title="Home")
 
 
-@bp_auth.route('/testing')
+@bp_auth.route('/testing/')
 def testing():
     mahdi = Mentor(first_name= "Mahdi", last_name= "Shah")
     return render_template('home_mentor_pending.html', mentor=mahdi)
 
 
-@bp_auth.route('/personal_form/<applicant>/<school_id>/', methods=['POST', 'GET'])
-def user_signup(applicant, school_id):
+@bp_auth.route('/mentee_signup/', methods=['POST', 'GET'])
+def mentee_signup():
     form2 = SignUpForm(request.form)
-    if request.method == 'POST'and form2.validate_on_submit():
+    if request.method == 'POST'and form2.validate():
         creation_date = str(datetime.date(datetime.now()))
         password = secrets.token_hex(8)
-        if applicant == 'mentee':
-            new_user = User(email=form2.email.data, user_type=applicant, school_id=school_id, password=password,
-                            bio="", creation_date=creation_date)
-            db.session.add(new_user)
-            db.session.flush()
-            new_mentee = Mentee(school_id=school_id, first_name=form2.first_name.data,
-                                last_name=form2.last_name.data)
-            db.session.add(new_mentee)
-            return redirect(url_for('auth.personal_info'))
+        new_user = User(email=form2.email.data, user_type='mentee', school_id=1, password=password,
+                        bio="", creation_date=creation_date)
+        db.session.add(new_user)
+        db.session.flush()
+        new_mentee = Mentee(school_id=1, first_name=form2.first_name.data,
+                            last_name=form2.last_name.data)
+        db.session.add(new_mentee)
+        db.session.commit()
+        return redirect(url_for('auth.personal_info', applicant='mentee'))
+    return render_template('auth/signup.html', form=form2)
 
-        elif applicant== 'mentor':
-            new_user = User(email=form2.email.data, user_type=applicant, school_id=school_id, password=password, bio="",
-                            creation_date=creation_date)
-            db.session.add(new_user)
-            db.session.flush()
-            new_mentor = Mentor(school_id=0, first_name=form2.first_name.data,
-                                last_name=form2.last_name.data, email=new_user.email, paired_status=False)
-            db.session.add(new_mentor)
-            return redirect(url_for('auth.personal_info'))
-    render_template('auth/signup.html')
 
-@bp_auth.route('personal_info/',methods=['POST', 'GET'])
-def personal_info(applicant):
+@bp_auth.route('/mentor_signup/<school_id>', methods=['POST', 'GET'])
+def MentorSignup(school_id):
+    form2 = SignUpForm(request.form)
+    if request.method == 'POST' and form2.validate():
+        creation_date = str(datetime.date(datetime.now()))
+        password = secrets.token_hex(8)
+        new_user = User(email=form2.email.data, user_type='mentor', school_id=school_id, password=password, bio="",
+                        creation_date=creation_date)
+        db.session.add(new_user)
+        db.session.flush()
+        new_mentor = Mentor(school_id=0, first_name=form2.first_name.data,
+                            last_name=form2.last_name.data, email=new_user.email, paired_status=False)
+        db.session.add(new_mentor)
+        db.session.commit()
+        return redirect(url_for('auth.personal_info', applicant='mentor'))
+    render_template('auth/signup.html', form=form2)
+
+
+@bp_auth.route('/personal_info/<applicant>', methods=['POST', 'GET'])
+def personal_info(applicant, user_id):
     form = PersonalInfoForm(request.form)
-    if request.method == 'POST' and form.validate_on_submit():
+    if request.method == 'POST' and form.validate():
         if applicant == 'mentee':
-            new_info = PersonalInfo(carer_email=form.carer_email.data, carer_name=form.carer_name.data,
-                                        status="S", xperience=None, share_performance=form.share_performance.data)
+            new_info = PersonalInfo(user_id=user_id, carer_email=form.carer_email.data, carer_name=form.carer_name.data,
+                                    status="S", xperience=None, share_performance=form.share_performance.data)
             db.session.add(new_info)
-            return redirect(url_for('auth.occupational_field'))
+            return redirect(url_for('auth.occupational_field', applicant=applicant))
         elif applicant == 'mentor':
             if form.mentor_xperience.data == '>=2' and form.mentor_occupation.data != 'N':
                 new_info = PersonalInfo(carer_email=None, carer_name=None,
                                         status=form.mentor_occupation.data, xperience=form.mentor_xperience.data,
                                         share_performance=None)
                 db.session.add(new_info)
-                return redirect(url_for('auth.occupational_field'))
+                db.session.commit()
+                return redirect(url_for('auth.occupational_field', applicant=applicant))
 
             else:
                 flash('Sorry, you must have a minimum of two years of experience to sign up as a mentor. '

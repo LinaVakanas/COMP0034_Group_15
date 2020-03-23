@@ -60,16 +60,30 @@ class BaseTest(TestCase):
 
 
 class TestMain(BaseTest):
-    def test_database(self):
-        testing = os.path.exists("webapp_sqlite.db")
-        self.assertTrue(testing)
+    pass
 
 
 class TestAuth(BaseTest):
 
+    def test_mentee_personal_info_form_saved(self):
+        count = PersonalInfo.query.count()
+        response = self.client.post(url_for('auth.personal_info',
+                                            applicant='mentee',
+                                            user_id=self.mentee_data.get('user_id')), data=dict(
+            carer_email=self.mentee_personal_issues_data.get('carer_email'),
+            carer_name=self.mentee_personal_issues_data.get('carer_name'),
+            status=self.mentee_personal_issues_data.get('status'),
+            share_performance=self.mentee_personal_issues_data.get('share_performance')
+        ), follow_redirects=True)
+        count2 = PersonalInfo.query.count()
+        self.assertEqual(count2 - count, 1)
+        self.assertEqual(response.status_cod, 200)
+
     def test_personal_issues_form_saved(self):
         count = PersonalIssues.query.count()
-        response = self.client.post(url_for('auth.personal_issues_form'), data=dict(
+        response = self.client.post(url_for('auth.personal_issues_form',
+                                            applicant=self.mentee_data.get('user_type'),
+                                            user_id=self.mentee_data.get('user_id')), data=dict(
             depression=self.mentee_personal_issues_data.get('depression'),
             family=self.mentee_personal_issues_data.get('family'),
             ed=self.mentee_personal_issues_data.get('ed'),
@@ -82,7 +96,7 @@ class TestAuth(BaseTest):
         self.assertEqual(response.status_cod, 200)
 
     def test_registration_form_displays(self):
-        target_url = url_for('auth.personal_forms')
+        target_url = url_for('auth.personal_forms', school_id=self.mentee_data.get('school_id'))
         response = self.client.get(target_url)
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'Signup', response.data)
@@ -99,22 +113,20 @@ class TestAuth(BaseTest):
         count2 = Mentee.query.count()
         self.assertEqual(count2 - count, 1)
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b'Address', response.data)
+        self.assertIn(b'Personal Info', response.data)
 
     def test_register_mentee_user_success(self):
         count = User.query.count()
-        response = self.client.post(url_for('auth.signup'), data=dict(
+        response = self.client.post(url_for('auth.mentee_signup'), data=dict(
             email=self.mentee_data.get('email'),
-            user_type="mentee",
-            user_password=self.mentee_data.get('password'),
+            password=self.mentee_data.get('password'),
             first_name=self.mentee_data.get('first_name'),
             last_name=self.mentee_data.get('last_name'),
-            school_id=self.mentee_data.get('school_id')
         ), follow_redirects=True)
         count2 = User.query.count()
         self.assertEqual(count2 - count, 1)
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b'Address', response.data)
+        self.assertIn(b'Personal Info', response.data)
 
     # def test_register_mentor_success(self):
     #     count = Mentor.query.count()
