@@ -59,7 +59,7 @@ class PersonalForm(FlaskForm):
 
 
 class LocationForm(FlaskForm):
-    with open('C:/Users/linav/Documents/UCL/Year 3/COMP0034 - Web Development/Group 15 branch 2/gb.json') as f:
+    with open('C:/Users/Mahdi/Documents/UCL Mechanical Engineering/3rd Year/COMP0034 - Web Development/COMP0034_Group_15/gb.json') as f:
         cities_dict = json.load(f)
         cities_list = []
         for dict in cities_dict:
