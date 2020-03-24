@@ -59,7 +59,7 @@ class PersonalForm(FlaskForm):
 
 
 class LocationForm(FlaskForm):
-    with open('C:/Users/linav/Documents/UCL/Year 3/COMP0034 - Web Development/COMP0034 Group 15 -/Group 15/gb.json') as f:
+    with open('C:/Users/Mahdi/Documents/UCL Mechanical Engineering/3rd Year/COMP0034 - Web Development/COMP0034_Group_15 -/gb.json') as f:
         cities_dict = json.load(f)
         cities_list = []
         for dict in cities_dict:
@@ -75,3 +75,6 @@ class LocationForm(FlaskForm):
     # choices6 = choices5.append(('car', 'Car'))
     # mentor_transport = SelectMultipleField('Please select which modes of transport you can take:', choices=choices6, validators=[DataRequired()])
 
+
+class ApproveForm(FlaskForm):
+    approve = BooleanField("",default="unchecked")
