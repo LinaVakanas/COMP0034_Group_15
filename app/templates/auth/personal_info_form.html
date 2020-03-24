@@ -1,9 +1,10 @@
 {% extends 'base.html' %}
 {% from "_formhelpers.html" import render_field %}
-<h1>{{title}}</h1>
+<h1>Personal Info Form</h1>
 {% block content %}
     <form action="" method="post" novalidate>
         {{ form.hidden_tag() }}
+
         {% if applicant == 'mentee' %}
             {{ render_field(form.carer_name) }} {{ render_field(form.carer_email) }}
             {{ render_field(form.share_performance) }}

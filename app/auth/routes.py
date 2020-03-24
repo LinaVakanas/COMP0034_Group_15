@@ -58,33 +58,33 @@ def mentor_signup(applicant,school_id):
     return render_template('auth/signup.html', form=form, title='Signup')
 
 
-@bp_auth.route('/personal_info/<applicant>/<school_id>/', methods=['POST', 'GET'])
-def personal_info(applicant, school_id):
+@bp_auth.route('/personal_info/<applicant>/<user_id>/', methods=['POST', 'GET'])
+def personal_info(applicant, user_id):
     form = PersonalInfoForm(request.form)
     if request.method == 'POST' and form.validate():
         if applicant == 'mentee':
-            new_user = User(email='user3@ucl.uk', user_type=applicant, school_id=school_id, password='password3', active=False)
+            new_user = User(user_id=3, email='hermione@hogwarts.ac.uk', user_type='mentee', school_id=1, password='password3')
             db.session.add(new_user)
-            db.session.flush()
+            db.session.commit()
             new_info = PersonalInfo(user_id=new_user.user_id, carer_email=form.carer_email.data, carer_name=form.carer_name.data,
                                     status="S", xperience=None, share_performance=form.share_performance.data)
             db.session.add(new_info)
             db.session.commit()
-            return redirect(url_for('auth.location_form'))
-        # elif applicant == 'mentor':
-        #     if form.mentor_xperience.data == '>=2' and form.mentor_occupation.data != 'N':
-        #         new_info = PersonalInfo(carer_email=None, carer_name=None,
-        #                                 status=form.mentor_occupation.data, xperience=form.mentor_xperience.data,
-        #                                 share_performance=None)
-        #         db.session.add(new_info)
-        #         db.session.commit()
-        #         return redirect(url_for('auth.occupational_field', applicant=applicant))
-        #
-        #     else:
-        #         flash('Sorry, you must have a minimum of two years of experience to sign up as a mentor. '
-        #               'We want to ensure mentors have enough experience to help the mentees. \nWe hope you understand!')
-        #         return redirect(url_for('auth.home'))
-    return render_template('auth/personal_info_form.html', applicant=applicant, form=form, title='Personal Info')
+            return redirect(url_for('auth.occupational_field', applicant=applicant))
+        elif applicant == 'mentor':
+            if form.mentor_xperience.data == '>=2' and form.mentor_occupation.data != 'N':
+                new_info = PersonalInfo(carer_email=None, carer_name=None,
+                                        status=form.mentor_occupation.data, xperience=form.mentor_xperience.data,
+                                        share_performance=None)
+                db.session.add(new_info)
+                db.session.commit()
+                return redirect(url_for('auth.occupational_field', applicant=applicant))
+
+            else:
+                flash('Sorry, you must have a minimum of two years of experience to sign up as a mentor. '
+                      'We want to ensure mentors have enough experience to help the mentees. \nWe hope you understand!')
+                return redirect(url_for('auth.home'))
+    return render_template('auth/personal_info_form.html', form=form, title='Personal Info')
 
 
 
@@ -109,11 +109,8 @@ def personal_info(applicant, school_id):
 #     return render_template('PersonalForm.html', title='Signup', form2=form2, form=form, applicant=applicant)
 #
 #
-@bp_auth.route('/location_form/', methods=['POST', 'GET'])
-def location_form():
-    form = location_form
-    return render_template('auth/personal_issues_form.html', form=form)
-
+# @bp_main.route('/location_form/<applicant>/<applicant_id>/', methods=['POST', 'GET'])
+# def location_form(applicant, applicant_id):
 #     form = LocationForm(request.form)
 #     if request.method == 'POST' and form.validate_on_submit():
 #         if applicant == 'mentor' and form.city.data.lower() != 'london':

@@ -23,15 +23,14 @@ class PersonalInfoForm(FlaskForm):
     mentor_xperience = SelectField('How long have you had this occupation for?', choices=choices5)
 
 
-class Hobbies():
-    football = BooleanField('Football', default="unchecked")
-    drawing = BooleanField('Drawing', default="unchecked")
-    blob = BooleanField()
+football = BooleanField('Football', default="unchecked")
+drawing = BooleanField('Drawing', default="unchecked")
+blob = BooleanField()
 
-    depression = BooleanField(label='Depression', default="unchecked")
-    self_harm = BooleanField(label='Self-harm', default="unchecked")
-    family = BooleanField(label='Family Problems', default="unchecked")
-    drugs = BooleanField(label='Drugs', default="unchecked")
-    ed = BooleanField(label='Eating Disorder', default="unchecked")
+depression = BooleanField(label='Depression', default="unchecked")
+self_harm = BooleanField(label='Self-harm', default="unchecked")
+family = BooleanField(label='Family Problems', default="unchecked")
+drugs = BooleanField(label='Drugs', default="unchecked")
+ed = BooleanField(label='Eating Disorder', default="unchecked")
 
-    share_personal_issues = BooleanField('Permission to share your problems with mentor', default="unchecked")
+share_personal_issues = BooleanField('Permission to share your problems with mentor', default="unchecked")

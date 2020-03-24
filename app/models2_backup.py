@@ -60,9 +60,6 @@ class User(db.Model):
     profile_pic = db.Column(db.BLOB) #don't know if its acc blob
     creation_date = db.Column(db.String)
 
-    def __repr__(self):
-        return '<User ID: {}, User Type: {}, Email: {}.>'.format(self.user_id, self.user_type, self.email)
-
 
 class Report(db.Model):
     __tablename__ = 'report'

@@ -9,7 +9,7 @@ from app import create_app, db
 from app.models2_backup import Mentor, Mentee, User, PersonalInfo, PersonalIssues
 
 
-class BaseTestCase(TestCase):
+class BaseTest(TestCase):
     """Base test case"""
 
     def create_app(self):
@@ -21,12 +21,12 @@ class BaseTestCase(TestCase):
         db.create_all()
 
         # create dummy data for tests
-        self.user1 = User(user_type='mentor', email='harrypj@ucl.ac.uk', password='password1', school_id=0, active=False)
+        self.user1 = User(user_type='mentor', email='harrypj@ucl.ac.uk', password='password1')
         self.mentor = Mentor(user_id=1, school_id=0, first_name='Harry', last_name='Potter')
-        self.user2 = User(user_type='mentee', email='lily@ucl.ac.uk', password='password2', school_id=2, active=False)
+        self.user2 = User(user_type='mentee', email='lily@ucl.ac.uk', password='password2')
         self.mentee = Mentee(user_id=2, school_id=2, first_name='Lily', last_name='Weasley')
-        db.session.add(self.user1)
-        db.session.add(self.user2)
+        db.session.add([self.user1, self.mentor])
+        db.session.add([self.user2, self.mentee])
         db.session.commit()
 
     def tearDown(self):
@@ -59,36 +59,31 @@ class BaseTestCase(TestCase):
     mentor_hobbies = dict(user_id=4, football=False, drawing=False)
 
 
-class TestMain(BaseTestCase):
+class TestMain(BaseTest):
     pass
 
 
-class TestAuth(BaseTestCase):
+class TestAuth(BaseTest):
 
     def test_mentee_personal_info_form_saved(self):
         count = PersonalInfo.query.count()
-        # user3 = User(user_id=self.mentee_data.get('user_id'), email=self.mentee_data.get('email'), user_type='mentee',
-        #              school_id=self.mentee_data.get('school_id'), password=self.mentee_data.get('password'))
-        # db.session.add(user3)
-        # db.session.commit()
+        print(self.mentee_data.get('user_id'))
         response = self.client.post(url_for('auth.personal_info',
-                                            applicant='mentee', school_id=self.mentee_data.get('school_id')), data=dict(
-            carer_email=self.mentee_personal_info.get('carer_email'),
-            carer_name=self.mentee_personal_info.get('carer_name'),
-            share_performance=self.mentee_personal_info.get('share_performance')
+                                            applicant='mentee', user_id=self.mentee_data.get('user_id')), data=dict(
+            carer_email=self.mentee_personal_issues_data.get('carer_email'),
+            carer_name=self.mentee_personal_issues_data.get('carer_name'),
+            share_performance=self.mentee_personal_issues_data.get('share_performance')
         ), follow_redirects=True)
-        print(User.query.count())
         count2 = PersonalInfo.query.count()
         print(count2)
         self.assertEqual(count2 - count, 1)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_cod, 200)
 
     def test_personal_issues_form_saved(self):
         count = PersonalIssues.query.count()
-        user2 = User.query.filter_by(user_type='mentee').first()
         response = self.client.post(url_for('auth.personal_issues_form',
-                                            applicant=user2.user_type,
-                                            user_id=user2.user_id), data=dict(
+                                            applicant=self.mentee_data.get('user_type'),
+                                            user_id=self.mentee_data.get('user_id')), data=dict(
             depression=self.mentee_personal_issues_data.get('depression'),
             family=self.mentee_personal_issues_data.get('family'),
             ed=self.mentee_personal_issues_data.get('ed'),
@@ -97,7 +92,6 @@ class TestAuth(BaseTestCase):
             share_personal_issues=self.mentee_personal_issues_data.get('share_personal_issues')
         ), follow_redirects=True)
         count2 = PersonalIssues.query.count()
-        print(count2)
         self.assertEqual(count2 - count, 1)
         self.assertEqual(response.status_cod, 200)
 
@@ -117,10 +111,9 @@ class TestAuth(BaseTestCase):
             email=self.mentee_data.get('email'),
             first_name=self.mentee_data.get('first_name'),
             last_name=self.mentee_data.get('last_name'),
-            # user_id=self.mentee_data.get('user_id'),
+            user_id=self.mentee_data.get('user_id'),
             school_id=self.mentee_data.get('school_id')
         ), follow_redirects=True)
-        print(User.query.count())
         count2 = Mentee.query.count()
         print(count2)
         self.assertEqual(count2 - count, 1)
@@ -136,6 +129,8 @@ class TestAuth(BaseTestCase):
             email=self.mentee_data.get('email'),
             first_name=self.mentee_data.get('first_name'),
             last_name=self.mentee_data.get('last_name'),
+            user_id=self.mentee_data.get('user_id'),
+            school_id=self.mentee_data.get('school_id')
         ), follow_redirects=True)
         count2 = User.query.count()
         print(count2)
@@ -151,6 +146,8 @@ class TestAuth(BaseTestCase):
             email=self.mentor_data.get('email'),
             first_name=self.mentor_data.get('first_name'),
             last_name=self.mentor_data.get('last_name'),
+            user_id=self.mentor_data.get('user_id'),
+            school_id = self.mentor_data.get('school_id')
         ), follow_redirects=True)
         count2 = Mentor.query.count()
         print(count2)
@@ -166,6 +163,8 @@ class TestAuth(BaseTestCase):
             email=self.mentor_data.get('email'),
             first_name=self.mentor_data.get('first_name'),
             last_name=self.mentor_data.get('last_name'),
+            user_id=self.mentor_data.get('user_id'),
+            school_id = self.mentor_data.get('school_id')
         ), follow_redirects=True)
         count2 = User.query.count()
         print(count2)
