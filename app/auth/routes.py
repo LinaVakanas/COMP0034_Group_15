@@ -61,8 +61,8 @@ def mentor_signup(applicant,school_id):
 @bp_auth.route('/personal_info/<applicant>/<school_id>/', methods=['POST', 'GET'])
 def personal_info(applicant, school_id):
     form = PersonalInfoForm(request.form)
-    print(form)
-    print('blah')
+    # print(form)
+    # print('blah')
     if request.method == 'POST' and form.validate():
         print('blah')
         if applicant == 'mentee':

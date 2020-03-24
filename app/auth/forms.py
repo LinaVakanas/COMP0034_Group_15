@@ -14,13 +14,13 @@ class PersonalInfoForm(FlaskForm):
     carer_email = StringField("Carer's email address:", validators=[DataRequired(), Email()])
     share_performance = BooleanField(label='Share school performance', default="unchecked")
 
-    choices4 = [('S', 'University student'),
-                ('W', 'Working'),
-                ('N', 'Neither')]
-    mentor_occupation = SelectField('What is your current status:', choices=choices4)
-    choices5 = [('<2', 'Less than 2 years'),
-                ('>=2', '2 years or longer')]
-    mentor_xperience = SelectField('How long have you had this occupation for?', choices=choices5)
+    # choices4 = [('S', 'University student'),
+    #             ('W', 'Working'),
+    #             ('N', 'Neither')]
+    # mentor_occupation = SelectField('What is your current status:', choices=choices4)
+    # choices5 = [('<2', 'Less than 2 years'),
+    #             ('>=2', '2 years or longer')]
+    # mentor_xperience = SelectField('How long have you had this occupation for?', choices=choices5)
 
     def __repr__(self):
         return '<AUTH PERSONAL INFO FORM>'
