@@ -42,10 +42,10 @@ class BaseTest(TestCase):
 
     # test mentee and mentor details:
     mentee_data = dict(user_id=3, first_name='Hermione', last_name='Granger', school_id=1,
-                       email='hermione@hogwart.ac.uk', password='password3')
+                       email='hermione@hogwarts.ac.uk', password='password3')
     mentee_personal_issues_data = dict(user_id=3, depression=False, self_harm=True, family=True, drugs=False, ed=True,
                                        share_personal_issues=True)
-    mentee_personal_info = dict(carer_email='emma@parent.uk', carer_name='Emma Granger', share_performance=False,
+    mentee_personal_info = dict(carer_email='emma@gmail.com', carer_name='Emma Granger', share_performance=False,
                                 status='S', xperience=None, user_id=3)
     mentee_hobbies = dict(user_id=3, football=True, drawing=False)
 
@@ -66,7 +66,6 @@ class TestAuth(BaseTest):
 
     def test_mentee_personal_info_form_saved(self):
         count = PersonalInfo.query.count()
-        print(self.mentee_data.get('user_id'))
         response = self.client.post(url_for('auth.personal_info',
                                             applicant='mentee', school_id=self.mentee_data.get('school_id')), data=dict(
             carer_name=self.mentee_personal_info.get('carer_name'),
