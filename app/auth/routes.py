@@ -63,7 +63,7 @@ def personal_info(applicant, school_id):
     form = PersonalInfoForm(request.form)
     print(form)
     print('blah')
-    if request.method == 'POST':
+    if request.method == 'POST' and form.validate():
         print('blah')
         if applicant == 'mentee':
             print('blah')
@@ -74,7 +74,7 @@ def personal_info(applicant, school_id):
                                     status="S", xperience=None, share_performance=form.share_performance.data)
             db.session.add(new_info)
             db.session.commit()
-            return redirect(url_for('auth.occupational_field', applicant=applicant))
+            return redirect(url_for('auth.location_form'))
         elif applicant == 'mentor':
             if form.mentor_xperience.data == '>=2' and form.mentor_occupation.data != 'N':
                 new_info = PersonalInfo(carer_email=None, carer_name=None,
@@ -82,13 +82,13 @@ def personal_info(applicant, school_id):
                                         share_performance=None)
                 db.session.add(new_info)
                 db.session.commit()
-                return redirect(url_for('auth.occupational_field', applicant=applicant))
+                return redirect(url_for('auth.location_form', title='Location'))
 
             else:
                 flash('Sorry, you must have a minimum of two years of experience to sign up as a mentor. '
                       'We want to ensure mentors have enough experience to help the mentees. \nWe hope you understand!')
                 return redirect(url_for('auth.home'))
-    return render_template('auth/personal_info_form.html', form=form, title='Personal Info')
+    return render_template('auth/personal_info_form.html', form=form, title='Personal Info', applicant=applicant)
 
 
 
@@ -113,26 +113,27 @@ def personal_info(applicant, school_id):
 #     return render_template('PersonalForm.html', title='Signup', form2=form2, form=form, applicant=applicant)
 #
 #
-# @bp_main.route('/location_form/<applicant>/<applicant_id>/', methods=['POST', 'GET'])
-# def location_form(applicant, applicant_id):
-#     form = LocationForm(request.form)
-#     if request.method == 'POST' and form.validate_on_submit():
-#         if applicant == 'mentor' and form.city.data.lower() != 'london':
-#             flash("Sadly we are only based at London for now. \nWe'll keep you on a waiting list and email you if we expand "
-#                   "to your city. We hope you understand.")
-#             return redirect(url_for('main.home', title='Home'))
-#
-#         elif applicant == 'mentee' and form.city.data.lower() != 'london':
-#             flash("Hm... are you sure that's the right city? We only send out application forms to students from London.")
-#
-#         else:
-#             new_location = Location(user_id=applicant_id, address=form.address.data, city=form.city.data.capitalize(), postcode=form.postcode.data,
-#                                     avoid_area=form.avoid_area.data)
-#             db.session.add(new_location)
-#             db.session.commit()
-#             return redirect(url_for('main.load_pairing', applicant=applicant, applicant_id=applicant_id, location=new_location))
-#
-#     return render_template('LocationForm.html', title='Signup', form=form, applicant=applicant)
+@bp_auth.route('/location_form//', methods=['POST', 'GET'])
+def location_form():
+    pass
+    # form = LocationForm(request.form)
+    # if request.method == 'POST' and form.validate_on_submit():
+    #     if applicant == 'mentor' and form.city.data.lower() != 'london':
+    #         flash("Sadly we are only based at London for now. \nWe'll keep you on a waiting list and email you if we expand "
+    #               "to your city. We hope you understand.")
+    #         return redirect(url_for('main.home', title='Home'))
+    #
+    #     elif applicant == 'mentee' and form.city.data.lower() != 'london':
+    #         flash("Hm... are you sure that's the right city? We only send out application forms to students from London.")
+    #
+    #     else:
+    #         new_location = Location(user_id=applicant_id, address=form.address.data, city=form.city.data.capitalize(), postcode=form.postcode.data,
+    #                                 avoid_area=form.avoid_area.data)
+    #         db.session.add(new_location)
+    #         db.session.commit()
+    #         return redirect(url_for('main.load_pairing', applicant=applicant, applicant_id=applicant_id, location=new_location))
+    #
+    # return render_template('LocationForm.html', title='Signup', form=form, applicant=applicant)
 #
 #
 # @bp_main.route('/pairing/<applicant>/<applicant_id>/<location>/', methods=['POST', 'GET'])
