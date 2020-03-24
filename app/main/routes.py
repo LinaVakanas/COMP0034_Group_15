@@ -160,26 +160,14 @@ def load_pairing(applicant, applicant_id, location):
         new_pair = Pair(mentor_id=mentor.mentor_id, mentee_id=mentee.mentee_id)
 
     elif applicant == 'mentor':
-        mentee = Mentee.query.join(Location).filter_by(city='London', user_type='mentee').first()
+        mentee = Mentee.query.join(Location, Mentee.user_id == Location.user_id).filter_by(city='London', user_type='mentee').first()
         if not mentee:
             flash("Unfortunately there are no mentors signed up in {} yet. Sorry for the inconvenience, "
                   "you'll be put on a waiting list and we will let you know as soon as a mentee is found.\n"
                   "For now, you can edit your profile, and get used to the website.".format(location.city))
-        mentor = Mentor.query.join(User).filter_by(user_id=applicant_id).all()
+        mentor = Mentor.query.filter_by(user_id=applicant_id).all()
         new_pair = Pair(mentor_id=mentor.mentor_id, mentee_id=mentee.mentee_id)
     return render_template(url_for('mentor_profile', pair=new_pair))
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
