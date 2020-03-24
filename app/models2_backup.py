@@ -52,7 +52,7 @@ class User(db.Model):
     __tablename__ = 'user'
     email = db.Column(db.Text, nullable=False, unique=True)
     user_type = db.Column(db.String, nullable=False)
-    user_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    user_id = db.Column(db.Integer,autoincrement=True, primary_key=True)
     school_id = db.Column(db.Integer, nullable=False)
     password = db.Column(db.Text, nullable=False) #we can look at how Miss did that hash thing in her example
     bio = db.Column(db.String(300))

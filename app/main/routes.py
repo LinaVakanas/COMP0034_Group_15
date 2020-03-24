@@ -3,7 +3,7 @@ from datetime import datetime
 import secrets
 
 from app import db
-from app.main.forms import PersonalForm, SignUpForm, LocationForm
+from app.main.forms import PersonalForm, SignUpForm, LocationForm, ApproveForm
 from app.models2_backup import User, MedicalCond, Message, Chatroom, OccupationalField, Hobbies, School, StudentReview, \
     Pair, PersonalInfo, Report, PersonalIssues, Mentee, Mentor, Location
 
@@ -36,14 +36,22 @@ def controlpanel_home():
 
 @bp_main.route('/admin/pending_mentees', methods=['POST','GET'])
 def controlpanel_mentee():
-    # mentees = Mentee.query.all() ## Either add active to mentee and mentor or maybe query users
-    # mentees = User.query.join(Mentee, User.user_id==Mentee.user_id).all() ### Works but empty columns for things not in user table e.g mentee id
+    form = ApproveForm(request.form)
     mentees = Mentee.query.join(User, User.user_id==Mentee.user_id).filter(User.active==False).all()
-    return render_template('admin_pending_mentees.html', mentees=mentees)
+    if request.method == 'POST':
+        approved_list = request.form.getlist('approve')
+        for id in approved_list:
+            mentee = Mentee.query.filter(Mentee.mentee_id==id).all()
+            user_id = mentee[0].user_id
+            user = User.query.filter(User.user_id==user_id).all()
+            user[0].active = True
+            db.session.commit()
+        return redirect(url_for('main.controlpanel_home')) ##### Maybe flash a msg as well
+    return render_template('admin_pending_mentees.html', mentees=mentees, form=form)
 
 
 @bp_main.route('/admin/pending_mentors')
-def controlpanel_mentor():
+def controlpanel_mentor(): #### Copy from above
     mentors = Mentor.query.all()
     ####mentors = db.session.query(Mentee).filter(mentees.... change for actual filtering for approved)
     return render_template('admin_pending_mentors.html', mentors=mentors)
