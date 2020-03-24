@@ -5,7 +5,6 @@ from flask import url_for
 from flask_testing import TestCase
 
 from app import create_app, db
-
 from app.models2_backup import Mentor, Mentee, User, PersonalInfo, PersonalIssues
 
 
@@ -25,8 +24,8 @@ class BaseTest(TestCase):
         self.mentor = Mentor(user_id=1, school_id=0, first_name='Harry', last_name='Potter')
         self.user2 = User(user_type='mentee', email='lily@ucl.ac.uk', password='password2')
         self.mentee = Mentee(user_id=2, school_id=2, first_name='Lily', last_name='Weasley')
-        db.session.add([self.user1, self.mentor])
-        db.session.add([self.user2, self.mentee])
+        db.session.add_all([self.user1, self.mentor])
+        db.session.add_all([self.user2, self.mentee])
         db.session.commit()
 
     def tearDown(self):
@@ -69,10 +68,10 @@ class TestAuth(BaseTest):
         count = PersonalInfo.query.count()
         print(self.mentee_data.get('user_id'))
         response = self.client.post(url_for('auth.personal_info',
-                                            applicant='mentee', user_id=self.mentee_data.get('user_id')), data=dict(
-            carer_email=self.mentee_personal_issues_data.get('carer_email'),
-            carer_name=self.mentee_personal_issues_data.get('carer_name'),
-            share_performance=self.mentee_personal_issues_data.get('share_performance')
+                                            applicant='mentee', school_id=self.mentee_data.get('school_id')), data=dict(
+            carer_email=self.mentee_personal_info.get('carer_email'),
+            carer_name=self.mentee_personal_info.get('carer_name'),
+            share_performance=self.mentee_personal_info.get('share_performance')
         ), follow_redirects=True)
         count2 = PersonalInfo.query.count()
         print(count2)
@@ -111,8 +110,6 @@ class TestAuth(BaseTest):
             email=self.mentee_data.get('email'),
             first_name=self.mentee_data.get('first_name'),
             last_name=self.mentee_data.get('last_name'),
-            user_id=self.mentee_data.get('user_id'),
-            school_id=self.mentee_data.get('school_id')
         ), follow_redirects=True)
         count2 = Mentee.query.count()
         print(count2)
@@ -129,8 +126,6 @@ class TestAuth(BaseTest):
             email=self.mentee_data.get('email'),
             first_name=self.mentee_data.get('first_name'),
             last_name=self.mentee_data.get('last_name'),
-            user_id=self.mentee_data.get('user_id'),
-            school_id=self.mentee_data.get('school_id')
         ), follow_redirects=True)
         count2 = User.query.count()
         print(count2)
@@ -146,8 +141,6 @@ class TestAuth(BaseTest):
             email=self.mentor_data.get('email'),
             first_name=self.mentor_data.get('first_name'),
             last_name=self.mentor_data.get('last_name'),
-            user_id=self.mentor_data.get('user_id'),
-            school_id = self.mentor_data.get('school_id')
         ), follow_redirects=True)
         count2 = Mentor.query.count()
         print(count2)
@@ -163,8 +156,6 @@ class TestAuth(BaseTest):
             email=self.mentor_data.get('email'),
             first_name=self.mentor_data.get('first_name'),
             last_name=self.mentor_data.get('last_name'),
-            user_id=self.mentor_data.get('user_id'),
-            school_id = self.mentor_data.get('school_id')
         ), follow_redirects=True)
         count2 = User.query.count()
         print(count2)

@@ -36,7 +36,7 @@ def mentee_signup(applicant,school_id):
                             last_name=form.last_name.data, user_id=new_user.user_id, email=new_user.email)
         db.session.add(new_mentee)
         db.session.commit()
-        return redirect(url_for('auth.personal_info', applicant=applicant, user_id=new_user.user_id))
+        return redirect(url_for('auth.personal_info', applicant=applicant, school_id=new_user.school_id))
     return render_template('auth/signup.html', form=form, title='Signup')
 
 
@@ -54,18 +54,22 @@ def mentor_signup(applicant,school_id):
                             last_name=form.last_name.data, user_id=new_user.user_id, email=new_user.email)
         db.session.add(new_mentor)
         db.session.commit()
-        return redirect(url_for('auth.personal_info', applicant=applicant, user_id=new_user.user_id))
+        return redirect(url_for('auth.personal_info', applicant=applicant, school_id=new_user.school_id))
     return render_template('auth/signup.html', form=form, title='Signup')
 
 
-@bp_auth.route('/personal_info/<applicant>/<user_id>/', methods=['POST', 'GET'])
-def personal_info(applicant, user_id):
+@bp_auth.route('/personal_info/<applicant>/<school_id>/', methods=['POST', 'GET'])
+def personal_info(applicant, school_id):
     form = PersonalInfoForm(request.form)
-    if request.method == 'POST' and form.validate():
+    print(form)
+    print('blah')
+    if request.method == 'POST':
+        print('blah')
         if applicant == 'mentee':
-            new_user = User(user_id=3, email='hermione@hogwarts.ac.uk', user_type='mentee', school_id=1, password='password3')
+            print('blah')
+            new_user = User(email='hermione@hogwarts.ac.uk', user_type='mentee', school_id=school_id, password='password3')
             db.session.add(new_user)
-            db.session.commit()
+            db.session.flush()
             new_info = PersonalInfo(user_id=new_user.user_id, carer_email=form.carer_email.data, carer_name=form.carer_name.data,
                                     status="S", xperience=None, share_performance=form.share_performance.data)
             db.session.add(new_info)

@@ -22,6 +22,8 @@ class PersonalInfoForm(FlaskForm):
                 ('>=2', '2 years or longer')]
     mentor_xperience = SelectField('How long have you had this occupation for?', choices=choices5)
 
+    def __repr__(self):
+        return '<AUTH PERSONAL INFO FORM>'
 
 football = BooleanField('Football', default="unchecked")
 drawing = BooleanField('Drawing', default="unchecked")
