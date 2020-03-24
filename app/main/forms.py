@@ -58,14 +58,12 @@ class PersonalForm(FlaskForm):
     share_performance = BooleanField('Permission to share school performance with mentor', default="unchecked ")
 
 
-with open('gb.json') as f:
-    cities_dict = json.load(f)
-    cities_list = []
-    for dict in cities_dict:
-        cities_list.append(dict['city'])
-
-
 class LocationForm(FlaskForm):
+    with open('C:/Users/linav/Documents/UCL/Year 3/COMP0034 - Web Development/COMP0034 Group 15 -/Group 15/gb.json') as f:
+        cities_dict = json.load(f)
+        cities_list = []
+        for dict in cities_dict:
+            cities_list.append(dict['city'])
     address = StringField('Address:', validators=[DataRequired()])
     city = StringField('City:', validators=[DataRequired(), AnyOf(cities_list)])
     postcode = StringField('Postcode:', validators=[DataRequired()])

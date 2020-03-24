@@ -2,8 +2,8 @@ from app import db
 
 
 class User(db.Model):
-    __tablename__ = 'user'
-    email = db.Column(db.Text, nullable=False, primary_key=True)
+    __tablename__ = "user"
+    email = db.Column(db.Text, nullable=False, unique=True)
     user_type = db.Column(db.String, nullable=False)
     user_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     school_id = db.Column(db.Integer, nullable=False)
@@ -13,9 +13,18 @@ class User(db.Model):
     profile_pic = db.Column(db.BLOB) #don't know if its acc blob
     creation_date = db.Column(db.String)
 
+    # defining relationships
+    reports = db.relationship('Report', backref='user')
+    personal_info = db.relationship('PersonalInfo', backref='user')
+    personal_issues = db.relationship('PersonalIssues', backref='user')
+    hobbies = db.relationship('Hobbies', backref='user')
+    medical_conds = db.relationship('MedicalCond', backref='user')
+    occupation = db.relationship('OccupationalField', backref='user')
+    location = db.relationship('Location', backref='user')
+
     __mapper_args__ = {
-        'polymorphic_identity': 'user',
-        'polymorphic_on':user_type
+        "polymorphic_identity": "user",
+        "polymorphic_on": user_type
     }
 
 
@@ -29,7 +38,7 @@ class Mentor(User):
     # unique_id = db.relationship("User", foreign_keys=[user_id])
 
     __mapper_args__ = {
-        'polymorphic_identity': 'mentor'
+        "polymorphic_identity": "mentor"
     }
 
 
@@ -38,12 +47,14 @@ class Mentee(User):
     mentee_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     first_name = db.Column(db.String, nullable=False)
     last_name = db.Column(db.String, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
+    user_id = db.Column(None, db.ForeignKey('user.user_id'))
+    paired_status = db.Column(db.Boolean, nullable=False)
     # unique_id = db.relationship("User", foreign_keys=[user_id])
 
     __mapper_args__ = {
-        'polymorphic_identity': 'mentee'
+        "polymorphic_identity": "mentee"
     }
+
 
 class Teacher(User):
     __tablename__ = 'teacher'
@@ -52,6 +63,8 @@ class Teacher(User):
     last_name = db.Column(db.String, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
     # unique_id = db.relationship("User", foreign_keys=[user_id])
+    # relationships
+    student_reviews = db.relationship('StudentReview', backref='teachers')
 
 
 class School(db.Model):
@@ -68,7 +81,7 @@ class School(db.Model):
 class Report(db.Model):
     __tablename__ = 'report'
     report_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey(User.user_id), nullable=False)
     # unique_id = db.relationship("User", foreign_keys=[user_id])
     content = db.Column(db.Text)
     type = db.Column(db.Boolean, nullable=False)
@@ -102,6 +115,10 @@ class Pair(db.Model):
     mentee_id = db.Column(db.Integer, db.ForeignKey('mentee.mentee_id'), nullable=False)
     # mentee = db.relationship("Mentee", foreign_keys=[mentee_id])
 
+    # relationships
+    mentor = db.relationship("Mentor", backref="pair")
+    mentee = db.relationship("Mentee", backref="pair")
+
 
 class PersonalInfo(db.Model):
     __tablename__ = 'personal_info'
@@ -112,7 +129,7 @@ class PersonalInfo(db.Model):
     share_performance = db.Column(db.Boolean)
     status = db.Column(db.String(1))
     xperience = db.Column(db.String(3), nullable=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey(User.user_id), nullable=False)
     # unique_id = db.relationship("User", foreign_keys=[user_id])
 
 
@@ -173,17 +190,15 @@ class StudentReview(db.Model):
     review_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     content = db.Column(db.String)
     attachment = db.Column(db.BLOB, nullable=False)
-    teacher_id = db.Column(db.Integer, db.ForeignKey('teacher.teacher_id'), nullable=False)
-    teacher = db.relationship("Teacher", foreign_keys=[teacher_id])
-    student_id = db.Column(db.Integer, db.ForeignKey('mentee.mentee_id'), nullable=False)
-    student = db.relationship("Mentee", foreign_keys=[student_id])
+    teacher_id = db.Column(db.Integer, db.ForeignKey(Teacher.teacher_id), nullable=False)
+    student = db.relationship("Mentee", backref="student_review")
+    student_id = db.Column(db.Integer, db.ForeignKey(Mentee.mentee_id), nullable=False)
 
 
 class Location(db.Model):
     __tablename__ = 'location'
     form_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
-    user = db.relationship('User')
+    user_id = db.Column(db.Integer, db.ForeignKey(User.user_id), nullable=False)
     address = db.Column(db.String, nullable=False)
     city = db.Column(db.String, nullable=False)
     postcode = db.Column(db.String, nullable=False)

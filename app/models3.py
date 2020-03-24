@@ -1,6 +1,30 @@
 from app import db
 
 
+class User(db.Model):
+    __tablename__ = 'user'
+    email = db.Column(db.Text, nullable=False, primary_key=True)
+    user_type = db.Column(db.String, nullable=False)
+    user_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    school_id = db.Column(db.Integer, nullable=False)
+    password = db.Column(db.Text, nullable=False)  # we can look at how Miss did that hash thing in her example
+    bio = db.Column(db.String(300))
+    active = db.Column(db.Boolean)
+    profile_pic = db.Column(db.BLOB)  # don't know if its acc blob
+    creation_date = db.Column(db.String)
+
+    # defining relationships
+    reports = db.relationship('Report', backref='user')
+    personal_info = db.relationship('PersonalInfo', backref='user')
+    personal_issues = db.relationship('PersonalIssues', backref='user')
+    hobbies = db.relationship('Hobbies', backref='user')
+    medical_conds = db.relationship('MedicalCond', backref='user')
+    occupation = db.relationship('OccupationalField', backref='user')
+    location = db.relationship('Location', backref='user')
+    mentors = db.relationship('Mentor', backref='user')
+    mentees = db.relationship('Mentee', backref='user')
+
+
 class Mentor(db.Model):
     __tablename__ = 'mentor'
     mentor_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
@@ -9,8 +33,8 @@ class Mentor(db.Model):
     last_name = db.Column(db.String, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
     # unique_id = db.relationship("User", foreign_keys=[user_id])
-    email = db.Column(db.Text, db.ForeignKey('user.email'), nullable=False)
-    user_email = db.relationship("User", foreign_keys=[email])
+    # email = db.Column(db.Text, db.ForeignKey('user.email'), nullable=False)
+    # user_email = db.relationship("User", foreign_keys=[email])
 
 
 class Mentee(db.Model):
@@ -19,10 +43,10 @@ class Mentee(db.Model):
     school_id = db.Column(db.Integer, nullable=False)
     first_name = db.Column(db.String, nullable=False)
     last_name = db.Column(db.String, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey(User.user_id), nullable=False)
     # unique_id = db.relationship("User", foreign_keys=[user_id])
-    email = db.Column(db.Text, db.ForeignKey('user.email'), nullable=False)
-    user_email = db.relationship("User", foreign_keys=[email])
+    # email = db.Column(db.Text, db.ForeignKey(User.email), nullable=False)
+    # user_email = db.relationship("User", foreign_keys=[email])
 
 
 class Teacher(db.Model):
@@ -36,6 +60,10 @@ class Teacher(db.Model):
     email = db.Column(db.Text, db.ForeignKey('user.email'), nullable=False)
     user_email = db.relationship("User", foreign_keys=[email])
 
+    # relationship
+    student_reviews = db.relationship('StudentReview', backref='teachers')
+
+
 
 class School(db.Model):
     __tablename__ = 'school'
@@ -45,23 +73,7 @@ class School(db.Model):
     school_email = db.Column(db.Text, db.ForeignKey('user.email'), nullable=False)
     email = db.relationship("User", foreign_keys=[school_email])
     ofsted_ranking = db.Column(db.Integer)
-    ofsted_report = db.Column(db.BLOB) #not sure about how blob works
-
-
-class User(db.Model):
-    __tablename__ = 'user'
-    email = db.Column(db.Text, nullable=False, unique=True)
-    user_type = db.Column(db.String, nullable=False)
-    user_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    school_id = db.Column(db.Integer, nullable=False)
-    password = db.Column(db.Text, nullable=False) #we can look at how Miss did that hash thing in her example
-    bio = db.Column(db.String(300))
-    active = db.Column(db.Boolean)
-    profile_pic = db.Column(db.BLOB) #don't know if its acc blob
-    creation_date = db.Column(db.String)
-
-    def __repr__(self):
-        return '<User ID: {}, User Type: {}, Email: {}.>'.format(self.user_id, self.user_type, self.email)
+    ofsted_report = db.Column(db.BLOB)  # not sure about how blob works
 
 
 class Report(db.Model):
@@ -100,6 +112,10 @@ class Pair(db.Model):
     # mentor = db.relationship("Mentor", foreign_keys=[mentor_id])
     mentee_id = db.Column(db.Integer, db.ForeignKey('mentee.mentee_id'), nullable=False)
     # mentee = db.relationship("Mentee", foreign_keys=[mentee_id])
+
+    # relationships
+    mentor = db.relationship("Mentor", backref="pair")
+    mentee = db.relationship("Mentee", backref="pair")
 
 
 class PersonalInfo(db.Model):
@@ -172,17 +188,17 @@ class StudentReview(db.Model):
     review_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     content = db.Column(db.String)
     attachment = db.Column(db.BLOB, nullable=False)
-    teacher_id = db.Column(db.Integer, db.ForeignKey('teacher.teacher_id'), nullable=False)
-    teacher = db.relationship("Teacher", foreign_keys=[teacher_id])
-    student_id = db.Column(db.Integer, db.ForeignKey('mentee.mentee_id'), nullable=False)
-    student = db.relationship("Mentee", foreign_keys=[student_id])
+    teacher_id = db.Column(db.Integer, db.ForeignKey(Teacher.teacher_id), nullable=False)
+    student_id = db.Column(db.Integer, db.ForeignKey(Mentee.mentee_id), nullable=False)
+
+    # relationship
+    student = db.relationship("Mentee", backref="student_review")
 
 
 class Location(db.Model):
     __tablename__ = 'location'
     form_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
-    user = db.relationship('User')
     address = db.Column(db.String, nullable=False)
     city = db.Column(db.String, nullable=False)
     postcode = db.Column(db.String, nullable=False)

@@ -56,9 +56,8 @@ def personal_form(applicant, school_id):
         creation_date = str(datetime.date(datetime.now()))
         password = secrets.token_hex(8)
         if applicant == 'mentee':
-
-            new_user = User(email=form2.email.data, school_id=school_id, user_type=applicant, creation_date=creation_date,
-                            bio="", password=password, active=False)
+            print(str(password))
+            new_user = User(email=form2.email.data, user_type=applicant, school_id=school_id, password=password, bio="", creation_date=creation_date)
             db.session.add(new_user)
             db.session.flush()
             print("user id 1 ="+str(new_user.user_id))
@@ -68,10 +67,10 @@ def personal_form(applicant, school_id):
             new_info = PersonalInfo(user_id=new_user.user_id, carer_email=form.carer_email.data, carer_name=form.carer_name.data,
                                     status="S", xperience=None, share_performance=form.share_performance.data)
             db.session.flush()
-            # print("mentee id ="+ str(new_mentee.user_id))
-            # print("user id 2 ="+str(new_info.user_id))
+            print("mentee id ="+ str(new_mentee.user_id))
+            print("user id 2 ="+str(new_info.user_id))
             db.session.add_all([new_info, new_mentee])
-            # print("user email ="+str(new_user.email))
+            print("user email ="+str(new_user.email))
 
         elif applicant == 'mentor':
 
@@ -149,7 +148,7 @@ def load_pairing(applicant, applicant_id, location):
                   "you'll be put on a waiting list and we'll let you know as soon as a mentor is found.\n"
                   "For now, you can edit your profile, and get used to the website.".format(location.city))
             return redirect(url_for('main.edit_profile', title='Edit Profile'))
-        mentee = Mentee.query.join(User).filter_by(user_id=applicant_id).all()
+        mentee = Mentee.query.filter_by(user_id=applicant_id).all()
         new_pair = Pair(mentor_id=mentor.mentor_id, mentee_id=mentee.mentee_id)
 
     elif applicant == 'mentor':
