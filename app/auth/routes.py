@@ -137,8 +137,14 @@ def location_form(applicant, applicant_id):
 
 @bp_auth.route('/pairing/<applicant>/<applicant_id>/<location>/', methods=['POST', 'GET'])
 def load_pairing(applicant, applicant_id, location):
+    new_user = User(email='hermione@hogwarts.ac.uk', user_type='mentee', school_id=2, password='password3')
+    db.session.add(new_user)
+    db.session.flush()
     render_template('pairing_load_page.html', title='Pairing . . . ')
     if applicant == 'mentee':
+        new_mentee = Mentee(school_id=3, email="hary@potter.com", first_name='hARRY', last_name='Potter',
+                            user_id=new_user.user_id)
+        db.session.add(new_mentee)
         mentor = Mentor.query.join(Location, Mentor.user_id == Location.user_id).filter_by(city=location.city, user_type='mentor').first()
         if not mentor:
             flash("Unfortunately there are no mentors signed up in {} just yet! Sorry for the inconvenience, "

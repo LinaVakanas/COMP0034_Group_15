@@ -5,33 +5,51 @@
 {% block header%}{{ title }}{% endblock %}
 {% block content %}
     <div class="container vh-70 d-flex mt-6 col justify-content-center">
-        <div class="col-3"></div>
-        <div class="col-6">
+        <div class="col-2"></div>
+        <div class="col-8">
             <form action="" method="post" novalidate>
 
                 {{ form.hidden_tag() }}
                     <dl>
                         <div class="form">
-                            <div class="row">
-                                <div class = "col-3">
-                                    {{ render_field(form2.first_name) }}
+                            <h2>Your details</h2>
+                            <div class="form-row">
+                                <div class = "col">
+                                    {{ render_field(form2.first_name, class="form-control") }}
                                 </div>
-                                <div class = "col-3">
-                                    {{ render_field(form2.last_name) }}
+                                <div class = "col">
+                                    {{ render_field(form2.last_name, class="form-control") }}
                                 </div>
                             </div>
-                            {{ render_field(form2.email) }}
+                            <div class="form-row">
+                                <div class="col">
+                                    {{ render_field(form2.email, class="form-control") }}
+                                </div>
+
+                            </div>
                             {% if applicant == 'mentee' %}
-                                {{ render_field(form.carer_name) }} {{ render_field(form.carer_email) }}
+                                <hr>
+                                <h2>Your carer's details</h2>
+                                <div class="form-row">
+                                    <div class="col">
+                                        {{ render_field(form.carer_name, class="form-control") }}
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col">
+                                        {{ render_field(form.carer_email, class="form-control") }}
+                                    </div>
+                                </div>
                             {% endif %}
 
                             {% if applicant == 'mentor' %}
-                                {{ render_field(form.mentor_occupation) }}
-                                {{ render_field(form.mentor_xperience)}}
+                                {{ render_field(form.mentor_occupation, class="form-control") }}
+                                {{ render_field(form.mentor_xperience, class="form-control")}}
 
-                                <div class="form-check">
+                                <div class="form-row">
+                                    <p>What field does your occupation lie in?<p>
+
                                     <div class="form-check form-check-inline">
-                                        <label class="form-check-label" for="mentor_field">What field does your occupation lie in?</label>
                                         {{ render_field(form.eng, value="mentor_field") }}
                                     </div>
                                     <div class="form-check form-check-inline">
@@ -41,7 +59,7 @@
                                         {{ render_field(form.bio) }}
                                     </div>
                                 </div>
-                                <div class="form-check">
+                                <div class="form-row">
                                     <div class="form-check form-check-inline">
                                         {{ render_field(form.chem) }}
                                     </div>
@@ -52,7 +70,7 @@
                                         {{ render_field(form.pharm) }}
                                     </div>
                                 </div>
-                                <div class="form-check">
+                                <div class="form-row">
                                     <div class="form-check form-check-inline">
                                         {{ render_field(form.maths) }}
                                     </div>
@@ -63,7 +81,7 @@
                                         {{ render_field(form.hist) }}
                                     </div>
                                 </div>
-                                <div class="form-check">
+                                <div class="form-row">
                                     <div class="form-check form-check-inline">
                                         {{ render_field(form.law)}}
                                     </div>

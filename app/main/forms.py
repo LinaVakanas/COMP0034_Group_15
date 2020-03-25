@@ -13,8 +13,8 @@ import json
 
 
 class SignUpForm(FlaskForm):
-    first_name = StringField("First name:")
-    last_name = StringField("Last name:")
+    first_name = StringField("First name:", id="first name")
+    last_name = StringField("Last name:", id="last name")
     email = StringField('Email address', validators=[DataRequired(), Email()])
 
 

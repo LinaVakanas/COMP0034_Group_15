@@ -141,32 +141,33 @@ def location_form(applicant, applicant_id):
                                     avoid_area=form.avoid_area.data)
             db.session.add(new_location)
             db.session.commit()
-            return redirect(url_for('main.load_pairing', applicant=applicant, applicant_id=applicant_id, location=new_location))
+            return redirect(url_for('main.load_pairing', applicant=applicant, applicant_id=applicant_id, location=new_location.city))
 
     return render_template('LocationForm.html', title='Signup', form=form, applicant=applicant)
 
 
 @bp_main.route('/pairing/<applicant>/<applicant_id>/<location>/', methods=['POST', 'GET'])
 def load_pairing(applicant, applicant_id, location):
-    render_template('pairing_load_page.html', title='Pairing . . . ')
+    # render_template('pairing_load_page.html', title='Pairing . . . ')
     if applicant == 'mentee':
-        mentor = Mentor.query.join(Location).filter_by(city=location.city, user_type='mentor').first()
+        mentor = Mentor.query.join(Location, Mentor.user_id == Location.user_id).filter_by(city=location).first()
         if not mentor:
             flash("Unfortunately there are no mentors signed up in {} just yet! Sorry for the inconvenience, "
                   "you'll be put on a waiting list and we'll let you know as soon as a mentor is found.\n"
-                  "For now, you can edit your profile, and get used to the website.".format(location.city))
+                  "For now, you can edit your profile, and get used to the website.".format(location))
             return redirect(url_for('main.edit_profile', title='Edit Profile'))
         mentee = Mentee.query.filter_by(user_id=applicant_id).all()
         new_pair = Pair(mentor_id=mentor.mentor_id, mentee_id=mentee.mentee_id)
 
     elif applicant == 'mentor':
-        mentee = Mentee.query.join(Location, Mentee.user_id == Location.user_id).filter_by(city='London', user_type='mentee').first()
+        mentee = Mentee.query.join(Location, Mentee.user_id == Location.user_id).filter_by(city='London').first()
         if not mentee:
             flash("Unfortunately there are no mentors signed up in {} yet. Sorry for the inconvenience, "
                   "you'll be put on a waiting list and we will let you know as soon as a mentee is found.\n"
-                  "For now, you can edit your profile, and get used to the website.".format(location.city))
+                  "For now, you can edit your profile, and get used to the website.".format(location))
         mentor = Mentor.query.filter_by(user_id=applicant_id).all()
         new_pair = Pair(mentor_id=mentor.mentor_id, mentee_id=mentee.mentee_id)
+
     return render_template(url_for('mentor_profile', pair=new_pair))
 
 
