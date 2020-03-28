@@ -23,5 +23,13 @@ To ask Miss:
 * Using an externally downloaded file --> how to reference (directory)
 * Form not being validated in tests? (2 empty parts not used, but not DataRequired())
 * 'Dummy' data made in unittest SetUp not being saved?
+* Half foreign half primary key? (meeting table) 
+
+------------------------------------------------------------
+To Do Before Move On:
+* Validators for forms in util>validators.py
+* Filter by paired status
+* Signup linked to school database - if school_id isn't saved in database --> validators.py
+
     
 
