@@ -77,6 +77,12 @@ class LocationForm(FlaskForm):
     # mentor_transport = SelectMultipleField('Please select which modes of transport you can take:', choices=choices6, validators=[DataRequired()])
 
 
+class AddSchoolForm(FlaskForm):
+    name = StringField('Name:', validators=[DataRequired()])
+    email = StringField('School Email:', validators=[DataRequired(), Email()])
+    ofsted_ranking = StringField('Ofsted Ranking:', validators=[DataRequired()])
+
+
 class ApproveForm(FlaskForm):
     approve = BooleanField("",default="unchecked")
 

@@ -3,7 +3,7 @@ from datetime import datetime
 import secrets
 
 from app import db
-from app.main.forms import PersonalForm, SignUpForm, LocationForm, ApproveForm
+from app.main.forms import PersonalForm, SignUpForm, LocationForm, ApproveForm, AddSchoolForm
 from app.models2_backup import User, MedicalCond, Message, Chatroom, OccupationalField, Hobbies, School, StudentReview, \
     Pair, PersonalInfo, Report, PersonalIssues, Mentee, Mentor, Location
 
@@ -56,6 +56,30 @@ def controlpanel_mentor(): #### Copy from above
     ####mentors = db.session.query(Mentee).filter(mentees.... change for actual filtering for approved)
     return render_template('admin_pending_mentors.html', mentors=mentors)
 
+
+@bp_main.route('/admin/add_schools', methods=['POST', 'GET'])
+def controlpanel_add_schools():
+    form = AddSchoolForm(request.form)
+    if request.method == 'POST' and form.validate_on_submit():
+        new_school = School(school_status=True, school_name=form.name.data, school_email=form.email.data, ofsted_ranking=form.ofsted_ranking.data)
+        db.session.add(new_school)
+        db.session.commit()
+        return redirect(url_for('main.controlpanel_home'))  ##### Maybe flash a msg as well
+    return render_template('admin_add_school.html', form=form)
+
+
+@bp_main.route('/admin/view_schools')
+def controlpanel_view_schools():############# This can be made better, also we need to make school_id a foreign key
+    schools = School.query.all()
+    schools_dict = dict()
+    for school in schools: ##### After joining the school table, this might change
+        school_id = school.school_id
+        num_mentees = Mentee.query.filter(Mentee.school_id==school_id).count()
+        schools_dict[school_id] = num_mentees
+    print(schools_dict)
+    return render_template('admin_view_schools.html', schools=schools, schools_dict=schools_dict)
+
+
 @bp_main.route('/personal_form/<applicant>/<school_id>/', methods=['POST', 'GET'])
 def personal_form(applicant, school_id):
     form = PersonalForm(request.form)
@@ -65,7 +89,7 @@ def personal_form(applicant, school_id):
         password = secrets.token_hex(8)
         if applicant == 'mentee':
             print(str(password))
-            new_user = User(email=form2.email.data, user_type=applicant, school_id=school_id, password=password, bio="", creation_date=creation_date)
+            new_user = User(email=form2.email.data, user_type=applicant, school_id=school_id, password=password, bio="", creation_date=creation_date, active=False)
             db.session.add(new_user)
             db.session.flush()
             print("user id 1 ="+str(new_user.user_id))
