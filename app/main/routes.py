@@ -74,7 +74,7 @@ def controlpanel_view_schools():############# This can be made better, also we n
     schools_dict = dict()
     for school in schools: ##### After joining the school table, this might change
         school_id = school.school_id
-        num_mentees = Mentee.query.filter(Mentee.school_id==school_id).count()
+        num_mentees = Mentee.query.filter(Mentee.school_id ==school_id).count()
         schools_dict[school_id] = num_mentees
     print(schools_dict)
     return render_template('admin_view_schools.html', schools=schools, schools_dict=schools_dict)
@@ -94,7 +94,7 @@ def personal_form(applicant, school_id):
             db.session.flush()
             print("user id 1 ="+str(new_user.user_id))
             new_mentee = Mentee(user_id=new_user.user_id, school_id=school_id, first_name=form2.first_name.data,
-                                last_name=form2.last_name.data, email=new_user.email)
+                                last_name=form2.last_name.data)
 
             new_info = PersonalInfo(user_id=new_user.user_id, carer_email=form.carer_email.data, carer_name=form.carer_name.data,
                                     status="S", xperience=None, share_performance=form.share_performance.data)
@@ -113,7 +113,7 @@ def personal_form(applicant, school_id):
                 db.session.flush()
                 print("user id =" + str(new_user.user_id))
                 new_mentor = Mentor(user_id=new_user.user_id, school_id=0, first_name=form2.first_name.data,
-                                    last_name=form2.last_name.data, email=new_user.email) #### REMOVED PAIRED STATUS=False
+                                    last_name=form2.last_name.data) #### REMOVED PAIRED STATUS=False
                 new_info = PersonalInfo(user_id=new_user.user_id, carer_email="N/A", carer_name="N/A",
                                         status=form.mentor_occupation.data, xperience=form.mentor_xperience.data, share_performance=None)
                 db.session.add_all([new_info, new_mentor])
@@ -142,7 +142,6 @@ def personal_form(applicant, school_id):
             return redirect(url_for('main.location_form', applicant=applicant, applicant_id=new_mentee.user_id))
         elif applicant == 'mentor':
             return render_template('home_mentor_pending.html', title='Pending Approval', mentor=new_mentor)
-
 
         # new_medical = MedicalCond()
     return render_template('PersonalForm.html', title='Signup', form2=form2, form=form, applicant=applicant)
@@ -180,7 +179,7 @@ def pairing(applicant, applicant_id, location):
             flash("Unfortunately there are no mentors signed up in {} just yet! Sorry for the inconvenience, "
                   "you'll be put on a waiting list and we'll let you know as soon as a mentor is found.\n"
                   "For now, you can edit your profile, and get used to the website.".format(location))
-            return redirect(url_for('main.home', title='Edit Profile')) ####should be edit
+            return redirect(url_for('main.home', title='Edit Profile')) ####should be main.edit
         mentee = Mentee.query.filter_by(user_id=applicant_id).first()
         new_pair = Pair(mentor_id=pair_with_mentor.mentor_id, mentee_id=mentee.mentee_id)
         db.session.add(new_pair)
@@ -206,16 +205,3 @@ def pairing(applicant, applicant_id, location):
 #
 # @bp_main.route('/book_meeting/')
 # def book_meeting():
-
-
-
-
-
-
-
-
-
-
-
-
-
