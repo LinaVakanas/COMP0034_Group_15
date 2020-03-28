@@ -11,20 +11,20 @@ class Mentor(db.Model):
     last_name = db.Column(db.String, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
     # unique_id = db.relationship("User", foreign_keys=[user_id])
-    email = db.Column(db.Text, db.ForeignKey('user.email'), nullable=False)
-    user_email = db.relationship("User", foreign_keys=[email])
+    # email = db.Column(db.Text, db.ForeignKey('user.email'), nullable=False)
+    # user_email = db.relationship("User", foreign_keys=[email])
 
 
 class Mentee(db.Model):
     __tablename__ = 'mentee'
     mentee_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    school_id = db.Column(db.Integer, nullable=False)
+    school_id = db.Column(db.Integer, db.ForeignKey('school.school_id'), nullable=False)
     first_name = db.Column(db.String, nullable=False)
     last_name = db.Column(db.String, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
     # unique_id = db.relationship("User", foreign_keys=[user_id])
-    email = db.Column(db.Text, db.ForeignKey('user.email'), nullable=False)
-    user_email = db.relationship("User", foreign_keys=[email])
+    # email = db.Column(db.Text, db.ForeignKey('user.email'), nullable=False)
+    # user_email = db.relationship("User", foreign_keys=[email])
 
 
 class Teacher(db.Model):
@@ -35,8 +35,8 @@ class Teacher(db.Model):
     last_name = db.Column(db.String, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
     # unique_id = db.relationship("User", foreign_keys=[user_id])
-    email = db.Column(db.Text, db.ForeignKey('user.email'), nullable=False)
-    user_email = db.relationship("User", foreign_keys=[email])
+    # email = db.Column(db.Text, db.ForeignKey('user.email'), nullable=False)
+    # user_email = db.relationship("User", foreign_keys=[email])
 
 
 class School(db.Model):
@@ -182,7 +182,6 @@ class Location(db.Model):
     __tablename__ = 'location'
     form_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
-    user = db.relationship('User')
     address = db.Column(db.String, nullable=False)
     city = db.Column(db.String, nullable=False)
     postcode = db.Column(db.String, nullable=False)
