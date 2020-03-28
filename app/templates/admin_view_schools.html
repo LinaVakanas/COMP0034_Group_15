@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% from "_formhelpers.html" import render_field %}
+{% block title %}View Schools{% endblock %}
+
+{% block header%}View Schools{% endblock %}
+{% block content %}
+     {% if schools|length %}
+{#         Variable is not empty #}
+        <div class="container d-flex h-100 align-items-center">
+            <div class="mx-auto text-center">
+                <form action="" method="post" novalidate>
+                    <table class="table">
+                        <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">School ID</th>
+                            <th scope="col">School Name</th>
+                            <th scope="col">School Email</th>
+                            <th scope="col">Ofsted Ranking</th>
+                            <th scope="col">Total Number of mentees</th>
+                            <th scope="col">School Referral (NOT DONE)</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for school in schools %}
+                            <tr>
+                                <td>{{ school.school_id }}</td>
+                                <td>{{ school.school_name }}</td>
+                                <td>{{ school.school_email}}</td>
+                                <td>{{ school.ofsted_ranking }}</td>
+                                <td>{{ schools_dict[school_id] }}</td>
+                                <td>
+                                    <input type="button" onclick="" value="Copy Referral Link">
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    <input type="submit" value="Submit" class="btn btn-primary">
+    {#            Make it flash a msg#}
+                </form>
+            </div>
+        </div>
+    {% else %}
+        <p>Sorry, no pending schools found</p>
+    {% endif %}
+{% endblock %}
