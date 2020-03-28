@@ -2,6 +2,12 @@ from wtforms.validators import ValidationError
 from datetime import datetime
 
 
+def is_equal_to(min, max):
+
+    def _correct_date(form, field):
+        pass
+
+
 def correct_date(day, month):
     today = datetime.date(datetime.now())
 
@@ -19,5 +25,8 @@ def correct_date(day, month):
 class Unique(object):
     pass
 
+
+class Lina(object):
+    pass
 
 

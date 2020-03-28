@@ -27,7 +27,7 @@ To ask Miss:
 
 ------------------------------------------------------------
 To Do Before Move On:
-* Validators for forms in util>validators.py
+* Validators for forms in util>validators.py, years of mentor xperience 
 * Filter by paired status
 * Signup linked to school database - if school_id isn't saved in database --> validators.py
 
