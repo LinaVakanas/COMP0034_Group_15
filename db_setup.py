@@ -29,6 +29,7 @@ c.execute('''
           last_name TEXT NOT NULL,
           user_id INTEGER NOT NULL,
           email TEXT NOT NULL,
+          paired BOOLEAN,
           FOREIGN KEY (user_id) REFERENCES user(user_id))
           ''')
 
@@ -40,6 +41,7 @@ c.execute('''
           last_name TEXT NOT NULL,
           user_id INTEGER NOT NULL,
           email TEXT NOT NULL,
+          paired BOOL,
           FOREIGN KEY (user_id) REFERENCES user(user_id))
           ''')
 

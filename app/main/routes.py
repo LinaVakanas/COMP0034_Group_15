@@ -50,7 +50,7 @@ def controlpanel_mentee():
     return render_template('admin_pending_mentees.html', mentees=mentees, form=form)
 
 
-@bp_main.route('/admin/pending_mentors')
+@bp_main.route('/admin/pending_mentors/')
 def controlpanel_mentor(): #### Copy from above
     mentors = Mentor.query.all()
     ####mentors = db.session.query(Mentee).filter(mentees.... change for actual filtering for approved)
@@ -141,34 +141,52 @@ def location_form(applicant, applicant_id):
                                     avoid_area=form.avoid_area.data)
             db.session.add(new_location)
             db.session.commit()
-            return redirect(url_for('main.load_pairing', applicant=applicant, applicant_id=applicant_id, location=new_location.city))
+            return redirect(url_for('main.pairing', applicant=applicant, applicant_id=applicant_id, location=new_location.city))
 
     return render_template('LocationForm.html', title='Signup', form=form, applicant=applicant)
 
 
 @bp_main.route('/pairing/<applicant>/<applicant_id>/<location>/', methods=['POST', 'GET'])
-def load_pairing(applicant, applicant_id, location):
+def pairing(applicant, applicant_id, location):
     # render_template('pairing_load_page.html', title='Pairing . . . ')
     if applicant == 'mentee':
-        mentor = Mentor.query.join(Location, Mentor.user_id == Location.user_id).filter_by(city=location).first()
-        if not mentor:
+        pair_with_mentor = Mentor.query.join(Location, Mentor.user_id == Location.user_id).filter_by(city='London').first()
+        pair_with_user = User.query.join(Mentor, User.user_id == Mentor.user_id).filter_by(user_id = pair_with_mentor.user_id).first()
+        if not pair_with_mentor:
             flash("Unfortunately there are no mentors signed up in {} just yet! Sorry for the inconvenience, "
                   "you'll be put on a waiting list and we'll let you know as soon as a mentor is found.\n"
                   "For now, you can edit your profile, and get used to the website.".format(location))
-            return redirect(url_for('main.edit_profile', title='Edit Profile'))
-        mentee = Mentee.query.filter_by(user_id=applicant_id).all()
-        new_pair = Pair(mentor_id=mentor.mentor_id, mentee_id=mentee.mentee_id)
+            return redirect(url_for('main.home', title='Edit Profile')) ####should be edit
+        mentee = Mentee.query.filter_by(user_id=applicant_id).first()
+        new_pair = Pair(mentor_id=pair_with_mentor.mentor_id, mentee_id=mentee.mentee_id)
+        db.session.add(new_pair)
+        db.session.commit()
+        return render_template('profiles/mentor_profile.html', title='Mentor Profile', mentor=pair_with_mentor, user=pair_with_user)
 
     elif applicant == 'mentor':
-        mentee = Mentee.query.join(Location, Mentee.user_id == Location.user_id).filter_by(city='London').first()
-        if not mentee:
-            flash("Unfortunately there are no mentors signed up in {} yet. Sorry for the inconvenience, "
+        pair_with = Mentee.query.join(Location, Mentee.user_id == Location.user_id).filter_by(city='London').first()
+        user = User.query.join(Mentor, User.user_id == Mentor.user_id).filter_by(user_id=pair_with.user_id).first()
+        if not pair_with:
+            flash("Unfortunately there are no mentees signed up in {} yet. Sorry for the inconvenience, "
                   "you'll be put on a waiting list and we will let you know as soon as a mentee is found.\n"
                   "For now, you can edit your profile, and get used to the website.".format(location))
-        mentor = Mentor.query.filter_by(user_id=applicant_id).all()
-        new_pair = Pair(mentor_id=mentor.mentor_id, mentee_id=mentee.mentee_id)
+            return render_template('home.html', title='Home')  ####for now
+        mentor = Mentor.query.filter_by(user_id=applicant_id).first()
+        new_pair = Pair(mentor_id=mentor.mentor_id, mentee_id=pair_with.mentee_id)
+        db.session.add(new_pair)
+        db.session.commit()
+        return render_template('profiles/mentee_profile.html', mentee=pair_with, user=user, title='Mentee Profile')
+    
+    return render_template('home.html', title='Home') ####for now
 
-    return render_template(url_for('mentor_profile', pair=new_pair))
+#
+# @bp_main.route('/book_meeting/')
+# def book_meeting():
+
+
+
+
+
 
 
 

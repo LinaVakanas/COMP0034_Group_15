@@ -2,6 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, Form, SelectField, BooleanField, SelectMultipleField
 from wtforms.validators import DataRequired, EqualTo, Email, AnyOf
 import json
+from datetime import datetime
 
 
 # class MentorSignUpForm(FlaskForm):
@@ -78,3 +79,27 @@ class LocationForm(FlaskForm):
 
 class ApproveForm(FlaskForm):
     approve = BooleanField("",default="unchecked")
+
+
+class BookMeeting(FlaskForm):
+    days = []
+    for i in range(31):
+        days.append(i)
+    day = SelectField(choices=days, validators=[DataRequired()])
+    months = [('1', 'Jan'), ('2', 'Feb'), ('3', 'Mar'), ('4', 'Apr'), ('5', 'May'), ('6', 'Jun'),
+              ('7', 'Jul'), ('8', 'Augu'), ('9', 'Sept'), ('10', 'Oct'), ('11', 'Nov'), ('12', 'Dec')]
+    month = SelectField(choices=months, validators=[DataRequired()])
+    today = datetime.date(datetime.now())
+    years = [(today.year, today.year), (today.year+1, today.year+1)]
+    year = SelectField(choices=years)
+    hours = [('16', '16'), ('17', '17'), ('18', '18')]
+    hour = SelectField(choices=hours)
+    minutes = [('00', '00'), ('15', '15'), ('30', '30'), ('45', '45')]
+    minute = SelectField(choices=minutes)
+    durations = [('1', '1 hour'), ('1.5', '1.5 hour'), ('2', '2 hours'), ('2.5', '2.5 hours'), ('3', '3 hours')]
+    duration = SelectField(choices=durations, validators=DataRequired())
+
+    area_types = [('libr', 'Library'), ('museum', 'Museum'), ('school', 'School')]
+    type = SelectField(choices=area_types, validators=[DataRequired()])
+    address = StringField('Address:', validators=[DataRequired()])
+    postcode = StringField('Postcode:', validators=DataRequired())
