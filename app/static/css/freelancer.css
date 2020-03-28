@@ -121,7 +121,7 @@ ul ol {
 }
 
 dt {
-  font-weight: 700;
+  font-weight: 100;
 }
 
 dd {
@@ -371,6 +371,10 @@ h1, h2, h3, h4, h5, h6,
   font-family: "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   font-weight: 700;
   line-height: 1.2;
+}
+
+.h3_modified {
+  font-weight: 300;
 }
 
 h1, .h1 {

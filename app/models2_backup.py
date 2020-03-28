@@ -1,3 +1,5 @@
+from sqlalchemy import ForeignKeyConstraint
+
 from app import db
 
 
@@ -97,6 +99,7 @@ class Pair(db.Model):
     # mentor = db.relationship("Mentor", foreign_keys=[mentor_id])
     mentee_id = db.Column(db.Integer, db.ForeignKey('mentee.mentee_id'), nullable=False)
     # mentee = db.relationship("Mentee", foreign_keys=[mentee_id])
+    meetings = db.relationship('Meeting', backref='pair')
 
 
 class PersonalInfo(db.Model):
@@ -184,3 +187,28 @@ class Location(db.Model):
     city = db.Column(db.String, nullable=False)
     postcode = db.Column(db.String, nullable=False)
     avoid_area = db.Column(db.String)
+
+
+class Meeting(db.Model):
+    __tablename__ = 'meeting'
+    meeting_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    pair_id = db.Column(db.Integer, db.ForeignKey('pair.pair_id'))
+    # time-related
+    day = db.Column(db.String(2), nullable=False)
+    month = db.Column(db.String(2), nullable=False)
+    year = db.Column(db.String(4), nullable=False)
+    date = db.Column(db.String(10), unique=True)
+    hour = db.Column(db.String(2), nullable=False)
+    minute = db.Column(db.String(2), nullable=False)
+    time = db.Column(db.String(5), unique=True)
+    duration = db.Column(db.String(3), nullable=False)
+    # location-related
+    address = db.Column(db.String, nullable=True)
+    postcode = db.Column(db.String, nullable=False)
+    type = db.Column(db.String, nullable=False)
+    # approvals
+    school_approval = db.Column(db.Boolean)
+    mentee_approval = db.Column(db.Boolean)
+
+
+

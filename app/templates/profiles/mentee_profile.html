@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% from "_formhelpers.html" import render_field %}
+{% block title %}{{title}}{% endblock %}
+
+
+    <div class="container vh-70 d-flex mt-6 col justify-content-center">
+        {% block header%}{{ mentee.first_name.capitalize() }} {{ mentee.last_name.capitalize() }}{% endblock %}
+        <br>
+        {% block content %}
+            <div class="row">
+                <div class="col-1">
+                    <img src="{{ url_for('static',filename='media/default_user/profile_pic.png') }}" class="rounded-circle img-fluid" alt="Profile Picture">
+                </div>
+                <div class="col-10">
+                    <h3 style="font-weight: 500">Bio</h3>
+                    <p>{{ user.bio }}</p>
+                </div>
+                <a class="btn btn-primary" href="#" role="button">Book Meeting</a>
+            </div>
+        {% endblock %}
+    </div>

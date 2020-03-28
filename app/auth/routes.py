@@ -3,9 +3,9 @@ from datetime import datetime
 import secrets
 
 from app import db
-from app.auth.forms import PersonalInfoForm, SignUpForm, LocationForm
+from app.auth.forms import PersonalInfoForm, SignUpForm, LocationForm, BookMeeting
 from app.models2_backup import User, MedicalCond, Message, Chatroom, OccupationalField, Hobbies, School, StudentReview, \
-    Pair, PersonalInfo, Report, PersonalIssues, Mentee, Mentor, Location
+    Pair, PersonalInfo, Report, PersonalIssues, Mentee, Mentor, Location, Meeting
 
 bp_auth = Blueprint('auth', __name__)
 
@@ -91,28 +91,6 @@ def personal_info(applicant, school_id):
     return render_template('auth/personal_info_form.html', form=form, title='Personal Info', applicant=applicant)
 
 
-
-
-
-#############################################################
-
-#         new_occupation = OccupationalField(eng=form.eng.data, phys=form.phys.data, chem=form.chem.data,
-#                                            bio=form.bio.data, med=form.med.data, pharm=form.pharm.data,
-#                                            maths=form.maths.data, geo=form.geo.data, hist=form.hist.data,
-#                                            finance=form.finance.data, law=form.law.data, engl=form.engl.data)
-#         db.session.add(new_occupation)
-#         db.session.commit()
-#
-#         if applicant == 'mentee':
-#             return redirect(url_for('main.location_form', applicant=applicant, applicant_id=new_mentee.user_id))
-#         elif applicant == 'mentor':
-#             return render_template('home_mentor_pending.html', title='Pending Approval', mentor=new_mentor)
-#
-#
-#         # new_medical = MedicalCond()
-#     return render_template('PersonalForm.html', title='Signup', form2=form2, form=form, applicant=applicant)
-#
-#
 @bp_auth.route('/location_form/<applicant>/<applicant_id>', methods=['POST', 'GET'])
 def location_form(applicant, applicant_id):
     form = LocationForm(request.form)
@@ -137,8 +115,14 @@ def location_form(applicant, applicant_id):
 
 @bp_auth.route('/pairing/<applicant>/<applicant_id>/<location>/', methods=['POST', 'GET'])
 def load_pairing(applicant, applicant_id, location):
+    new_user = User(email='hermione@hogwarts.ac.uk', user_type='mentee', school_id=2, password='password3')
+    db.session.add(new_user)
+    db.session.flush()
     render_template('pairing_load_page.html', title='Pairing . . . ')
     if applicant == 'mentee':
+        new_mentee = Mentee(school_id=3, email="hary@potter.com", first_name='hARRY', last_name='Potter',
+                            user_id=new_user.user_id)
+        db.session.add(new_mentee)
         mentor = Mentor.query.join(Location, Mentor.user_id == Location.user_id).filter_by(city=location.city, user_type='mentor').first()
         if not mentor:
             flash("Unfortunately there are no mentors signed up in {} just yet! Sorry for the inconvenience, "
@@ -158,3 +142,44 @@ def load_pairing(applicant, applicant_id, location):
         mentor = Mentor.query.filter_by(user_id=applicant_id).all()
         new_pair = Pair(mentor_id=mentor.mentor_id, mentee_id=mentee.mentee_id)
     return render_template(url_for('mentor_profile', pair=new_pair))
+
+
+@bp_auth.route('/book-meeting/', methods=['POST', 'GET'])
+def book_meeting(pair_id):
+    if request.method == 'POST':
+        form = BookMeeting(request.form)
+        date = form.day.data+form.month.data+str(form.year.data)
+
+        # check if that day is already booked
+
+        time = form.hour.data+form.minute.data
+        Meeting(pair_id=pair_id, day=form.day.data, month=form.month.data, year=str(form.year.data), date=date,
+                minute=form.minute.data, hour=form.hour.data, time=time, duration=form.duration.data,
+                address=form.address.data, postcode=form.postcode.data, type=form.type.data)
+
+
+
+
+
+
+    # saving dummy mentee to be paired with mentor
+    new_user = User(email='harry@potter.com', user_type='mentee', school_id=2, password='password3')
+    db.session.add(new_user)
+    db.session.flush()
+    new_mentee = Mentee(school_id=2, email="hary@potter.com", first_name='hARRY', last_name='Potter',
+                        user_id=new_user.user_id)
+    db.session.add(new_mentee)
+
+    # saving mentor to do the booking with paired mentee
+    new_user2 = User(email='hermione@hogwarts.ac.uk', user_type='mentee', school_id=0, password='password4')
+    db.session.add(new_user2)
+    db.session.flush()
+    mentor = Mentee(school_id=0, email="hermione@hogwarts.ac.uk", first_name='Hermione', last_name='Granger',
+                    user_id=new_user2.user_id)
+    db.session.add(new_mentee)
+    db.session.flush()
+
+    # setting up pair
+    pair = Pair(mentor_id=mentor.user_id, mentee_id=new_mentee.user_id)
+    db.session.add(pair)
+    db.session.commit()

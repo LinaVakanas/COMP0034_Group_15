@@ -20,10 +20,10 @@ class BaseTest(TestCase):
         db.create_all()
 
         # create dummy data for tests
-        self.user1 = User(user_type='mentor', email='harrypj@ucl.ac.uk', password='password1')
-        self.mentor = Mentor(user_id=1, school_id=0, first_name='Harry', last_name='Potter')
-        self.user2 = User(user_type='mentee', email='lily@ucl.ac.uk', password='password2')
-        self.mentee = Mentee(user_id=2, school_id=2, first_name='Lily', last_name='Weasley')
+        self.user1 = User(user_type='mentor', school_id=0, email='harrypj@ucl.ac.uk', password='password1')
+        self.mentor = Mentor(user_id=1, school_id=0, first_name='Harry', last_name='Potter', email='harrypj@ucl.ac.uk')
+        self.user2 = User(user_type='mentee', school_id=2, email='lily@ucl.ac.uk', password='password2')
+        self.mentee = Mentee(user_id=2, school_id=2, first_name='Lily', last_name='Weasley', email='lily@ucl.ac.uk')
         db.session.add_all([self.user1, self.mentor])
         db.session.add_all([self.user2, self.mentee])
         db.session.commit()
@@ -161,6 +161,10 @@ class TestAuth(BaseTest):
         self.assertEqual(count2 - count, 1)
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'Personal Info', response.data)
+
+
+    def test_book_meeting_success(self):
+        pass        
 
 if __name__ == '__main__':
     unittest.main()
