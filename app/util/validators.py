@@ -23,7 +23,15 @@ def correct_date(day, month):
 
 
 class Unique(object):
-    pass
+    def __init__(self, model, field, message=""):
+        self.model = model
+        self.field = field
+        self.message = message
+
+    def __call__(self, form, field):
+        is_unique = self.model.query.filter_by(self.field == field.data).first()
+        if is_unique:
+            raise ValidationError(self.message)
 
 
 class Lina(object):

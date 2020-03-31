@@ -89,17 +89,18 @@ class Chatroom(db.Model):
     __tablename__ = 'chatroom'
     chatroom_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     creation_date = db.Column(db.String, nullable=False)
-    pair_id = db.Column(db.Integer, db.ForeignKey('pair.pair_id'), nullable=False)
-    # pair = db.relationship("Pair", foreign_keys=[pair_id])
+    pair_id = db.Column(db.Integer, db.ForeignKey('pair.id'), nullable=False)
+    # pair = db.relationship("Pair", foreign_keys=[id])
 
 
 class Pair(db.Model):
-    pair_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     mentor_id = db.Column(db.Integer, db.ForeignKey('mentor.mentor_id'), nullable=False)
     # mentor = db.relationship("Mentor", foreign_keys=[mentor_id])
     mentee_id = db.Column(db.Integer, db.ForeignKey('mentee.mentee_id'), nullable=False)
     # mentee = db.relationship("Mentee", foreign_keys=[mentee_id])
     meetings = db.relationship('Meeting', backref='pair')
+    creation_date = db.Column(db.String)
 
 
 class PersonalInfo(db.Model):
@@ -191,7 +192,7 @@ class Location(db.Model):
 class Meeting(db.Model):
     __tablename__ = 'meeting'
     meeting_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    pair_id = db.Column(db.Integer, db.ForeignKey('pair.pair_id'))
+    pair_id = db.Column(db.Integer, db.ForeignKey('pair.id'))
     # time-related
     day = db.Column(db.String(2), nullable=False)
     month = db.Column(db.String(2), nullable=False)

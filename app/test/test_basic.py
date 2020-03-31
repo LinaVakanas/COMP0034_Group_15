@@ -5,7 +5,7 @@ from flask import url_for
 from flask_testing import TestCase
 
 from app import create_app, db
-from app.models2_backup import Mentor, Mentee, User, PersonalInfo, PersonalIssues
+from app.models2_backup import Mentor, Mentee, User, PersonalInfo, PersonalIssues, Pair, Location, Meeting
 
 
 class BaseTest(TestCase):
@@ -21,11 +21,19 @@ class BaseTest(TestCase):
 
         # create dummy data for tests
         self.user1 = User(user_type='mentor', school_id=0, email='harrypj@ucl.ac.uk', password='password1')
-        self.mentor = Mentor(user_id=1, school_id=0, first_name='Harry', last_name='Potter', email='harrypj@ucl.ac.uk')
-        self.user2 = User(user_type='mentee', school_id=2, email='lily@ucl.ac.uk', password='password2')
-        self.mentee = Mentee(user_id=2, school_id=2, first_name='Lily', last_name='Weasley', email='lily@ucl.ac.uk')
+        self.mentor = Mentor(user_id=1, school_id=0, first_name='Harry', last_name='Potter')
+
+        self.user2 = User(user_type='mentee', school_id=1, email='lily@ucl.ac.uk', password='password2')
+        self.mentee = Mentee(user_id=2, school_id=1, first_name='Lily', last_name='Weasley')
+        self.mentee_location = Location(user_id=2, address="Hogmeade", city="London",
+                                        postcode="XR4 5AQ", avoid_area="Neasden")
         db.session.add_all([self.user1, self.mentor])
         db.session.add_all([self.user2, self.mentee])
+        db.session.add(self.mentee_location)
+        db.session.flush()
+
+        self.pair = Pair(mentor_id=self.mentor.mentor_id, mentee_id=self.mentee.mentee_id)
+        db.session.add(self.pair)
         db.session.commit()
 
     def tearDown(self):
@@ -56,6 +64,8 @@ class BaseTest(TestCase):
     mentor_personal_info = dict(carer_email='', carer_name='', share_performance=False,
                                 status='W', xperience='=>2', user_id=4)
     mentor_hobbies = dict(user_id=4, football=False, drawing=False)
+    book_meeting = dict(pair_id=1, day='3', month='5', year=2020, date='3/5/2020', hour='17', minute='00', time='1700',
+                        duration='1', address="Kilburn Road", postcode="WY4 5UU", type="libr")
 
 
 class TestMain(BaseTest):
@@ -162,9 +172,32 @@ class TestAuth(BaseTest):
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'Personal Info', response.data)
 
-
     def test_book_meeting_success(self):
-        pass        
+        BaseTest.SetUp(self)
+        # saving dummy mentee to be paired with mentor
+        db.session.add_all([self.user1, self.mentor])
+        db.session.add_all([self.user2, self.mentee])
+        db.session.add(self.mentee_location)
+        db.session.flush()
+        db.session.add(self.pair)
+        db.session.commit()
+
+        count = Meeting.query.count()
+        response = self.client.post(url_for('auth.book_meeting', pair_id=self.pair.id), data=dict(
+            day=self.book_meeting.get('day'),
+            month=self.book_meeting.get('month'),
+            year=self.book_meeting.get('year'),
+            hour=self.book_meeting.get('hour'),
+            minute=self.book_meeting.get('minute'),
+            duration=self.book_meeting.get('duration'),
+            type=self.book_meeting.get('type'),
+            address=self.book_meeting.get('address'),
+            postcode=self.book_meeting.get('postcode'),
+        ))
+        count2 = Meeting.query.count()
+        self.assertEqual(count2 - count, 1)
+        self.assertEqual(response.status_code, 200)
+
 
 if __name__ == '__main__':
     unittest.main()

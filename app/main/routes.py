@@ -2,10 +2,11 @@ from flask import render_template, Blueprint, url_for, flash, redirect, request
 from datetime import datetime
 import secrets
 
-from app import db
-from app.main.forms import PersonalForm, SignUpForm, LocationForm, ApproveForm, AddSchoolForm
+from app import db, mail
+from app.main.forms import PersonalForm, SignUpForm, LocationForm, ApproveForm, AddSchoolForm, BookMeeting
 from app.models2_backup import User, MedicalCond, Message, Chatroom, OccupationalField, Hobbies, School, StudentReview, \
-    Pair, PersonalInfo, Report, PersonalIssues, Mentee, Mentor, Location
+    Pair, PersonalInfo, Report, PersonalIssues, Mentee, Mentor, Location, Meeting
+from functions import is_unique
 
 bp_main = Blueprint('main', __name__)
 
@@ -202,6 +203,40 @@ def pairing(applicant, applicant_id, location):
     
     return render_template('home.html', title='Home') ####for now
 
-#
-# @bp_main.route('/book_meeting/')
-# def book_meeting():
+
+@bp_main.route('/book-meeting/<pair_id>/<mentee_id>/<mentee_user_id>/', methods=['POST', 'GET'])
+def book_meeting(pair_id, mentee_id, mentee_user_id):
+    form = BookMeeting(request.form)
+    mentee = Mentee.query.filter(Mentee.mentee_id == mentee_id).first()
+    print(mentee)
+    if request.method == 'POST' and form.validate_on_submit:
+        date = form.day.data+form.month.data+str(form.year.data)
+        mentee_user = User.query.filter(User.user_id == mentee_user_id).first()
+        print(mentee_user.user_id)
+
+        # check if the area is a place mentee didnt want to go
+        mentee_form = Location.query.join(User).filter(User.user_id == mentee_user.user_id).first()
+        print(mentee_form)
+        if form.address.data == mentee_form.avoid_area:
+            flash("Sorry bud, your mentee doesn't feel comfortable going there. In the interest of their wellbeing, please pick another area!")
+            return render_template('BookingForm.html', title="Book Meeting")
+
+        # check if that day is already booked
+        elif is_unique(Meeting, Meeting.date, date, model2=Pair, id=pair_id) is False:
+            flash("Hm... looks like you've already booked a meeting for {date}.".format(date=date)) ### try to do w js so doesn't need to render
+            return render_template('BookingForm.html', title="Book Meeting")
+
+        else:
+            new_meeting = Meeting(pair_id=pair_id, day=form.day.data, month=form.month.data, year=str(form.year.data),
+                                  date=date, minute=form.minute.data, hour=form.hour.data, duration=form.duration.data,
+                                  address=form.address.data, postcode=form.postcode.data, type=form.type.data)
+            db.session.add(new_meeting)
+            db.session.commit()
+            mentee = Mentee.query.join(Pair).filter(Mentee.mentee_id == Pair.mentee_id).first()
+            email = Message(subject="Confirm your Meeting", recipients=mentee_user.email,
+                            body="Hi {name}, \nYour mentor has booked a meeting with you on {date} at {time}. "
+                                 "Please click the link below to review this.".format(name=mentee_user.name, date=new_meeting.date, time=new_meeting.time))
+            mail.send(email)
+            return render_template('home.html') ##### NEED TO MAKE A BOOKING CONFIRMATION PAGE
+
+    return render_template("BookingForm.html", title="Book Meeting", form=form, mentee=mentee)

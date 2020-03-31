@@ -1,11 +1,13 @@
-from flask import render_template, Blueprint, url_for, flash, redirect, request
+from flask import render_template, Blueprint, url_for, flash, redirect, request, Markup
 from datetime import datetime
+from flask_mail import Message
 import secrets
 
 from app import db
 from app.auth.forms import PersonalInfoForm, SignUpForm, LocationForm, BookMeeting
-from app.models2_backup import User, MedicalCond, Message, Chatroom, OccupationalField, Hobbies, School, StudentReview, \
+from app.models2_backup import User, MedicalCond, Chatroom, OccupationalField, Hobbies, School, StudentReview, \
     Pair, PersonalInfo, Report, PersonalIssues, Mentee, Mentor, Location, Meeting
+from functions import is_unique
 
 bp_auth = Blueprint('auth', __name__)
 
@@ -144,42 +146,40 @@ def load_pairing(applicant, applicant_id, location):
     return render_template(url_for('mentor_profile', pair=new_pair))
 
 
-@bp_auth.route('/book-meeting/', methods=['POST', 'GET'])
+@bp_auth.route('/book-meeting/<pair_id>', methods=['POST', 'GET'])
 def book_meeting(pair_id):
     if request.method == 'POST':
         form = BookMeeting(request.form)
         date = form.day.data+form.month.data+str(form.year.data)
+        mentee_user = User.query.join(Mentee).join(Pair).first()
+        print(mentee_user.user_id)
+
+        # check if the area is a place mentee didnt want to go
+        mentee_form = Location.query.join(User).filter(User.user_id == mentee_user.user_id).first()
+        print(mentee_form)
+        if form.address.data == mentee_form.avoid_area:
+            flash("Sorry bud, your mentee doesn't feel comfortable going there. In the interest of their wellbeing, please pick another area!")
+            return render_template('BookingForm.html', title="Book Meeting")
 
         # check if that day is already booked
+        elif is_unique(Meeting, Meeting.date, date, model2=Pair, id=pair_id) is False:
+            flash("Hm... looks like you've already booked a meeting for {date}.".format(date=date)) ### try to do w js so doesn't need to render
+            return render_template('BookingForm.html', title="Book Meeting")
 
-        time = form.hour.data+form.minute.data
-        Meeting(pair_id=pair_id, day=form.day.data, month=form.month.data, year=str(form.year.data), date=date,
-                minute=form.minute.data, hour=form.hour.data, time=time, duration=form.duration.data,
-                address=form.address.data, postcode=form.postcode.data, type=form.type.data)
+        else:
+            new_meeting = Meeting(pair_id=pair_id, day=form.day.data, month=form.month.data, year=str(form.year.data),
+                                  date=date, minute=form.minute.data, hour=form.hour.data, duration=form.duration.data,
+                                  address=form.address.data, postcode=form.postcode.data, type=form.type.data)
+            db.session.add(new_meeting)
+            db.session.commit()
+            mentee_user = User.query.join(Mentee).join(Pair).join(Meeting).first()
+            # email = Message(subject="Confirm your Meeting", recipients=mentee_user.email,
+            #                 body="Hi {name}, \nYour mentor has booked a meeting with you on {date} at {time}. "
+            #                      "Please click the link below to review this.".format(name=mentee_user.name, date=new_meeting.date, time=new_meeting.time))
+            # mail.send(email)
+            return render_template('home.html') ##### NEED TO MAKE A BOOKING CONFIRMATION PAGE
+
+    return render_template("BookingForm.html", title="Book Meeting")
 
 
 
-
-
-
-    # saving dummy mentee to be paired with mentor
-    new_user = User(email='harry@potter.com', user_type='mentee', school_id=2, password='password3')
-    db.session.add(new_user)
-    db.session.flush()
-    new_mentee = Mentee(school_id=2, email="hary@potter.com", first_name='hARRY', last_name='Potter',
-                        user_id=new_user.user_id)
-    db.session.add(new_mentee)
-
-    # saving mentor to do the booking with paired mentee
-    new_user2 = User(email='hermione@hogwarts.ac.uk', user_type='mentee', school_id=0, password='password4')
-    db.session.add(new_user2)
-    db.session.flush()
-    mentor = Mentee(school_id=0, email="hermione@hogwarts.ac.uk", first_name='Hermione', last_name='Granger',
-                    user_id=new_user2.user_id)
-    db.session.add(new_mentee)
-    db.session.flush()
-
-    # setting up pair
-    pair = Pair(mentor_id=mentor.user_id, mentee_id=new_mentee.user_id)
-    db.session.add(pair)
-    db.session.commit()

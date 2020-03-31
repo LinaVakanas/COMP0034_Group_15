@@ -1,5 +1,7 @@
 """Flask config class"""
 from os.path import dirname, abspath, join
+from flask import Flask
+from flask_mail import Mail
 
 
 class Config(object):
@@ -18,6 +20,10 @@ class Config(object):
     CWD = dirname(abspath(__file__))
     SQLALCHEMY_DATABASE_URI = 'sqlite:///'+join(CWD, 'webapp_sqlite.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+    MAIL_DEFAULT_SENDER = 'valikanas@yahoo.fr'
+    ### do rest ###
+
 
 
 class TestConfig(Config):

@@ -18,12 +18,13 @@ it could make testing more specific, and the form.validate_on_submit
 
 To ask Miss:
 * Updating user id --> models
-* Passing in applicant type (for real would be in url)
 * None or ''
 * Using an externally downloaded file --> how to reference (directory)
 * Form not being validated in tests? (2 empty parts not used, but not DataRequired())
-* 'Dummy' data made in unittest SetUp not being saved?
-* Half foreign half primary key? (meeting table) 
+* 'Dummy' data made in unittest SetUp not being saved? i think SetUp isnt run @ start
+* Including other functions in routes --> in separate file?
+* Email - mail object not initialised 
+* Flashing a link?
 
 ------------------------------------------------------------
 To Do Before Move On:

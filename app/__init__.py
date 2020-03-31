@@ -1,9 +1,12 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_mail import Mail
+
 
 from config import DevConfig
 
 db = SQLAlchemy()
+mail = Mail()
 
 
 def create_app(config_class=DevConfig):
@@ -15,13 +18,17 @@ def create_app(config_class=DevConfig):
     app.config.from_object(config_class)
 
     db.init_app(app)
+    mail.init_app(app)
+
+    from populate_db import populate_db
 
     # The following is needed if you want to map classes to an existing database
     from app.models2_backup import User, Mentee, Mentor, Teacher, School, Report, Message, Chatroom, Pair, PersonalIssues, \
         PersonalInfo, Hobbies, MedicalCond, Location, OccupationalField, StudentReview
     with app.app_context():
-        # db.drop_all()
+        db.drop_all()
         db.create_all()
+        populate_db()
 
 
     # Register Blueprints
@@ -32,3 +39,4 @@ def create_app(config_class=DevConfig):
     app.register_blueprint(bp_auth)
 
     return app
+

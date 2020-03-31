@@ -1,7 +1,8 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, Form, SelectField, BooleanField, SelectMultipleField
 from wtforms.validators import DataRequired, EqualTo, Email, AnyOf
-from app.util.validators import correct_date
+from app.util.validators import correct_date, Unique
+from app.models2_backup import Meeting
 import json
 from datetime import datetime
 
@@ -64,15 +65,15 @@ class BookMeeting(FlaskForm):
     month = SelectField(choices=months, validators=[DataRequired()])
     today = datetime.date(datetime.now())
     years = [(today.year, today.year), (today.year + 1, today.year + 1)]
-    year = SelectField(choices=years, validators=[DataRequired(), correct_date(day.data, month.data)])
+    year = SelectField(choices=years, validators=[DataRequired(), correct_date(day, month)])
     hours = [('15', '15'), ('16', '16'), ('17', '17')]
     hour = SelectField(choices=hours)
     minutes = [('00', '00'), ('15', '15'), ('30', '30')]
     minute = SelectField(choices=minutes)
     durations = [('1', '1 hour'), ('1.5', '1.5 hour'), ('2', '2 hours'), ('2.5', '2.5 hours')]
-    duration = SelectField(choices=durations, validators=DataRequired())
+    duration = SelectField(choices=durations, validators=[DataRequired()])
 
-    area_types = [('libr', 'Library'), ('museum', 'Museum'), ('school', 'School')]
-    type = SelectField(choices=area_types, validators=[DataRequired()])
+    area_types = [('libr', 'Library'), ('museum', 'Museum'), ('school', 'School'), ('coffe', 'Coffee Shop')]
+    type = SelectField(choices=area_types, validators=[DataRequired()]) # to validate if mentee said not to go there
     address = StringField('Address:', validators=[DataRequired()])
-    postcode = StringField('Postcode:', validators=DataRequired())
+    postcode = StringField('Postcode:', validators=[DataRequired()])

@@ -28,7 +28,6 @@ c.execute('''
           first_name TEXT NOT NULL, 
           last_name TEXT NOT NULL,
           user_id INTEGER NOT NULL,
-          email TEXT NOT NULL,
           paired BOOLEAN,
           FOREIGN KEY (user_id) REFERENCES user(user_id))
           ''')
@@ -40,7 +39,6 @@ c.execute('''
           first_name TEXT NOT NULL, 
           last_name TEXT NOT NULL,
           user_id INTEGER NOT NULL,
-          email TEXT NOT NULL,
           paired BOOL,
           FOREIGN KEY (user_id) REFERENCES user(user_id))
           ''')
@@ -180,7 +178,6 @@ c.execute('''
           postcode TEXT NOT NULL,
           avoid_area TEXT,
           user_id INTEGER NOT NULL,
-          user_type TEXT NOT NULL REFERENCES  user(user_type),
           FOREIGN KEY (user_id) REFERENCES user(user_id))
           ''')
 

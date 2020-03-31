@@ -2,6 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, Form, SelectField, BooleanField, SelectMultipleField
 from wtforms.validators import DataRequired, EqualTo, Email, AnyOf
 import json
+from app.util.validators import correct_date
 from datetime import datetime
 
 
@@ -59,8 +60,8 @@ class PersonalForm(FlaskForm):
     share_performance = BooleanField('Permission to share school performance with mentor', default="unchecked ")
 
 
-class LocationForm(FlaskForm):
-    with open('C:/Users/Mahdi/Documents/UCL Mechanical Engineering/3rd Year/COMP0034 - Web Development/COMP0034_Group_15/gb.json') as f:
+class LocationForm(FlaskForm): # static folder, url_for for it
+    with open('C:/Users/linav/Documents/UCL/Year 3/COMP0034 - Web Development/Group 15 branch 2/gb.json') as f:
         cities_dict = json.load(f)
         cities_list = []
         for dict in cities_dict:
@@ -90,22 +91,22 @@ class ApproveForm(FlaskForm):
 class BookMeeting(FlaskForm):
     days = []
     for i in range(31):
-        days.append(i)
+        days.append(('{}'.format(i), '{}'.format(i)))
     day = SelectField(choices=days, validators=[DataRequired()])
     months = [('1', 'Jan'), ('2', 'Feb'), ('3', 'Mar'), ('4', 'Apr'), ('5', 'May'), ('6', 'Jun'),
               ('7', 'Jul'), ('8', 'Augu'), ('9', 'Sept'), ('10', 'Oct'), ('11', 'Nov'), ('12', 'Dec')]
     month = SelectField(choices=months, validators=[DataRequired()])
     today = datetime.date(datetime.now())
-    years = [(today.year, today.year), (today.year+1, today.year+1)]
-    year = SelectField(choices=years)
-    hours = [('16', '16'), ('17', '17'), ('18', '18')]
+    years = [(today.year, today.year), (today.year + 1, today.year + 1)]
+    year = SelectField(choices=years, validators=[DataRequired(), correct_date(day, month)])
+    hours = [('15', '15'), ('16', '16'), ('17', '17')]
     hour = SelectField(choices=hours)
-    minutes = [('00', '00'), ('15', '15'), ('30', '30'), ('45', '45')]
+    minutes = [('00', '00'), ('15', '15'), ('30', '30')]
     minute = SelectField(choices=minutes)
-    durations = [('1', '1 hour'), ('1.5', '1.5 hour'), ('2', '2 hours'), ('2.5', '2.5 hours'), ('3', '3 hours')]
-    duration = SelectField(choices=durations, validators=DataRequired())
+    durations = [('1', '1 hour'), ('1.5', '1.5 hour'), ('2', '2 hours'), ('2.5', '2.5 hours')]
+    duration = SelectField(choices=durations, validators=[DataRequired()])
 
-    area_types = [('libr', 'Library'), ('museum', 'Museum'), ('school', 'School')]
-    type = SelectField(choices=area_types, validators=[DataRequired()])
+    area_types = [('libr', 'Library'), ('museum', 'Museum'), ('school', 'School'), ('coffe', 'Coffee Shop')]
+    type = SelectField(choices=area_types, validators=[DataRequired()]) # to validate if mentee said not to go there
     address = StringField('Address:', validators=[DataRequired()])
-    postcode = StringField('Postcode:', validators=DataRequired())
+    postcode = StringField('Postcode:', validators=[DataRequired()])
