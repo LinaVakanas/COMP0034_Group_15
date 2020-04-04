@@ -3,6 +3,19 @@ from sqlalchemy import ForeignKeyConstraint
 from app import db
 
 
+class User(db.Model):
+    __tablename__ = 'user'
+    email = db.Column(db.Text, nullable=False, unique=True)
+    user_type = db.Column(db.String, nullable=False)
+    user_id = db.Column(db.Integer,autoincrement=True, primary_key=True)
+    school_id = db.Column(db.Integer, nullable=False)
+    password = db.Column(db.Text, nullable=False) #we can look at how Miss did that hash thing in her example
+    bio = db.Column(db.String(300))
+    active = db.Column(db.Boolean)
+    profile_pic = db.Column(db.BLOB) #don't know if its acc blob
+    creation_date = db.Column(db.String)
+
+
 class Mentor(db.Model):
     __tablename__ = 'mentor'
     mentor_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
@@ -10,7 +23,8 @@ class Mentor(db.Model):
     first_name = db.Column(db.String, nullable=False)
     last_name = db.Column(db.String, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
-    # unique_id = db.relationship("User", foreign_keys=[user_id])
+    user = db.relationship("User", backref='mentor')
+    paired = db.Column(db.Boolean)
     # email = db.Column(db.Text, db.ForeignKey('user.email'), nullable=False)
     # user_email = db.relationship("User", foreign_keys=[email])
 
@@ -22,7 +36,8 @@ class Mentee(db.Model):
     first_name = db.Column(db.String, nullable=False)
     last_name = db.Column(db.String, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
-    # unique_id = db.relationship("User", foreign_keys=[user_id])
+    user = db.relationship("User", backref='mentee')
+    paired = db.Column(db.Boolean)
     # email = db.Column(db.Text, db.ForeignKey('user.email'), nullable=False)
     # user_email = db.relationship("User", foreign_keys=[email])
 
@@ -47,19 +62,6 @@ class School(db.Model):
     school_email = db.Column(db.Text, nullable=False)
     ofsted_ranking = db.Column(db.Integer)
     ofsted_report = db.Column(db.BLOB) #not sure about how blob works
-
-
-class User(db.Model):
-    __tablename__ = 'user'
-    email = db.Column(db.Text, nullable=False, unique=True)
-    user_type = db.Column(db.String, nullable=False)
-    user_id = db.Column(db.Integer,autoincrement=True, primary_key=True)
-    school_id = db.Column(db.Integer, nullable=False)
-    password = db.Column(db.Text, nullable=False) #we can look at how Miss did that hash thing in her example
-    bio = db.Column(db.String(300))
-    active = db.Column(db.Boolean)
-    profile_pic = db.Column(db.BLOB) #don't know if its acc blob
-    creation_date = db.Column(db.String)
 
 
 class Report(db.Model):

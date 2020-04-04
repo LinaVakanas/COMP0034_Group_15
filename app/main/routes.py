@@ -105,45 +105,37 @@ def controlpanel_view_schools():
     return render_template('admin_view_schools.html', schools=schools, schools_dict=schools_dict)
 
 
-@bp_main.route('/personal_form/<applicant>/<school_id>/', methods=['POST', 'GET'])
-def personal_form(applicant, school_id):
-    school_ids = School.query.with_entities(School.school_id).all()
-    all_ids = [row[0] for row in school_ids]
-    print(school_id)
-    print(all_ids)
-    if (int(school_id) in all_ids and applicant=="mentee") or (applicant=="mentor" and int(school_id)==0):
+@bp_main.route('/personal_form/<applicant_type>/<school_id>/', methods=['POST', 'GET'])
+def personal_form(applicant_type, school_id):
+    if is_unique(School, School.school_id, school_id, model2=None, id=None) is False:
         form = PersonalForm(request.form)
         form2 = SignUpForm(request.form)
         if request.method == 'POST'and form2.validate_on_submit():
             creation_date = str(datetime.date(datetime.now()))
             password = secrets.token_hex(8)
-            if applicant == 'mentee':
-                print(str(password))
-                new_user = User(email=form2.email.data, user_type=applicant, school_id=school_id, password=password, bio="", creation_date=creation_date, active=False)
+            if applicant_type == 'mentee':
+                new_user = User(email=form2.email.data, user_type=applicant_type, school_id=school_id, password=password, bio="", creation_date=creation_date, active=False)
                 db.session.add(new_user)
                 db.session.flush()
-                print("user id 1 ="+str(new_user.user_id))
-                new_mentee = Mentee(user_id=new_user.user_id, school_id=school_id, first_name=form2.first_name.data,
-                                    last_name=form2.last_name.data, email=new_user.email, paired=False)
+                new_user.mentee.append(Mentee(school_id=school_id, first_name=form2.first_name.data,
+                                              last_name=form2.last_name.data, paired=False))
+                new_mentee = Mentee.query.join(User).filter(Mentee.user_id == new_user.user_id).first()
 
                 new_info = PersonalInfo(user_id=new_user.user_id, carer_email=form.carer_email.data, carer_name=form.carer_name.data,
                                         status="S", xperience=None, share_performance=form.share_performance.data)
                 db.session.flush()
-                print("mentee id ="+ str(new_mentee.user_id))
-                print("user id 2 ="+str(new_info.user_id))
                 db.session.add_all([new_info, new_mentee])
-                print("user email ="+str(new_user.email))
 
-            elif applicant == 'mentor':
+            elif applicant_type == 'mentor':
 
                 if form.mentor_xperience.data == '>=2' and form.mentor_occupation.data != 'N':
-                    new_user = User(email=form2.email.data, school_id=0, user_type=applicant, creation_date=creation_date,
+                    new_user = User(email=form2.email.data, school_id=0, user_type=applicant_type, creation_date=creation_date,
                                     bio="", password=password, active=False)
                     db.session.add(new_user)
                     db.session.flush()
-                    print("user id =" + str(new_user.user_id))
-                    new_mentor = Mentor(user_id=new_user.user_id, school_id=0, first_name=form2.first_name.data,
-                                        last_name=form2.last_name.data, email=new_user.email, paired=False)
+                    new_user.mentor.append(Mentor(user_id=new_user.user_id, school_id=0, first_name=form2.first_name.data,
+                                        last_name=form2.last_name.data, paired=False))
+                    new_mentor = Mentor.query.join(User).filter(Mentor.user_id == new_user.user_id).first()
                     new_info = PersonalInfo(user_id=new_user.user_id, carer_email="", carer_name="",
                                             status=form.mentor_occupation.data, xperience=form.mentor_xperience.data, share_performance=None)
                     db.session.add_all([new_info, new_mentor])
@@ -153,8 +145,6 @@ def personal_form(applicant, school_id):
                           'We want to ensure mentors have enough experience to help the mentees. \nWe hope you understand!')
                     return redirect(url_for('main.home'))
 
-            print("depression ="+str(form.depression.data))
-            print("share personal issues ="+str(form.share_personal_issues.data))
             new_issues = PersonalIssues(depression=form.depression.data, self_harm=form.self_harm.data, family=form.family.data, drugs=form.drugs.data, ed=form.ed.data, user_id=new_user.user_id, share_personal_issues=form.share_personal_issues.data)
             db.session.add(new_issues)
 
@@ -168,28 +158,28 @@ def personal_form(applicant, school_id):
             db.session.add(new_occupation)
             db.session.commit()
 
-            if applicant == 'mentee':
-                return redirect(url_for('main.location_form', applicant=applicant, applicant_id=new_mentee.user_id))
-            elif applicant == 'mentor':
+            if applicant_type == 'mentee':
+                return redirect(url_for('main.location_form', applicant_type=applicant_type, applicant_id=new_user.user_id))
+            elif applicant_type == 'mentor':
                 return render_template('home_mentor_pending.html', title='Pending Approval', mentor=new_mentor)
 
             # new_medical = MedicalCond()
-        return render_template('PersonalForm.html', title='Signup', form2=form2, form=form, applicant=applicant)
+        return render_template('PersonalForm.html', title='Signup', form2=form2, form=form, applicant_type=applicant_type)
     else:
         flash('Sorry you have entered an invalid registration link, please contact a system admin. CHANGE THIS TO REDIRECT')
         return redirect(url_for('main.home'))
 
 
-@bp_main.route('/location_form/<applicant>/<applicant_id>/', methods=['POST', 'GET'])
-def location_form(applicant, applicant_id):
+@bp_main.route('/location_form/<applicant_type>/<applicant_id>/', methods=['POST', 'GET'])
+def location_form(applicant_type, applicant_id):
     form = LocationForm(request.form)
     if request.method == 'POST' and form.validate_on_submit():
-        if applicant == 'mentor' and form.city.data.lower() != 'london':
+        if applicant_type == 'mentor' and form.city.data.lower() != 'london':
             flash("Sadly we are only based at London for now. \nWe'll keep you on a waiting list and email you if we expand "
                   "to your city. We hope you understand.")
             return redirect(url_for('main.home', title='Home'))
 
-        elif applicant == 'mentee' and form.city.data.lower() != 'london':
+        elif applicant_type == 'mentee' and form.city.data.lower() != 'london':
             flash("Hm... are you sure that's the right city? We only send out application forms to students from London.")
 
         else:
@@ -197,17 +187,17 @@ def location_form(applicant, applicant_id):
                                     avoid_area=form.avoid_area.data)
             db.session.add(new_location)
             db.session.commit()
-            return redirect(url_for('main.pairing', applicant=applicant, applicant_id=applicant_id, location=new_location.city))
+            return redirect(url_for('main.pairing', applicant_type=applicant_type, applicant_id=applicant_id, location=new_location.city))
 
-    return render_template('LocationForm.html', title='Signup', form=form, applicant=applicant)
+    return render_template('LocationForm.html', title='Signup', form=form, applicant_type=applicant_type)
 
 
-@bp_main.route('/pairing/<applicant>/<applicant_id>/<location>/', methods=['POST', 'GET'])
-def pairing(applicant, applicant_id, location):
+@bp_main.route('/pairing/<applicant_type>/<applicant_id>/<location>/', methods=['POST', 'GET'])
+def pairing(applicant_type, applicant_id, location):
     # render_template('pairing_load_page.html', title='Pairing . . . ')
-    if applicant == 'mentee':
+    if applicant_type == 'mentee':
         pair_with_mentor = Mentor.query.join(Location, Mentor.user_id == Location.user_id).filter_by(city='London').first()
-        pair_with_user = User.query.join(Mentor, User.user_id == Mentor.user_id).filter_by(user_id = pair_with_mentor.user_id).first()
+        pair_with_user = User.query.join(Mentor, User.user_id == Mentor.user_id).filter_by(user_id=pair_with_mentor.user_id).first()
         if not pair_with_mentor:
             flash("Unfortunately there are no mentors signed up in {} just yet! Sorry for the inconvenience, "
                   "you'll be put on a waiting list and we'll let you know as soon as a mentor is found.\n"
@@ -215,23 +205,27 @@ def pairing(applicant, applicant_id, location):
             return redirect(url_for('main.home', title='Edit Profile')) ####should be main.edit
         mentee = Mentee.query.filter_by(user_id=applicant_id).first()
         new_pair = Pair(mentor_id=pair_with_mentor.mentor_id, mentee_id=mentee.mentee_id)
+        mentee.paired = True
+        pair_with_mentor.paired = True
         db.session.add(new_pair)
         db.session.commit()
         return render_template('profiles/mentor_profile.html', title='Mentor Profile', mentor=pair_with_mentor, user=pair_with_user)
 
-    elif applicant == 'mentor':
-        pair_with = Mentee.query.join(Location, Mentee.user_id == Location.user_id).filter_by(city='London').first()
-        user = User.query.join(Mentor, User.user_id == Mentor.user_id).filter_by(user_id=pair_with.user_id).first()
-        if not pair_with:
+    elif applicant_type == 'mentor':
+        pair_with_mentee = Mentee.query.join(Location, Mentee.user_id == Location.user_id).filter_by(city='London').first()
+        pair_with_user = User.query.join(Mentee, User.user_id == Mentee.user_id).filter_by(user_id=pair_with_mentee.user_id).first()
+        if not pair_with_mentee:
             flash("Unfortunately there are no mentees signed up in {} yet. Sorry for the inconvenience, "
                   "you'll be put on a waiting list and we will let you know as soon as a mentee is found.\n"
                   "For now, you can edit your profile, and get used to the website.".format(location))
             return render_template('home.html', title='Home')  ####for now
         mentor = Mentor.query.filter_by(user_id=applicant_id).first()
-        new_pair = Pair(mentor_id=mentor.mentor_id, mentee_id=pair_with.mentee_id)
+        new_pair = Pair(mentor_id=mentor.mentor_id, mentee_id=pair_with_mentee.mentee_id)
+        mentor.paired = True
+        pair_with_mentee.paired = True
         db.session.add(new_pair)
         db.session.commit()
-        return render_template('profiles/mentee_profile.html', mentee=pair_with, user=user, title='Mentee Profile')
+        return render_template('profiles/mentee_profile.html', mentee=pair_with_mentee, user=pair_with_user, title='Mentee Profile')
     
     return render_template('home.html', title='Home') ####for now
 

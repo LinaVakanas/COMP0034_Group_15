@@ -27,7 +27,7 @@
                                 </div>
 
                             </div>
-                            {% if applicant == 'mentee' %}
+                            {% if applicant_type == 'mentee' %}
                                 <hr>
                                 <h2>Your carer's details</h2>
                                 <div class="form-row">
@@ -42,7 +42,7 @@
                                 </div>
                             {% endif %}
 
-                            {% if applicant == 'mentor' %}
+                            {% if applicant_type == 'mentor' %}
                                 {{ render_field(form.mentor_occupation, class="form-control") }}
                                 {{ render_field(form.mentor_xperience, class="form-control")}}
 
@@ -119,7 +119,7 @@
                                 {{ render_field(form.share_personal_issues) }}
                             </div>
 
-                            {% if applicant== 'mentee'%}
+                            {% if applicant_type== 'mentee'%}
                                 <label for="mentee_field">What field are you interested in for further studies/career?</label>
                                 <div class="row">
                                     <div class = "col-3">

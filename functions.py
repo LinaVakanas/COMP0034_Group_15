@@ -12,7 +12,7 @@ def is_unique(model, field, data, model2, id):
     if model2 and id:
         check = model.query.join(model2).filter(model2.id == id).filter(field == data).first()
     else:
-        check = model.query.filter_by(field == data).first()
+        check = model.query.filter(field == data).first()
     if check:
         return False
     else:
