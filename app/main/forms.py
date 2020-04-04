@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, Form, SelectField, BooleanField, SelectMultipleField
+from wtforms import StringField, PasswordField, Form, SelectField, BooleanField, SelectMultipleField, RadioField
 from wtforms.validators import DataRequired, EqualTo, Email, AnyOf
 import json
 from app.util.validators import correct_date
@@ -106,7 +106,12 @@ class BookMeeting(FlaskForm):
     durations = [('1', '1 hour'), ('1.5', '1.5 hour'), ('2', '2 hours'), ('2.5', '2.5 hours')]
     duration = SelectField(choices=durations, validators=[DataRequired()])
 
-    area_types = [('libr', 'Library'), ('museum', 'Museum'), ('school', 'School'), ('coffe', 'Coffee Shop')]
+    area_types = [('Library', 'Library'), ('Museum', 'Museum'), ('School', 'School'), ('Coffee Shop', 'Coffee Shop')]
     type = SelectField(choices=area_types, validators=[DataRequired()]) # to validate if mentee said not to go there
     address = StringField('Address:', validators=[DataRequired()])
     postcode = StringField('Postcode:', validators=[DataRequired()])
+
+
+class ApproveMeeting(FlaskForm):
+    choices = [(1, 'I can make it'), (0, "I can't make it")]
+    approval = RadioField(choices=choices, validators=[DataRequired()])

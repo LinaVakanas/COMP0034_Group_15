@@ -188,3 +188,23 @@ c.execute('''
           user_id INTEGER NOT NULL,
           FOREIGN KEY (user_id) REFERENCES user(user_id))
           ''')
+
+c.execute('''
+          CREATE TABLE meeting
+          (meeting_id INTEGER PRIMARY KEY,
+          day TEXT,
+          month TEXT,
+          year TEXT,
+          hour TEXT,
+          minute TEXT,
+          duration TEXT,
+          date TEXT,
+          time TEXT,
+          address TEXT,
+          postcode TEXT,
+          type TEXT,
+          mentee_approval INTEGER,
+          teacher_approval INTEGER,
+          user_id INTEGER NOT NULL,
+          FOREIGN KEY (user_id) REFERENCES user(user_id))
+          ''')

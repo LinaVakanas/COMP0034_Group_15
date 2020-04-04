@@ -207,7 +207,7 @@ class Meeting(db.Model):
     type = db.Column(db.String, nullable=False)
     # approvals
     school_approval = db.Column(db.Boolean)
-    mentee_approval = db.Column(db.Boolean)
+    mentee_approval = db.Column(db.Integer)
 
 
 

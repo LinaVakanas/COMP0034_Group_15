@@ -15,21 +15,15 @@ whether it says mentor or mentee, and the if statement ==> define separate funct
     - When to pass mentee/mentor and user? 
 * Should we have the personal form after the general signup? (name, last name, email)
 it could make testing more specific, and the form.validate_on_submit
-
-To ask Miss:
-* Updating user id --> models
-* None or ''
-* Using an externally downloaded file --> how to reference (directory)
-* Form not being validated in tests? (2 empty parts not used, but not DataRequired())
-* 'Dummy' data made in unittest SetUp not being saved? i think SetUp isnt run @ start
-* Including other functions in routes --> in separate file?
-* Email - mail object not initialised 
-* Flashing a link?
-
 ------------------------------------------------------------
 To Do Before Move On:
 * Filter by paired status
 * Signup linked to school database - if school_id isn't saved in database --> validators.py
+* Make only 'id' for own table id's
+----------------------------------------------------------
+To Discuss:
+* What happens after mentor books meeting, for mentee confirmation:
+    1. views all booked meetings (in a table or smth), and one that needs confirmation is highlighted, then they click it
 
     
 

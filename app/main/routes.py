@@ -1,9 +1,9 @@
-from flask import render_template, Blueprint, url_for, flash, redirect, request
+from flask import render_template, Blueprint, url_for, flash, redirect, request, Markup
 from datetime import datetime
 import secrets
 
 from app import db, mail
-from app.main.forms import PersonalForm, SignUpForm, LocationForm, ApproveForm, AddSchoolForm, BookMeeting
+from app.main.forms import PersonalForm, SignUpForm, LocationForm, ApproveForm, AddSchoolForm, BookMeeting, ApproveMeeting
 from app.models2_backup import User, MedicalCond, Message, Chatroom, OccupationalField, Hobbies, School, StudentReview, \
     Pair, PersonalInfo, Report, PersonalIssues, Mentee, Mentor, Location, Meeting
 from functions import is_unique
@@ -240,35 +240,50 @@ def pairing(applicant, applicant_id, location):
 def book_meeting(pair_id, mentee_id, mentee_user_id):
     form = BookMeeting(request.form)
     mentee = Mentee.query.filter(Mentee.mentee_id == mentee_id).first()
-    print(mentee)
     if request.method == 'POST' and form.validate_on_submit:
-        date = form.day.data+form.month.data+str(form.year.data)
+        date = '{day}/{month}/{year}'.format(day=form.day.data, month=form.month.data, year=str(form.year.data))
         mentee_user = User.query.filter(User.user_id == mentee_user_id).first()
-        print(mentee_user.user_id)
 
         # check if the area is a place mentee didnt want to go
         mentee_form = Location.query.join(User).filter(User.user_id == mentee_user.user_id).first()
-        print(mentee_form)
         if form.address.data == mentee_form.avoid_area:
-            flash("Sorry bud, your mentee doesn't feel comfortable going there. In the interest of their wellbeing, please pick another area!")
-            return render_template('BookingForm.html', title="Book Meeting")
+            flash("Sorry bud, your mentee doesn't feel comfortable going there. In the interest of their well-being, please pick another area!")
+            return render_template('BookingForm.html', title="Book Meeting", form=form, mentee=mentee)
 
         # check if that day is already booked
         elif is_unique(Meeting, Meeting.date, date, model2=Pair, id=pair_id) is False:
-            flash("Hm... looks like you've already booked a meeting for {date}.".format(date=date)) ### try to do w js so doesn't need to render
-            return render_template('BookingForm.html', title="Book Meeting")
+            flash("Hm... looks like you've already booked a meeting on {date}."
+                  .format(date=date)) ### try to do w js so doesn't need to render
+            # when make a view booking page, link to that one
+            return render_template('BookingForm.html', title="Book Meeting", form=form, mentee=mentee)
 
         else:
+            time = '{hour}:{minute}'.format(hour=form.hour.data, minute=form.minute.data)
             new_meeting = Meeting(pair_id=pair_id, day=form.day.data, month=form.month.data, year=str(form.year.data),
-                                  date=date, minute=form.minute.data, hour=form.hour.data, duration=form.duration.data,
-                                  address=form.address.data, postcode=form.postcode.data, type=form.type.data)
+                                  date=date, minute=form.minute.data, hour=form.hour.data, time=time,
+                                  duration=form.duration.data, address=form.address.data, postcode=form.postcode.data,
+                                  type=form.type.data) #### IM THINKING WE SHOULD ONLY KEEP DATE AND TIME, NOT DAY, MONTH ETC...
             db.session.add(new_meeting)
             db.session.commit()
-            mentee = Mentee.query.join(Pair).filter(Mentee.mentee_id == Pair.mentee_id).first()
-            email = Message(subject="Confirm your Meeting", recipients=mentee_user.email,
-                            body="Hi {name}, \nYour mentor has booked a meeting with you on {date} at {time}. "
-                                 "Please click the link below to review this.".format(name=mentee_user.name, date=new_meeting.date, time=new_meeting.time))
-            mail.send(email)
-            return render_template('home.html') ##### NEED TO MAKE A BOOKING CONFIRMATION PAGE
+            # email = Message(subject="Confirm your Meeting", recipients=mentee_user.email,
+            #                 body="Hi {name}, \nYour mentor has booked a meeting with you on {date} at {time}. "
+            #                      "Please click the link below to review this.".format(name=mentee_user.name, date=new_meeting.date, time=new_meeting.time))
+            # mail.send(email)
+            return render_template('meeting_confirmation.html', title="Meeting Confirmation", approval="1", user="mentor")
 
     return render_template("BookingForm.html", title="Book Meeting", form=form, mentee=mentee)
+
+
+@bp_main.route('/confirm-meeting/<meeting_id>/', methods=['POST', 'GET'])
+def confirm_meeting(meeting_id):
+    form = ApproveMeeting(request.form)
+    meeting = Meeting.query.filter_by(meeting_id=meeting_id).first()
+    if request.method == 'POST':
+        approval = form.approval.data
+        meeting.mentee_approval = approval
+        print(approval)
+        db.session.commit()
+        return render_template('meeting_confirmation.html', title="Meeting Confirmation",
+                               approval=approval, user="mentee")
+
+    return render_template('meeting_approval.html', title="Review Meeting", form=form, meeting=meeting)

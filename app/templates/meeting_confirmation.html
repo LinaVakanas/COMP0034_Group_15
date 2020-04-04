@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block title %}{{title}}{% endblock %}
+
+<div class="container vh-70 d-flex mt-6 col justify-content-center">
+
+    {% block content %}
+        <div class="row">
+            <div class="col-2">
+                <img src="{{ url_for('static',filename='media/confirmation/1.gif') }}" class="img-fluid" alt="Confirmation Picture">
+            </div>
+            <div class="col-10">
+                {% if user == 'mentor' and approval == '1'%}
+                    <h1>Meeting booking is complete</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div>
+                <p>Thank you for completing the form, the booking process is now complete. We'll send off a
+                    confirmation link to your mentee, which they must complete before the meeting. We'll let you
+                    know their response, and you must only attend the meeting if they have replied that they can
+                    make it (if you don't get a response from them in time, assume the meeting has been cancelled!).</p>
+            </div>
+        </div>
+
+        {% elif user == 'mentee' %}
+            {% if approval == '1' %}
+                <div class="row">
+                    <div class="col-10">
+                        <h1>Meeting Confirmed</h1>
+                    </div>
+                </div>
+                <div class="row">
+                    <p>Nice! We'll let your mentor know you can make it. The meeting will now appear in your 'View Meetings'
+                    tab, and you can cancel it at any time uptil 24 hours before the meeting.</p>
+                    <br>
+                    <h3>Remiders for your meeting:</h3>
+                    <ul>
+                        <li>Get there on time! Your mentor can leave after 10 minutes - don't risk it!</li>
+                        <li>Cancel if you can't make it to the meeting. We will remove mentees/mentors from the system if
+                         they miss 2 meetings (without cancelling).</li>
+                        <li>If you find that your mentor was acting suspiciously or inappropriately, report them!<br>
+                        <small>You can find the 'Report' tab in the menu bar</small></li>
+                    </ul>
+                </div>
+            {% elif approval == '0' %}
+                <div class="row">
+                    <div class="col-10">
+                        <h1>Meeting Cancelled</h1>
+                    </div>
+                </div>
+                <div class="row">
+                    <p>Aw man. We'll let your mentor know you couldn't make it, and they'll hopefully book another meeting
+                        which you can both make it to.</p>
+                </div>
+            {% endif %}
+        {% endif %}
+    {% endblock %}
+</div>
