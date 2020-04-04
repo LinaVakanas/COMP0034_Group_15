@@ -8,7 +8,7 @@
         <div class="mx-auto text-center">
             <h1>USER STATISTICS</h1>
             <h2>Total Users: {{ users_total }}</h2>
-            <h2>Total Unapproved: NOT DONE YET</h2>
+            <h2>Total Unapproved: {{ unapproved_total }}</h2>
             <table class="table">
                 <thead class="thead-dark">
                 <tr>
@@ -22,9 +22,9 @@
                 <tbody>
                 <tr>
                     <td>{{ mentors_total }}</td>
-                    <td>NOT DONE</td>
+                    <td>{{unapproved_mentors_total}}</td>
                     <td>{{ mentees_total }}</td>
-                    <td>NOT DONE</td>
+                    <td>{{unapproved_mentees_total}}</td>
                     <td>{{ schools_total }}</td>
                 </tr>
                 </tbody>
@@ -32,10 +32,10 @@
             <div class="row justify-content-center">
                 <table class="buttons">
                     <tr>
-                        <td><a href=# >
+                        <td><a href="{{ url_for('main.controlpanel_view_mentors') }}" >
                             <input type="button" value="View Mentors" class="btn btn-primary">
                         </a></td>
-                        <td><a href=# >
+                        <td><a href="{{ url_for('main.controlpanel_view_mentees') }}" >
                             <input type="button" value="View Mentees" class="btn btn-primary">
                         </a></td>
                     </tr>

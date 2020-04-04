@@ -50,15 +50,14 @@ class BaseTest(TestCase):
 
     # test mentee and mentor details:
     mentee_data = dict(user_id=3, first_name='Hermione', last_name='Granger', school_id=1,
-                       email='hermione@hogwarts.ac.uk', password='password3')
+                       password='password3')
     mentee_personal_issues_data = dict(user_id=3, depression=False, self_harm=True, family=True, drugs=False, ed=True,
                                        share_personal_issues=True)
     mentee_personal_info = dict(carer_email='emma@gmail.com', carer_name='Emma Granger', share_performance=False,
                                 status='S', xperience=None, user_id=3)
     mentee_hobbies = dict(user_id=3, football=True, drawing=False)
 
-    mentor_data = dict(user_id=4, first_name='Ron', last_name='Weasley', school_id=0, email='weaasleyy@hogwart.ac.uk',
-                       password='password4')
+    mentor_data = dict(user_id=4, first_name='Ron', last_name='Weasley', school_id=0, password='password4')
     mentor_personal_issues_data = dict(user_id=4, depression=True, self_harm=True, family=False, drugs=True, ed=True,
                                        share_personal_issues=False)
     mentor_personal_info = dict(carer_email='', carer_name='', share_performance=False,
@@ -85,7 +84,7 @@ class TestAuth(BaseTest):
         count2 = PersonalInfo.query.count()
         print(count2)
         self.assertEqual(count2 - count, 1)
-        # self.assertEqual(response.status_cod, 200)
+        self.assertEqual(response.status_cod, 200)
 
     def test_personal_issues_form_saved(self):
         count = PersonalIssues.query.count()
@@ -111,12 +110,13 @@ class TestAuth(BaseTest):
         self.assertIn(b'Signup', response.data)
 
     def test_register_mentee_success(self):
+        mentees = Mentee.query.with_entities(Mentee.first_name, Mentee.last_name).all()
+        print(mentees)
         count = Mentee.query.count()
         print(count)
         response = self.client.post(url_for('auth.mentee_signup',
                                             applicant='mentee',
                                             school_id=self.mentee_data.get('school_id')), data=dict(
-            email=self.mentee_data.get('email'),
             first_name=self.mentee_data.get('first_name'),
             last_name=self.mentee_data.get('last_name'),
         ), follow_redirects=True)
@@ -147,7 +147,6 @@ class TestAuth(BaseTest):
         response = self.client.post(url_for('auth.mentor_signup',
                                             applicant='mentor',
                                             school_id=self.mentor_data.get('school_id')), data=dict(
-            email=self.mentor_data.get('email'),
             first_name=self.mentor_data.get('first_name'),
             last_name=self.mentor_data.get('last_name'),
         ), follow_redirects=True)

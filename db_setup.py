@@ -40,7 +40,8 @@ c.execute('''
           last_name TEXT NOT NULL,
           user_id INTEGER NOT NULL,
           paired BOOL,
-          FOREIGN KEY (user_id) REFERENCES user(user_id))
+          FOREIGN KEY (user_id) REFERENCES user(user_id),
+          FOREIGN KEY (school_id) REFERENCES school(school_id))
           ''')
 
 c.execute('''
@@ -60,10 +61,8 @@ c.execute('''
           school_status BOOLEAN NOT NULL ,
           school_name TEXT NOT NULL,
           school_email TEXT NOT NULL,
-          email TEXT NOT NULL,
           ofsted_ranking INTEGER,
-          ofsted_report BLOB,
-          FOREIGN KEY (school_email) REFERENCES user(email))
+          ofsted_report BLOB)
           ''')
 
 c.execute('''

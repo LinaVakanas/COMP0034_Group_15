@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% from "_formhelpers.html" import render_field %}
+{% block title %}View Mentees{% endblock %}
+
+{% block header%}View Mentees{% endblock %}
+{% block content %}
+     {% if mentees|length %}
+{#         Variable is not empty #}
+        <div class="container d-flex h-100 align-items-center">
+            <div class="mx-auto text-center">
+                <form action="" method="post" novalidate>
+                    <table class="table">
+                        <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">Mentee ID</th>
+                            <th scope="col">School ID</th>
+                            <th scope="col">First Name</th>
+                            <th scope="col">Last Name</th>
+                            <th scope="col">User ID</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Paired Status</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for mentee in mentees %}
+                            <tr>
+                                <td>{{ mentee.mentee_id }}</td>
+                                <td>{{ mentee.school_id }}</td>
+                                <td>{{ mentee.first_name}}</td>
+                                <td>{{ mentee.last_name }}</td>
+                                <td>{{ mentee.user_id }}</td>
+                                <td>{{ mentee.email }}</td>
+                                <td>{{ mentee.paired }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    <input type="submit" value="Submit" class="btn btn-primary">
+    {#            Make it flash a msg#}
+                </form>
+            </div>
+        </div>
+    {% else %}
+        <p>Sorry, no mentees exist</p>
+    {% endif %}
+{% endblock %}

@@ -44,8 +44,7 @@ class School(db.Model):
     school_status = db.Column(db.Boolean, nullable=False)
     school_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     school_name = db.Column(db.Text, nullable=False)
-    school_email = db.Column(db.Text, db.ForeignKey('user.email'), nullable=False)
-    email = db.relationship("User", foreign_keys=[school_email])
+    school_email = db.Column(db.Text, nullable=False)
     ofsted_ranking = db.Column(db.Integer)
     ofsted_report = db.Column(db.BLOB) #not sure about how blob works
 
