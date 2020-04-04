@@ -5,6 +5,7 @@ from app.util.validators import correct_date, Unique
 from app.models2_backup import Meeting
 import json
 from datetime import datetime
+from flask import current_app as app
 
 
 class SignUpForm(FlaskForm):
@@ -44,15 +45,21 @@ class PersonalInfoForm(FlaskForm):
 
 
 class LocationForm(FlaskForm):
-    with open('C:/Users/linav/Documents/UCL/Year 3/COMP0034 - Web Development/Group 15 branch 2/gb.json') as f:
-        cities_dict = json.load(f)
-        cities_list = []
-        for dict in cities_dict:
-            cities_list.append(dict['city'])
     address = StringField('Address:', validators=[DataRequired()])
-    city = StringField('City:', validators=[DataRequired(), AnyOf(cities_list)])
+    city = SelectField('City:', validators=[DataRequired()])
     postcode = StringField('Postcode:', validators=[DataRequired()])
     avoid_area = StringField('Please specify the address of any areas which you want to avoid:')
+
+    def __init__(self, *args, **kwargs):
+        super(LocationForm, self).__init__(*args, **kwargs)
+        with app.open_resource('static/json/gb.json') as f:
+            cities_dict = json.load(f)
+            cities_list = []
+            # You could do what I have below, which gives you a number for each city e.g. 1 London, or you could just repeat the city e.g. London London)
+            n = 1
+            for dict in cities_dict:
+                cities_list.append((dict['city'], dict['city']))
+        self.city.choices = cities_list
 
 
 class BookMeeting(FlaskForm):
