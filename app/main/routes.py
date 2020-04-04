@@ -174,20 +174,11 @@ def personal_form(applicant_type, school_id):
 def location_form(applicant_type, applicant_id):
     form = LocationForm(request.form)
     if request.method == 'POST' and form.validate_on_submit():
-        if applicant_type == 'mentor' and form.city.data.lower() != 'london':
-            flash("Sadly we are only based at London for now. \nWe'll keep you on a waiting list and email you if we expand "
-                  "to your city. We hope you understand.")
-            return redirect(url_for('main.home', title='Home'))
-
-        elif applicant_type == 'mentee' and form.city.data.lower() != 'london':
-            flash("Hm... are you sure that's the right city? We only send out application forms to students from London.")
-
-        else:
-            new_location = Location(user_id=applicant_id, address=form.address.data, city=form.city.data.capitalize(), postcode=form.postcode.data,
-                                    avoid_area=form.avoid_area.data)
-            db.session.add(new_location)
-            db.session.commit()
-            return redirect(url_for('main.pairing', applicant_type=applicant_type, applicant_id=applicant_id, location=new_location.city))
+        new_location = Location(user_id=applicant_id, address=form.address.data, city=form.city.data,
+                                postcode=form.postcode.data, avoid_area=form.avoid_area.data)
+        db.session.add(new_location)
+        db.session.commit()
+        return redirect(url_for('main.pairing', applicant_type=applicant_type, applicant_id=applicant_id, location=new_location.city))
 
     return render_template('LocationForm.html', title='Signup', form=form, applicant_type=applicant_type)
 
@@ -196,7 +187,8 @@ def location_form(applicant_type, applicant_id):
 def pairing(applicant_type, applicant_id, location):
     # render_template('pairing_load_page.html', title='Pairing . . . ')
     if applicant_type == 'mentee':
-        pair_with_mentor = Mentor.query.join(Location, Mentor.user_id == Location.user_id).filter_by(city='London').first()
+        pair_with_mentor = Mentor.query.join(Location, Mentor.user_id == Location.user_id).\
+            filter(Location.city==location).filter(Mentor.paired==False).first()
         pair_with_user = User.query.join(Mentor, User.user_id == Mentor.user_id).filter_by(user_id=pair_with_mentor.user_id).first()
         if not pair_with_mentor:
             flash("Unfortunately there are no mentors signed up in {} just yet! Sorry for the inconvenience, "
@@ -212,7 +204,8 @@ def pairing(applicant_type, applicant_id, location):
         return render_template('profiles/mentor_profile.html', title='Mentor Profile', mentor=pair_with_mentor, user=pair_with_user)
 
     elif applicant_type == 'mentor':
-        pair_with_mentee = Mentee.query.join(Location, Mentee.user_id == Location.user_id).filter_by(city='London').first()
+        pair_with_mentee = Mentee.query.join(Location, Mentee.user_id == Location.user_id).filter(Location.city==location).\
+            filter(Mentee.paired==False).first()
         pair_with_user = User.query.join(Mentee, User.user_id == Mentee.user_id).filter_by(user_id=pair_with_mentee.user_id).first()
         if not pair_with_mentee:
             flash("Unfortunately there are no mentees signed up in {} yet. Sorry for the inconvenience, "
@@ -246,8 +239,7 @@ def book_meeting(pair_id, mentee_id, mentee_user_id):
 
         # check if that day is already booked
         elif is_unique(Meeting, Meeting.date, date, model2=Pair, id=pair_id) is False:
-            flash("Hm... looks like you've already booked a meeting on {date}."
-                  .format(date=date)) ### try to do w js so doesn't need to render
+            flash("Hm... looks like you've already booked a meeting on {date}.".format(date=date)) ### try to do w js so doesn't need to render
             # when make a view booking page, link to that one
             return render_template('BookingForm.html', title="Book Meeting", form=form, mentee=mentee)
 

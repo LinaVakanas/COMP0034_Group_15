@@ -294,6 +294,11 @@ input[type="checkbox"] {
   padding: 0;
 }
 
+input[type="radio"] + label{
+  width: 50% !important;
+  white-space:nowrap;
+}
+
 input[type="date"],
 input[type="time"],
 input[type="datetime-local"],
@@ -307,11 +312,33 @@ textarea {
 }
 
 fieldset {
-  min-width: 0;
-  padding: 0;
-  margin: 0;
-  border: 0;
-}
+    min-width: 0;
+    padding: 0;
+    margin: 0;
+    border: 0;
+  }
+
+  label {
+      float: left;
+      clear: none;
+      display: inline;
+      padding: 0px 1em 0px 8px;
+  }
+
+  input[type=radio],
+  input.radio {
+    float: left;
+    clear: none;
+    margin: 2px 0 0 2px;
+  }
+
+  /*ul {*/
+  /*  list-style: none;*/
+  /*}*/
+
+/*fieldset.form-group ul{*/
+/*  list-style: none;*/
+/*}*/
 
 legend {
   display: block;
@@ -1687,6 +1714,14 @@ pre code {
   }
   .table-responsive-lg > .table-bordered {
     border: 0;
+  }
+}
+
+@media all and (max-width: 767.98px) {
+  .fixed {
+    display: block;
+    width: 200px;
+    -webkit-overflow-scrolling: touch;
   }
 }
 
@@ -3359,6 +3394,7 @@ input[type="button"].btn-block {
 .input-group-text input[type="radio"],
 .input-group-text input[type="checkbox"] {
   margin-top: 0;
+  display: inline-block !important;
 }
 
 .input-group-lg > .form-control:not(textarea),

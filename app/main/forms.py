@@ -4,6 +4,7 @@ from wtforms.validators import DataRequired, EqualTo, Email, AnyOf
 import json
 from app.util.validators import correct_date
 from datetime import datetime
+from flask import current_app as app
 
 
 # class MentorSignUpForm(FlaskForm):
@@ -60,22 +61,23 @@ class PersonalForm(FlaskForm):
     share_performance = BooleanField('Permission to share school performance with mentor', default="unchecked ")
 
 
-class LocationForm(FlaskForm): # static folder, url_for for it
-    with open('C:/Users/linav/Documents/UCL/Year 3/COMP0034 - Web Development/Group 15 branch 2/gb.json') as f:
-        cities_dict = json.load(f)
-        cities_list = []
-        for dict in cities_dict:
-            cities_list.append(dict['city'])
+class LocationForm(FlaskForm):
     address = StringField('Address:', validators=[DataRequired()])
-    city = StringField('City:', validators=[DataRequired(), AnyOf(cities_list)])
+    city = SelectField('City:', validators=[DataRequired()])
     postcode = StringField('Postcode:', validators=[DataRequired()])
     avoid_area = StringField('Please specify the address of any areas which you want to avoid:')
-    # choices5 = [('bus', 'Bus'),
-    #             ('undrgrnd', 'Underground'),
-    #             ('foot', 'By Foot')]
-    # mentee_transport = SelectMultipleField('Please select which modes of transport you can take:', choices=choices5, validators=[DataRequired()])
-    # choices6 = choices5.append(('car', 'Car'))
-    # mentor_transport = SelectMultipleField('Please select which modes of transport you can take:', choices=choices6, validators=[DataRequired()])
+
+    def __init__(self, *args, **kwargs):
+        super(LocationForm, self).__init__(*args, **kwargs)
+        with app.open_resource('static/json/gb.json') as f:
+            cities_dict = json.load(f)
+            cities_list = []
+            # You could do what I have below, which gives you a number for each city e.g. 1 London, or you could just repeat the city e.g. London London)
+            n = 1
+            for dict in cities_dict:
+                cities_list.append((dict['city'], dict['city']))
+        self.city.choices = cities_list
+
 
 
 class AddSchoolForm(FlaskForm):

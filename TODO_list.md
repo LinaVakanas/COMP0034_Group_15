@@ -24,6 +24,12 @@ To Do Before Move On:
 To Discuss:
 * What happens after mentor books meeting, for mentee confirmation:
     1. views all booked meetings (in a table or smth), and one that needs confirmation is highlighted, then they click it
+---------------------------------------------------------------
+JavaScript:
+* Select city --> start typing and then list shows 
+* Copy to clipboard for registration link
+* Calendar to pick date for meeting
+* Schools add mentors
 
     
 
