@@ -333,6 +333,10 @@ def location_form(applicant_type, applicant_id):
         flash("Sorry you have entered an invalid registration link, as you haven't completed the section before this in "
               "the registration process. If you have and you think it's a mistake, please contact a system admin.")
         return redirect(url_for('main.home', title='Home'))
+    elif is_unique(User, User.user_id, applicant_id) is True:
+        flash("Sorry, you can't access this page because we don't have you down as a user. Please contact a system admin"
+              " if you think this is a mistake.")
+        return redirect(url_for('main.home', title='Home'))
     elif is_unique(Location, Location.user_id, applicant_id) is False:
         flash("Hm... looks like you've already signed up. You can sign in.")
         return redirect(url_for('main.home', title='Home'))  ### SIGN IN PAGE WHEN MAKE
