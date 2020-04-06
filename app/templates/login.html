@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% from "_formhelpers.html" import render_field %}
+{% block title %}{{title}}{% endblock %}
+
+{% block header%}{{ title }}{% endblock %}
+{% block content %}
+    <div class="container vh-70 d-flex mt-6 col justify-content-center">
+        <div class="col-2"></div>
+        <div class="col-8">
+            <form action="" method="post" novalidate>
+
+                {{ form.hidden_tag() }}
+                    <dl>
+                        <div class="form">
+                            <h2>Your details</h2>
+                            <div class="form-row">
+                                <div class = "col">
+                                    {{ render_field(form.email, class="form-control") }}
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="col">
+                                    {{ render_field(form.password, class="form-control") }}
+                                </div>
+                            </div>
+                        </div>
+                        <dd><input type="submit" value="Submit" class="btn btn-primary"> </dd>
+                    </dl>
+            </form>
+        </div>
+    </div>
+{% endblock %}

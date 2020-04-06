@@ -84,3 +84,9 @@ class BookMeeting(FlaskForm):
     type = SelectField(choices=area_types, validators=[DataRequired()]) # to validate if mentee said not to go there
     address = StringField('Address:', validators=[DataRequired()])
     postcode = StringField('Postcode:', validators=[DataRequired()])
+
+
+class LoginForm(FlaskForm):
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    remember_me = BooleanField('Keep me logged in')

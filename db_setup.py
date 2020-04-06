@@ -8,6 +8,7 @@ c = conn.cursor()
 
 # Step 3: Create the person and address tables
 
+
 c.execute('''
           CREATE TABLE user
           (user_id INTEGER PRIMARY KEY,
@@ -19,6 +20,13 @@ c.execute('''
           active BOOLEAN,
           profile_pic BLOB,
           creation_date TEXT)
+          ''')
+
+c.execute('''
+          CREATE TABLE admin
+          (admin_id INTEGER PRIMARY KEY,
+          user_id INTEGER,
+          FOREIGN KEY (user_id) REFERENCES user(user_id))
           ''')
 
 c.execute('''

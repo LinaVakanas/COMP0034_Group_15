@@ -1,14 +1,89 @@
-from flask import render_template, Blueprint, url_for, flash, redirect, request, Markup
-from datetime import datetime
+from urllib.parse import urlparse, urljoin
+
+from flask import render_template, Blueprint, url_for, flash, redirect, request, Markup, abort
+from datetime import datetime, timedelta
 import secrets
 
-from app import db, mail
-from app.main.forms import PersonalForm, SignUpForm, LocationForm, ApproveForm, AddSchoolForm, BookMeeting, ApproveMeeting
+from flask_login import login_user, login_required, logout_user, current_user
+
+from app import db, mail, login_manager
+from app.main.forms import PersonalForm, SignUpForm, LocationForm, ApproveForm, AddSchoolForm, BookMeeting, \
+    ApproveMeeting, LoginForm
 from app.models2_backup import User, MedicalCond, Message, Chatroom, OccupationalField, Hobbies, School, StudentReview, \
     Pair, PersonalInfo, Report, PersonalIssues, Mentee, Mentor, Location, Meeting
+from app.util.decorators import requires_admin
 from functions import is_unique
 
 bp_main = Blueprint('main', __name__)
+
+
+def is_safe_url(target):
+    host_url = urlparse(request.host_url)
+    redirect_url = urlparse(urljoin(request.host_url, target))
+    return redirect_url.scheme in ('http', 'https') and host_url.netloc == redirect_url.netloc
+
+
+def get_safe_redirect():
+    url = request.args.get('next')
+    if url and is_safe_url(url):
+        return url
+
+    url = request.referrer
+    if url and is_safe_url(url):
+        return url
+    return '/'
+
+
+@login_manager.user_loader
+def user_loader(user_id):
+
+    if user_id is not None:
+        return User.query.get(user_id)
+    return None
+
+
+login_manager.login_view = 'main.login'
+
+@bp_main.route('/login/', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    next = request.args.get('next')
+    if request.method == 'POST' and form.validate():
+        user = User.query.filter_by(email=form.email.data).first()
+        if user is None or not user.check_password(form.password.data):
+            flash('Invalid email or password')
+            return redirect(url_for('main.login'))
+        login_user(user, remember=form.remember_me.data, duration=timedelta(minutes=1))
+        if user.user_type == 'mentee':
+            mentee = Mentee.query.join(User, User.user_id == Mentee.user_id).filter(User.user_type=='mentee').first()
+            first_name = mentee.first_name
+            last_name = mentee.last_name
+        elif user.user_type == 'mentor':
+            mentor = User.query.join(Mentor, User.user_id == Mentor.user_id).filter(User.user_type=='mentor').first()
+            first_name = mentor.first_name
+            last_name = mentor.last_name
+        elif user.user_type == 'admin':
+            first_name = 'System'
+            last_name = 'Admin'
+        flash('Logged in successfully as {} {}'.format(first_name, last_name))
+        if not is_safe_url(next):
+            return abort(400)
+        return redirect(next or url_for('main.home'))
+    return render_template('login.html', form=form, title="Login")
+
+
+@bp_main.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash('You have been logged out.')
+    return redirect(url_for('main.home'))
+
+
+# @login_manager.unauthorized_handler ------------- if we want to customise but idk how to fix next
+# def unauthorized():
+#     flash('You must be logged in 123')
+#     return redirect(url_for('main.login'))
 
 
 @bp_main.route('/')
@@ -23,6 +98,8 @@ def testing():
 
 
 @bp_main.route('/admin')
+@login_required
+@requires_admin('admin')
 def controlpanel_home():
     users = User.query.all()
     users_total = User.query.count()
@@ -40,6 +117,8 @@ def controlpanel_home():
 
 
 @bp_main.route('/admin/pending_mentees', methods=['POST','GET'])
+@login_required
+@requires_admin('admin')
 def controlpanel_mentee(): ############ ISNT SHOWING THE EMAILS
     form = ApproveForm(request.form)
     mentees = Mentee.query.join(User, User.user_id==Mentee.user_id).filter(User.active==False).all()
@@ -56,18 +135,24 @@ def controlpanel_mentee(): ############ ISNT SHOWING THE EMAILS
 
 
 @bp_main.route('/admin/view_mentees')
+@login_required
+@requires_admin('admin')
 def controlpanel_view_mentees():
     mentees = Mentee.query.join(User, User.user_id==Mentee.user_id).filter(User.active==True).all()
     return render_template('admin_view_mentees.html', mentees=mentees)
 
 
 @bp_main.route('/admin/view_mentors')
+@login_required
+@requires_admin('admin')
 def controlpanel_view_mentors():
     mentors = Mentor.query.join(User, User.user_id==Mentor.user_id).filter(User.active==True).all()
     return render_template('admin_view_mentors.html', mentors=mentors)
 
 
 @bp_main.route('/admin/pending_mentors/')
+@login_required
+@requires_admin('admin')
 def controlpanel_mentor(): #### Copy from above
     form = ApproveForm(request.form)
     mentors = Mentor.query.join(User, User.user_id==Mentor.user_id).filter(User.active==False).all()
@@ -84,6 +169,8 @@ def controlpanel_mentor(): #### Copy from above
 
 
 @bp_main.route('/admin/add_schools', methods=['POST', 'GET'])
+@login_required
+@requires_admin('admin')
 def controlpanel_add_schools():
     form = AddSchoolForm(request.form)
     if request.method == 'POST' and form.validate_on_submit():
@@ -95,6 +182,8 @@ def controlpanel_add_schools():
 
 
 @bp_main.route('/admin/view_schools')
+@login_required
+@requires_admin('admin')
 def controlpanel_view_schools():
     schools = School.query.all()
     schools_dict = dict()
@@ -107,66 +196,72 @@ def controlpanel_view_schools():
 
 @bp_main.route('/personal_form/<applicant_type>/<school_id>/', methods=['POST', 'GET'])
 def personal_form(applicant_type, school_id):
-    if is_unique(School, School.school_id, school_id, model2=None, id=None) is False:
-        form = PersonalForm(request.form)
-        form2 = SignUpForm(request.form)
-        if request.method == 'POST'and form2.validate_on_submit():
-            creation_date = str(datetime.date(datetime.now()))
-            password = secrets.token_hex(8)
-            if applicant_type == 'mentee':
-                new_user = User(email=form2.email.data, user_type=applicant_type, school_id=school_id, password=password, bio="", creation_date=creation_date, active=False)
-                db.session.add(new_user)
-                db.session.flush()
-                new_user.mentee.append(Mentee(school_id=school_id, first_name=form2.first_name.data,
-                                              last_name=form2.last_name.data, paired=False))
-                new_mentee = Mentee.query.join(User).filter(Mentee.user_id == new_user.user_id).first()
-
-                new_info = PersonalInfo(user_id=new_user.user_id, carer_email=form.carer_email.data, carer_name=form.carer_name.data,
-                                        status="S", xperience=None, share_performance=form.share_performance.data)
-                db.session.flush()
-                db.session.add_all([new_info, new_mentee])
-
-            elif applicant_type == 'mentor':
-
-                if form.mentor_xperience.data == '>=2' and form.mentor_occupation.data != 'N':
-                    new_user = User(email=form2.email.data, school_id=0, user_type=applicant_type, creation_date=creation_date,
-                                    bio="", password=password, active=False)
+    if current_user.is_authenticated is False:
+        if is_unique(School, School.school_id, school_id, model2=None, id=None) is False:
+            form = PersonalForm(request.form)
+            form2 = SignUpForm(request.form)
+            if request.method == 'POST'and form2.validate_on_submit():
+                creation_date = str(datetime.date(datetime.now()))
+                # password = secrets.token_hex(8)
+                if applicant_type == 'mentee':
+                    new_user = User(email=form2.email.data, user_type=applicant_type, school_id=school_id, bio="", creation_date=creation_date, active=False)
+                    new_user.set_password(form2.password.data)
                     db.session.add(new_user)
                     db.session.flush()
-                    new_user.mentor.append(Mentor(user_id=new_user.user_id, school_id=0, first_name=form2.first_name.data,
-                                        last_name=form2.last_name.data, paired=False))
-                    new_mentor = Mentor.query.join(User).filter(Mentor.user_id == new_user.user_id).first()
-                    new_info = PersonalInfo(user_id=new_user.user_id, carer_email="", carer_name="",
-                                            status=form.mentor_occupation.data, xperience=form.mentor_xperience.data, share_performance=None)
-                    db.session.add_all([new_info, new_mentor])
+                    new_user.mentee.append(Mentee(school_id=school_id, first_name=form2.first_name.data,
+                                                  last_name=form2.last_name.data, paired=False))
+                    new_mentee = Mentee.query.join(User).filter(Mentee.user_id == new_user.user_id).first()
 
-                else:
-                    flash('Sorry, you must have a minimum of two years of experience to sign up as a mentor. '
-                          'We want to ensure mentors have enough experience to help the mentees. \nWe hope you understand!')
-                    return redirect(url_for('main.home'))
+                    new_info = PersonalInfo(user_id=new_user.user_id, carer_email=form.carer_email.data, carer_name=form.carer_name.data,
+                                            status="S", xperience=None, share_performance=form.share_performance.data)
+                    db.session.flush()
+                    db.session.add_all([new_info, new_mentee])
 
-            new_issues = PersonalIssues(depression=form.depression.data, self_harm=form.self_harm.data, family=form.family.data, drugs=form.drugs.data, ed=form.ed.data, user_id=new_user.user_id, share_personal_issues=form.share_personal_issues.data)
-            db.session.add(new_issues)
+                elif applicant_type == 'mentor':
 
-            new_hobbies = Hobbies(football=form.football.data, drawing=form.drawing.data, user_id=new_user.user_id)
-            db.session.add(new_hobbies)
+                    if form.mentor_xperience.data == '>=2' and form.mentor_occupation.data != 'N':
+                        new_user = User(email=form2.email.data, school_id=0, user_type=applicant_type, creation_date=creation_date,
+                                        bio="", active=False)
+                        new_user.set_password(form2.password.data)
+                        db.session.add(new_user)
+                        db.session.flush()
+                        new_user.mentor.append(Mentor(user_id=new_user.user_id, school_id=0, first_name=form2.first_name.data,
+                                            last_name=form2.last_name.data, paired=False))
+                        new_mentor = Mentor.query.join(User).filter(Mentor.user_id == new_user.user_id).first()
+                        new_info = PersonalInfo(user_id=new_user.user_id, carer_email="", carer_name="",
+                                                status=form.mentor_occupation.data, xperience=form.mentor_xperience.data, share_performance=None)
+                        db.session.add_all([new_info, new_mentor])
 
-            new_occupation = OccupationalField(eng=form.eng.data, phys=form.phys.data, chem=form.chem.data,
-                                               bio=form.bio.data, med=form.med.data, pharm=form.pharm.data,
-                                               maths=form.maths.data, geo=form.geo.data, hist=form.hist.data,
-                                               finance=form.finance.data, law=form.law.data, engl=form.engl.data, user_id=new_user.user_id)
-            db.session.add(new_occupation)
-            db.session.commit()
+                    else:
+                        flash('Sorry, you must have a minimum of two years of experience to sign up as a mentor. '
+                              'We want to ensure mentors have enough experience to help the mentees. \nWe hope you understand!')
+                        return redirect(url_for('main.home'))
 
-            if applicant_type == 'mentee':
-                return redirect(url_for('main.location_form', applicant_type=applicant_type, applicant_id=new_user.user_id))
-            elif applicant_type == 'mentor':
-                return render_template('home_mentor_pending.html', title='Pending Approval', mentor=new_mentor)
+                new_issues = PersonalIssues(depression=form.depression.data, self_harm=form.self_harm.data, family=form.family.data, drugs=form.drugs.data, ed=form.ed.data, user_id=new_user.user_id, share_personal_issues=form.share_personal_issues.data)
+                db.session.add(new_issues)
 
-            # new_medical = MedicalCond()
-        return render_template('PersonalForm.html', title='Signup', form2=form2, form=form, applicant_type=applicant_type)
+                new_hobbies = Hobbies(football=form.football.data, drawing=form.drawing.data, user_id=new_user.user_id)
+                db.session.add(new_hobbies)
+
+                new_occupation = OccupationalField(eng=form.eng.data, phys=form.phys.data, chem=form.chem.data,
+                                                   bio=form.bio.data, med=form.med.data, pharm=form.pharm.data,
+                                                   maths=form.maths.data, geo=form.geo.data, hist=form.hist.data,
+                                                   finance=form.finance.data, law=form.law.data, engl=form.engl.data, user_id=new_user.user_id)
+                db.session.add(new_occupation)
+                db.session.commit()
+
+                if applicant_type == 'mentee':
+                    return redirect(url_for('main.location_form', applicant_type=applicant_type, applicant_id=new_user.user_id))
+                elif applicant_type == 'mentor':
+                    return render_template('home_mentor_pending.html', title='Pending Approval', mentor=new_mentor)
+
+                # new_medical = MedicalCond()
+            return render_template('PersonalForm.html', title='Signup', form2=form2, form=form, applicant_type=applicant_type)
+        else:
+            flash('Sorry you have entered an invalid registration link, please contact a system admin. CHANGE THIS TO REDIRECT')
+            return redirect(url_for('main.home'))
     else:
-        flash('Sorry you have entered an invalid registration link, please contact a system admin. CHANGE THIS TO REDIRECT')
+        flash('You cannot sign up as another user while logged in, please log out first.')
         return redirect(url_for('main.home'))
 
 

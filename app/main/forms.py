@@ -19,6 +19,7 @@ class SignUpForm(FlaskForm):
     first_name = StringField("First name:", id="first name")
     last_name = StringField("Last name:", id="last name")
     email = StringField('Email address', validators=[DataRequired(), Email()])
+    password = PasswordField('Password', validators=[DataRequired()])
 
 
 class PersonalForm(FlaskForm):
@@ -117,3 +118,9 @@ class BookMeeting(FlaskForm):
 class ApproveMeeting(FlaskForm):
     choices = [(1, 'I can make it'), (0, "I can't make it")]
     approval = RadioField(choices=choices, validators=[DataRequired()])
+
+
+class LoginForm(FlaskForm):
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    remember_me = BooleanField('Keep me logged in')

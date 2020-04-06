@@ -1,19 +1,37 @@
+from flask_login import UserMixin
 from sqlalchemy import ForeignKeyConstraint
+from werkzeug.security import generate_password_hash, check_password_hash
 
 from app import db
 
 
-class User(db.Model):
+class User(UserMixin,db.Model):
     __tablename__ = 'user'
     email = db.Column(db.Text, nullable=False, unique=True)
     user_type = db.Column(db.String, nullable=False)
     user_id = db.Column(db.Integer,autoincrement=True, primary_key=True)
     school_id = db.Column(db.Integer, nullable=False)
-    password = db.Column(db.Text, nullable=False) #we can look at how Miss did that hash thing in her example
+    password = db.Column(db.String, nullable=False) #we can look at how Miss did that hash thing in her example
     bio = db.Column(db.String(300))
     active = db.Column(db.Boolean)
     profile_pic = db.Column(db.BLOB) #don't know if its acc blob
     creation_date = db.Column(db.String)
+
+    def get_id(self): #################### If we rename user_id to id we can remove this
+        return self.user_id
+
+    def set_password(self, password):
+        self.password = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password, password)
+
+
+class Admin(db.Model):
+    __tablename__ = 'admin'
+    admin_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
+    user = db.relationship("User", backref='admin')
 
 
 class Mentor(db.Model):
