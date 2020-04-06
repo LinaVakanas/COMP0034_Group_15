@@ -17,9 +17,12 @@ whether it says mentor or mentee, and the if statement ==> define separate funct
 it could make testing more specific, and the form.validate_on_submit
 ------------------------------------------------------------
 To Do Before Move On:
-* Filter by paired status
-* Signup linked to school database - if school_id isn't saved in database --> validators.py
+~~* Filter by paired status~~
+~~* Signup linked to school database - if school_id isn't saved in database --> validators.py~~
 * Make only 'id' for own table id's
+* Filter by admin approval
+* Sort out 'auth' folder 
+* Admin search 
 ----------------------------------------------------------
 To Discuss:
 * What happens after mentor books meeting, for mentee confirmation:

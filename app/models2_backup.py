@@ -5,13 +5,13 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from app import db
 
 
-class User(UserMixin,db.Model):
+class User(UserMixin, db.Model):
     __tablename__ = 'user'
     email = db.Column(db.Text, nullable=False, unique=True)
     user_type = db.Column(db.String, nullable=False)
     user_id = db.Column(db.Integer,autoincrement=True, primary_key=True)
     school_id = db.Column(db.Integer, nullable=False)
-    password = db.Column(db.String, nullable=False) #we can look at how Miss did that hash thing in her example
+    password = db.Column(db.String) #we can look at how Miss did that hash thing in her example
     bio = db.Column(db.String(300))
     active = db.Column(db.Boolean)
     profile_pic = db.Column(db.BLOB) #don't know if its acc blob
@@ -115,9 +115,9 @@ class Chatroom(db.Model):
 class Pair(db.Model):
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     mentor_id = db.Column(db.Integer, db.ForeignKey('mentor.mentor_id'), nullable=False)
-    # mentor = db.relationship("Mentor", foreign_keys=[mentor_id])
+    mentor = db.relationship("Mentor", backref='pair')
     mentee_id = db.Column(db.Integer, db.ForeignKey('mentee.mentee_id'), nullable=False)
-    # mentee = db.relationship("Mentee", foreign_keys=[mentee_id])
+    mentee = db.relationship("Mentee", backref='pair')
     meetings = db.relationship('Meeting', backref='pair')
     creation_date = db.Column(db.String)
 
@@ -132,14 +132,14 @@ class PersonalInfo(db.Model):
     status = db.Column(db.String(1))
     xperience = db.Column(db.String(3), nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
-    # unique_id = db.relationship("User", foreign_keys=[user_id])
+    user = db.relationship("User", backref='personal_info')
 
 
 class PersonalIssues(db.Model):
     __tablename__ = 'personal_issues'
     form_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
-    # unique_id = db.relationship("User", foreign_keys=[user_id])
+    user = db.relationship("User", backref='personal_issues')
     depression = db.Column(db.Boolean)
     self_harm = db.Column(db.Boolean)
     family = db.Column(db.Boolean)
@@ -152,7 +152,7 @@ class Hobbies(db.Model):
     __tablename__ = 'hobbies'
     form_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
-    # unique_id = db.relationship("User", foreign_keys=[user_id])
+    user = db.relationship("User", backref='hobbies')
     football = db.Column(db.Boolean)
     drawing = db.Column(db.Boolean)
 
@@ -163,7 +163,7 @@ class MedicalCond(db.Model):
     cond1 = db.Column(db.Boolean)
     share_med_cond = db.Column(db.Boolean, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
-    # unique_id = db.relationship("User", foreign_keys=[user_id])
+    user = db.relationship("User", backref='medical_cond')
 
 
 class OccupationalField(db.Model):
@@ -172,7 +172,7 @@ class OccupationalField(db.Model):
     # form_id = db.Column(db.Integer, db.ForeignKey('personalinfo.form_id'), nullable=False)
     # form = db.relationship("PersonalInfo", foreign_keys=[form_id])
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
-    # unique_id = db.relationship("User", foreign_keys=[user_id])
+    user = db.relationship("User", backref='occupational_field')
     eng = db.Column(db.Boolean)
     maths = db.Column(db.Boolean)
     med = db.Column(db.Boolean)
@@ -202,6 +202,7 @@ class Location(db.Model):
     __tablename__ = 'location'
     form_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
+    user = db.relationship("User", backref='location')
     address = db.Column(db.String, nullable=False)
     city = db.Column(db.String, nullable=False)
     postcode = db.Column(db.String, nullable=False)

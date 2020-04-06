@@ -4,6 +4,7 @@ from app.models2_backup import User, Mentee, Mentor, Location, Meeting, Pair, Sc
 
 
 def populate_db():
+    school0 = School(school_status=0, school_id=0, school_name="", school_email="", ofsted_ranking="")
     user0 = User(user_id=0, user_type='admin', school_id=0, email="admin@admin.com", bio=None, active=True, profile_pic=None, creation_date=None)
     user0.set_password('admin123')
     admin = Admin(user_id=0)
@@ -21,6 +22,9 @@ def populate_db():
     user3 = User(user_type='mentee', school_id=1, email='wat@hotmail.com', active=False)
     user3.set_password('password3')
     mentee2 = Mentee(user_id=3, school_id=1, first_name='Wat', last_name='Watkinson', paired=False)
+    mentee2_location = Location(user_id=3, address="Aberdeen road", city="London",
+                               postcode="NW3 5YO", avoid_area="Neasden")
+
     user4 = User(user_type="mentee", school_id=2, email="ok@hotmail.com", active=False)
     user4.set_password('password4')
     mentee3 = Mentee(user_id=4, school_id=2, first_name='Bob', last_name='Jones', paired=False)
@@ -37,11 +41,12 @@ def populate_db():
     db.session.add_all([user0,admin])
     db.session.add_all([user1, mentor])
     db.session.add_all([user2, mentee])
-    db.session.add_all([user3, mentee2])
+    db.session.add_all([user3, mentee2, mentor2_location])
     db.session.add_all([user4, mentee3])
     db.session.add_all([user5, mentor2])
-    db.session.add_all([school1, school2])
+    db.session.add_all([school1, school2, school0])
     db.session.add(mentee_location)
     db.session.add(book_meeting)
+    db.session.add(mentor2_location)
 
     db.session.commit()

@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block title %}{{ user_type }} - {{ search_type }} Results{% endblock %}
+
+{% block header%}View {{ user_type }} - {{ search_type }} Search Results{% endblock %}
+{% block content %}
+     {% if mentees|length %}
+{#         Variable is not empty #}
+        <div class="container d-flex h-100 align-items-center">
+            <div class="mx-auto text-center">
+                <table class="table">
+                    <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">Mentee ID</th>
+                        <th scope="col">Meeting ID</th>
+                        <th scope="col">Pair ID</th>
+                        <th scope="col">Meeting Date</th>
+                        <th scope="col">Meeting Time</th>
+                        <th scope="col">Meeting Duration</th>
+                        <th scope="col">Addres</th>
+                        <th scope="col">Postcode</th>
+                        <th scope="col">Meeting Type</th>
+                        <th scope="col">Mentee Approval</th>
+                        <th scope="col">School Approval</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for mentee in mentees %}
+                        <tr>
+                            <td>{{ mentee.mentee_id }}</td>
+                            <td>{{ mentee.meeting_id }}</td>
+                            <td>{{ mentee.pair_id }}</td>
+                            <td>{{ mentee.date}}</td>
+                            <td>{{ mentee.time }}</td>
+                            <td>{{ mentee.duration }}</td>
+                            <td>{{ mentee.Meeting.address }}</td>
+                            <td>{{ mentee.Meeting.postcode }}</td>
+                            <td>{{ mentee.Meeting.type }}</td>
+                            <td>{{ mentee.Meeting.mentee_approval }}</td>
+                            <td>{{ mentee.Meeting.school_approval }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+    {#            Make it flash a msg#}
+            </div>
+        </div>
+    {% else %}
+        <p>Sorry, no mentees exist</p>
+    {% endif %}
+{% endblock %}

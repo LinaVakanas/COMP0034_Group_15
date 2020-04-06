@@ -112,7 +112,7 @@ def location_form(applicant, applicant_id):
             db.session.commit()
             return redirect(url_for('main.load_pairing', applicant=applicant, applicant_id=applicant_id, location=new_location))
 
-    return render_template('LocationForm.html', title='Signup', form=form, applicant=applicant)
+    return render_template('forms/LocationForm.html', title='Signup', form=form, applicant=applicant)
 
 
 @bp_auth.route('/pairing/<applicant>/<applicant_id>/<location>/', methods=['POST', 'GET'])
@@ -159,12 +159,12 @@ def book_meeting(pair_id):
         print(mentee_form)
         if form.address.data == mentee_form.avoid_area:
             flash("Sorry bud, your mentee doesn't feel comfortable going there. In the interest of their wellbeing, please pick another area!")
-            return render_template('BookingForm.html', title="Book Meeting")
+            return render_template('forms/BookingForm.html', title="Book Meeting")
 
         # check if that day is already booked
         elif is_unique(Meeting, Meeting.date, date, model2=Pair, id=pair_id) is False:
             flash("Hm... looks like you've already booked a meeting for {date}.".format(date=date)) ### try to do w js so doesn't need to render
-            return render_template('BookingForm.html', title="Book Meeting")
+            return render_template('forms/BookingForm.html', title="Book Meeting")
 
         else:
             new_meeting = Meeting(pair_id=pair_id, day=form.day.data, month=form.month.data, year=str(form.year.data),
@@ -179,7 +179,7 @@ def book_meeting(pair_id):
             # mail.send(email)
             return render_template('home.html') ##### NEED TO MAKE A BOOKING CONFIRMATION PAGE
 
-    return render_template("BookingForm.html", title="Book Meeting")
+    return render_template("forms/BookingForm.html", title="Book Meeting")
 
 
 
