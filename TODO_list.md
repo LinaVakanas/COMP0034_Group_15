@@ -22,7 +22,13 @@ To Do Before Move On:
 * Make only 'id' for own table id's
 * Filter by admin approval
 * Sort out 'auth' folder 
-* Admin search 
+* Admin search
+* Fix home page signup, let schools sign up
+* Fix inactive user thingy
+* Finish refactoring code
+* Redo testing
+* Fix HTML
+* Selenium web testing thingy 
 ----------------------------------------------------------
 To Discuss:
 * What happens after mentor books meeting, for mentee confirmation:
