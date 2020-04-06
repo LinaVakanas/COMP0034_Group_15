@@ -51,30 +51,34 @@ login_manager.login_view = 'main.login'
 
 @bp_main.route('/login/', methods=['GET', 'POST'])
 def login():
-    form = LoginForm()
-    next = request.args.get('next')
-    if request.method == 'POST' and form.validate():
-        user = User.query.filter_by(email=form.email.data).first()
-        if user is None or not user.check_password(form.password.data):
-            flash('Invalid email or password')
-            return redirect(url_for('main.login'))
-        login_user(user, remember=form.remember_me.data, duration=timedelta(minutes=1))
-        if user.user_type == 'mentee':
-            mentee = Mentee.query.join(User, User.user_id == Mentee.user_id).filter(Mentee.user_id == user.user_id).first()
-            first_name = mentee.first_name
-            last_name = mentee.last_name
-        elif user.user_type == 'mentor':
-            mentor = Mentor.query.join(User, User.user_id == Mentor.user_id).filter(Mentor.user_id == user.user_id).first()
-            first_name = mentor.first_name
-            last_name = mentor.last_name
-        elif user.user_type == 'admin':
-            first_name = 'System'
-            last_name = 'Admin'
-        flash('Logged in successfully as {} {}'.format(first_name, last_name))
-        if not is_safe_url(next):
-            return abort(400)
-        return redirect(next or url_for('main.home'))
-    return render_template('login.html', form=form, title="Login")
+    if current_user.is_authenticated is False:
+        form = LoginForm()
+        next = request.args.get('next')
+        if request.method == 'POST' and form.validate():
+            user = User.query.filter_by(email=form.email.data).first()
+            if user is None or not user.check_password(form.password.data):
+                flash('Invalid email or password')
+                return redirect(url_for('main.login'))
+            login_user(user, remember=form.remember_me.data, duration=timedelta(minutes=1))
+            if user.user_type == 'mentee':
+                mentee = Mentee.query.join(User, User.user_id == Mentee.user_id).filter(Mentee.user_id == user.user_id).first()
+                first_name = mentee.first_name
+                last_name = mentee.last_name
+            elif user.user_type == 'mentor':
+                mentor = Mentor.query.join(User, User.user_id == Mentor.user_id).filter(Mentor.user_id == user.user_id).first()
+                first_name = mentor.first_name
+                last_name = mentor.last_name
+            elif user.user_type == 'admin':
+                first_name = 'System'
+                last_name = 'Admin'
+            flash('Logged in successfully as {} {}'.format(first_name, last_name))
+            if not is_safe_url(next):
+                return abort(400)
+            return redirect(next or url_for('main.home'))
+        return render_template('login.html', form=form, title="Login")
+    else:
+        flash('You are already logged in, please log out first if you would like to change users.')
+        return redirect(url_for('main.home'))
 
 
 @bp_main.route('/logout')
@@ -263,7 +267,6 @@ def personal_form(applicant_type, school_id):
             form2 = SignUpForm(request.form)
             if request.method == 'POST'and form2.validate_on_submit():
                 creation_date = str(datetime.date(datetime.now()))
-                # password = secrets.token_hex(8)
                 try:
                     new_user = User(email=form2.email.data, user_type=applicant_type, school_id=school_id, bio="", active=False, creation_date=creation_date)
                     new_user.set_password(form2.password.data)

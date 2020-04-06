@@ -22,6 +22,7 @@ def correct_date(day, month):
     return _correct_date
 
 
+
 class Unique(object):
     def __init__(self, model, field, message=""):
         self.model = model
