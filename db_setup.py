@@ -66,7 +66,7 @@ c.execute('''
 c.execute('''
           CREATE TABLE school
           (school_id INTEGER PRIMARY KEY,
-          school_status BOOLEAN NOT NULL ,
+          is_approved BOOLEAN NOT NULL ,
           school_name TEXT NOT NULL,
           school_email TEXT NOT NULL,
           ofsted_ranking INTEGER,

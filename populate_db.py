@@ -4,14 +4,14 @@ from app.models2_backup import User, Mentee, Mentor, Location, Meeting, Pair, Sc
 
 
 def populate_db():
-    school0 = School(school_status=0, school_id=0, school_name="", school_email="", ofsted_ranking="")
+    school0 = School(is_approved=0, school_id=0, school_name="", school_email="", ofsted_ranking="")
     user0 = User(user_id=0, user_type='admin', school_id=0, email="admin@admin.com", bio=None, is_active=True, profile_pic=None, creation_date=None)
     user0.set_password('admin123')
     admin = Admin(user_id=0)
-    school1 = School(school_status=1, school_id=1, school_name='Hogwarts',school_email="hogwarts@howarts.ac.uk", ofsted_ranking="1")
-    school2 = School(school_status=1, school_id=2, school_name='Westminster City School', school_email="wcsch@hotmail.com",
+    school1 = School(is_approved=1, school_id=1, school_name='Hogwarts',school_email="hogwarts@howarts.ac.uk", ofsted_ranking="1")
+    school2 = School(is_approved=1, school_id=2, school_name='Westminster City School', school_email="wcsch@hotmail.com",
                      ofsted_ranking="2")
-    school3 = School(school_status=0, school_id=3, school_name='Greycoats', school_email="greycoats@hotmail.com",
+    school3 = School(is_approved=0, school_id=3, school_name='Greycoats', school_email="greycoats@hotmail.com",
                      ofsted_ranking="3")
     user1 = User(user_type='mentor', school_id=0, email='harrypj@ucl.ac.uk', is_active=True)
     user1.set_password('password1')

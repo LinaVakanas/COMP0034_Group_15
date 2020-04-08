@@ -340,7 +340,7 @@ def controlpanel_mentor(): #### Copy from above
 def controlpanel_add_schools():
     form = AddSchoolForm(request.form)
     if request.method == 'POST' and form.validate_on_submit():
-        new_school = School(school_status=True, school_name=form.name.data, school_email=form.email.data, ofsted_ranking=form.ofsted_ranking.data)
+        new_school = School(is_approved=True, school_name=form.name.data, school_email=form.email.data, ofsted_ranking=form.ofsted_ranking.data)
         db.session.add(new_school)
         db.session.commit()
         return redirect(url_for('main.controlpanel_home'))  ##### Maybe flash a msg as well
@@ -365,12 +365,12 @@ def controlpanel_view_schools():
 @requires_admin('admin')
 def controlpanel_school(): #### Copy from above
     form = ApproveForm(request.form)
-    schools = School.query.filter(School.school_status==False).all()
+    schools = School.query.filter(School.is_approved==False).all()
     if request.method == 'POST': ######### Validate on submit
         approved_list = request.form.getlist('approve')
         for id in approved_list:
             school = School.query.filter(School.school_id==id).first()
-            school.school_status = True
+            school.is_approved = True
             db.session.commit()
         return redirect(url_for('main.controlpanel_home'))
     return render_template('admin/admin_pending_schools.html', schools=schools, form=form)
@@ -380,7 +380,7 @@ def controlpanel_school(): #### Copy from above
 def school_signup():
     form = AddSchoolForm(request.form)
     if request.method == 'POST' and form.validate_on_submit():
-        new_school = School(school_status=False, school_name=form.name.data, school_email=form.email.data, ofsted_ranking=form.ofsted_ranking.data)
+        new_school = School(is_approved=False, school_name=form.name.data, school_email=form.email.data, ofsted_ranking=form.ofsted_ranking.data)
         db.session.add(new_school)
         db.session.commit()
         return redirect(url_for('main.home'))  ##### Maybe flash a msg as well

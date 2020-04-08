@@ -19,14 +19,14 @@ To Do Before Move On:
 ~~* Filter by paired status~~
 ~~* Signup linked to school database - if school_id isn't saved in database --> validators.py~~
 * Make only 'id' for own table id's
-* Filter by admin approval
+* Filter by admin approval when pairing 
 * Sort out 'auth' folder 
-* Admin search
+~~* Admin search~~
 ~~* Fix home page signup, let schools sign up
 ~~* Let mentors sign up on home page~~
 ~~* Fix inactive user thingy~~
 ~~* Let admin approve schools~~
-* Make personal form check for if school is active as well
+* Make personal form check for if school is active as well 
 * Finish refactoring code
 * Control panel, need to fix email column. need to pass user
 * Redo testing

@@ -74,7 +74,7 @@ class Teacher(db.Model):
 
 class School(db.Model):
     __tablename__ = 'school'
-    school_status = db.Column(db.Boolean, nullable=False)
+    is_approved = db.Column(db.Boolean, nullable=False)
     school_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     school_name = db.Column(db.Text, nullable=False)
     school_email = db.Column(db.Text, nullable=False)
