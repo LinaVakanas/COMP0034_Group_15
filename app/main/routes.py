@@ -223,7 +223,7 @@ def controlpanel_home():
 @bp_main.route('/admin/pending_mentees', methods=['POST','GET'])
 @login_required
 @requires_admin('admin')
-def controlpanel_mentee(): ############ ISNT SHOWING THE EMAILS
+def controlpanel_mentee():
     form = ApproveForm(request.form)
     queries = db.session.query(User, Mentee).filter(User.is_active==False).join(Mentee, User.user_id==Mentee.user_id).all()
     if request.method == 'POST': ######## Validate on submit
