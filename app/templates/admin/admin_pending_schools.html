@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% from "_formhelpers.html" import render_field %}
+{% block title %}Pending Schools{% endblock %}
+
+{% block header%}Pending Schools{% endblock %}
+{% block content %}
+     {% if schools|length %}
+{#         Variable is not empty #}
+        <div class="container d-flex h-100 align-items-center">
+            <div class="mx-auto text-center">
+                <form action="" method="post" novalidate>
+                    <table class="table">
+                        <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">School ID</th>
+                            <th scope="col">School Name</th>
+                            <th scope="col">School Email</th>
+                            <th scope="col">Ofstead Ranking</th>
+                            <th scope="col">Approve</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for school in schools %}
+                            <tr>
+                                <td>{{ school.school_id }}</td>
+                                <td>{{ school.school_name }}</td>
+                                <td>{{ school.school_email }}</td>
+                                <td>{{ school.ofstead_ranking }}</td>
+    {#                            <td><input type="checkbox" id="{{ school }}" name="approve"></td>#}
+                                <td>
+                                    {{ render_field(form.approve, value=school.school_id)}}
+                                </td>
+
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    <input type="submit" value="Submit" class="btn btn-primary">
+    {#            Make it flash a msg#}
+                </form>
+            </div>
+        </div>
+    {% else %}
+        <p>Sorry, no pending schools found</p>
+    {% endif %}
+{% endblock %}

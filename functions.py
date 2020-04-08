@@ -35,10 +35,12 @@ def is_unique(model, field, data, model2=None, field2=None, data2=None):
 
 def approve(user_type, id):
     if user_type == 'mentor':
-        mentor = Mentor.query.filter(Mentor.mentor_id==id).first()
-        user = User.query.filter(User.user_id==mentor.user_id).first()
+        UserType = Mentor
+        user_type_id = UserType.mentor_id
     if user_type == 'mentee':
-        mentee = Mentee.query.filter(Mentee.mentee_id == id).first()
-        user = User.query.filter(User.user_id == mentee.user_id).first()
-    user.is_active = True
+        UserType = Mentee
+        user_type_id = UserType.mentee_id
+    query = db.session.query(UserType, User).filter(user_type_id == id). \
+        join(User, User.user_id == UserType.user_id).first()
+    query[1].is_active = True
     db.session.commit()
