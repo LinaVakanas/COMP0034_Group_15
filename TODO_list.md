@@ -23,9 +23,13 @@ To Do Before Move On:
 * Filter by admin approval
 * Sort out 'auth' folder 
 * Admin search
-* Fix home page signup, let schools sign up
-* Fix inactive user thingy
+~~* Fix home page signup, let schools sign up
+~~* Let mentors sign up on home page~~
+~~* Fix inactive user thingy~~
+~~* Let admin approve schools~~
+* Make personal form check for if school is active as well
 * Finish refactoring code
+* Control panel, need to fix email column. need to pass user
 * Redo testing
 * Fix HTML
 * Selenium web testing thingy 

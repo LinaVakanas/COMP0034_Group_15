@@ -17,7 +17,7 @@ c.execute('''
           school_id INTEGER NOT NULL,
           password TEXT NOT NULL,
           bio VARCHAR(300),
-          active BOOLEAN,
+          is_active BOOLEAN,
           profile_pic BLOB,
           creation_date TEXT)
           ''')

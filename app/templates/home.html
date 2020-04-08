@@ -5,4 +5,13 @@
 {% block header%}{{ title }}{% endblock %}
 {% block content %}
 Hi
+
+<a href="{{ url_for('main.school_signup') }}">
+    <input type="button" value="Signup School" class="btn btn-primary">
+</a>
+
+<a href="{{ '/personal_form/mentor/0/' }}">
+    <input type="button" value="Signup Mentor" class="btn btn-primary">
+</a>
+
 {% endblock %}

@@ -13,7 +13,7 @@ class User(UserMixin, db.Model):
     school_id = db.Column(db.Integer, nullable=False)
     password = db.Column(db.String) #we can look at how Miss did that hash thing in her example
     bio = db.Column(db.String(300))
-    active = db.Column(db.Boolean)
+    is_active = db.Column(db.Boolean)
     profile_pic = db.Column(db.BLOB) #don't know if its acc blob
     creation_date = db.Column(db.String)
 

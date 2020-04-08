@@ -8,29 +8,35 @@
 {#         Variable is not empty #}
         <div class="container d-flex h-100 align-items-center">
             <div class="mx-auto text-center">
-                <table class="table">
-                    <thead class="thead-dark">
-                    <tr>
-                        <th scope="col">Mentor ID</th>
-                        <th scope="col">First Name</th>
-                        <th scope="col">Last Name</th>
-                        <th scope="col">User ID</th>
-                        <th scope="col">Email</th>
-                        <th scope="col">Approve</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for mentor in mentors %}
+                <form action="" method="post" novalidate>
+                    <table class="table">
+                        <thead class="thead-dark">
                         <tr>
-                            <td>{{ mentor.mentor_id }}</td>
-                            <td>{{ mentor.first_name }}</td>
-                            <td>{{ mentor.last_name }}</td>
-                            <td>{{ mentor.user_id }}</td>
-                            <td>{{ mentor.email }}</td>
-                            <td><input type="checkbox" name="approve"></td>
+                            <th scope="col">Mentor ID</th>
+                            <th scope="col">First Name</th>
+                            <th scope="col">Last Name</th>
+                            <th scope="col">User ID</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Approve</th>
                         </tr>
-                    {% endfor %}
-                </table>
+                        </thead>
+                        <tbody>
+                        {% for mentor in mentors %}
+                            <tr>
+                                <td>{{ mentor.mentor_id }}</td>
+                                <td>{{ mentor.first_name }}</td>
+                                <td>{{ mentor.last_name }}</td>
+                                <td>{{ mentor.user_id }}</td>
+                                <td>{{ mentor.email }}</td>
+                                <td>
+                                    {{ render_field(form.approve, value=mentor.mentor_id)}}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    <input type="submit" value="Submit" class="btn btn-primary">
+                </form>
             </div>
         </div>
     {% else %}

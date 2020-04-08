@@ -16,7 +16,7 @@ from app.main.forms import PersonalForm, SignUpForm, LocationForm, ApproveForm, 
 from app.models2_backup import User, MedicalCond, Message, Chatroom, OccupationalField, Hobbies, School, StudentReview, \
     Pair, PersonalInfo, Report, PersonalIssues, Mentee, Mentor, Location, Meeting
 from app.util.decorators import requires_admin
-from functions import is_unique
+from functions import is_unique, approve
 from sqlalchemy.exc import IntegrityError
 
 bp_main = Blueprint('main', __name__)
@@ -59,6 +59,9 @@ def login():
             if user is None or not user.check_password(form.password.data):
                 flash('Invalid email or password')
                 return redirect(url_for('main.login'))
+            if user.is_active is False:
+                flash('Sorry, your account has not been approved yet.')
+                return redirect(url_for('main.home'))
             login_user(user, remember=form.remember_me.data, duration=timedelta(minutes=1))
             if user.user_type == 'mentee':
                 mentee = Mentee.query.join(User, User.user_id == Mentee.user_id).filter(Mentee.user_id == user.user_id).first()
@@ -117,8 +120,8 @@ def controlpanel_home():
     mentors = Mentor.query.all() ## will need filtering for specific numbers such as unapproved etc
     mentors_total = Mentor.query.count()
     schools_total = School.query.count() ###### ACTUAL
-    unapproved_mentees_total = Mentee.query.join(User, User.user_id==Mentee.user_id).filter(User.active==False).count()
-    unapproved_mentors_total = Mentor.query.join(User, User.user_id==Mentor.user_id).filter(User.active==False).count()
+    unapproved_mentees_total = Mentee.query.join(User, User.user_id==Mentee.user_id).filter(User.is_active==False).count()
+    unapproved_mentors_total = Mentor.query.join(User, User.user_id==Mentor.user_id).filter(User.is_active==False).count()
     unapproved_total = unapproved_mentees_total + unapproved_mentors_total
     return render_template('admin/admin_home.html', users=users, users_total=users_total, mentees=mentees, mentees_total=mentees_total, mentors=mentors,
                            mentors_total=mentors_total, schools_total=schools_total, unapproved_mentees_total=unapproved_mentees_total,
@@ -130,15 +133,11 @@ def controlpanel_home():
 @requires_admin('admin')
 def controlpanel_mentee(): ############ ISNT SHOWING THE EMAILS
     form = ApproveForm(request.form)
-    mentees = Mentee.query.join(User, User.user_id==Mentee.user_id).filter(User.active==False).all()
+    mentees = Mentee.query.join(User, User.user_id==Mentee.user_id).filter(User.is_active==False).all()
     if request.method == 'POST': ######## Validate on submit
         approved_list = request.form.getlist('approve')
         for id in approved_list:
-            mentee = Mentee.query.filter(Mentee.mentee_id==id).all()
-            user_id = mentee[0].user_id
-            user = User.query.filter(User.user_id==user_id).all()
-            user[0].active = True
-            db.session.commit()
+            approve('mentee', id)
         return redirect(url_for('main.controlpanel_home')) ##### Maybe flash a msg as well
     return render_template('admin/admin_pending_mentees.html', mentees=mentees, form=form)
 
@@ -148,7 +147,7 @@ def controlpanel_mentee(): ############ ISNT SHOWING THE EMAILS
 @requires_admin('admin')
 def controlpanel_view_mentees():
     search = SearchForm(request.form)
-    mentees = Mentee.query.join(User, User.user_id == Mentee.user_id).filter(User.active == True).all()
+    mentees = Mentee.query.join(User, User.user_id == Mentee.user_id).filter(User.is_active == True).all()
     if request.method == 'POST':
         return search_results(search, 'mentee')
     return render_template('admin/admin_view_mentees.html', mentees=mentees)
@@ -210,26 +209,22 @@ def search_results(search, user_type):
 @login_required
 @requires_admin('admin')
 def controlpanel_view_mentors():
-    mentors = Mentor.query.join(User, User.user_id==Mentor.user_id).filter(User.active==True).all()
+    mentors = Mentor.query.join(User, User.user_id==Mentor.user_id).filter(User.is_active==True).all()
     return render_template('admin/admin_view_mentors.html', mentors=mentors)
 
 
-@bp_main.route('/admin/pending_mentors/')
+@bp_main.route('/admin/pending_mentors/', methods=['POST', 'GET'])
 @login_required
 @requires_admin('admin')
 def controlpanel_mentor(): #### Copy from above
     form = ApproveForm(request.form)
-    mentors = Mentor.query.join(User, User.user_id==Mentor.user_id).filter(User.active==False).all()
+    mentors = Mentor.query.join(User, User.user_id==Mentor.user_id).filter(User.is_active==False).all()
     if request.method == 'POST': ######### Validate on submit
         approved_list = request.form.getlist('approve')
         for id in approved_list:
-            mentor = Mentor.query.filter(Mentor.mentor_id==id).all()
-            user_id = mentor[0].user_id
-            user = User.query.filter(User.user_id==user_id).all()
-            user[0].active = True
-            db.session.commit()
+            approve('mentor', id)
         return redirect(url_for('main.controlpanel_home')) ##### Maybe flash a msg as well
-    return render_template('admin/admin_pending_mentors.html', mentors=mentors)
+    return render_template('admin/admin_pending_mentors.html', mentors=mentors, form=form)
 
 
 @bp_main.route('/admin/add_schools', methods=['POST', 'GET'])
@@ -258,6 +253,33 @@ def controlpanel_view_schools():
     return render_template('admin/admin_view_schools.html', schools=schools, schools_dict=schools_dict)
 
 
+@bp_main.route('/admin/pending_schools/', methods=['POST', 'GET'])
+@login_required
+@requires_admin('admin')
+def controlpanel_school(): #### Copy from above
+    form = ApproveForm(request.form)
+    schools = School.query.filter(School.school_status==False).all()
+    if request.method == 'POST': ######### Validate on submit
+        approved_list = request.form.getlist('approve')
+        for id in approved_list:
+            school = School.query.filter(School.school_id==id).first()
+            school.school_status = True
+            db.session.commit()
+        return redirect(url_for('main.controlpanel_home'))
+    return render_template('admin/admin_pending_schools.html', schools=schools, form=form)
+
+
+@bp_main.route('/add_school', methods=['POST', 'GET']) ########### Maybe Change name
+def school_signup():
+    form = AddSchoolForm(request.form)
+    if request.method == 'POST' and form.validate_on_submit():
+        new_school = School(school_status=False, school_name=form.name.data, school_email=form.email.data, ofsted_ranking=form.ofsted_ranking.data)
+        db.session.add(new_school)
+        db.session.commit()
+        return redirect(url_for('main.home'))  ##### Maybe flash a msg as well
+    return render_template('admin/admin_add_school.html', form=form)
+
+
 @bp_main.route('/personal_form/<applicant_type>/<school_id>/', methods=['POST', 'GET'])
 def personal_form(applicant_type, school_id):
     # Check that school already exists in the database
@@ -268,7 +290,7 @@ def personal_form(applicant_type, school_id):
             if request.method == 'POST'and form2.validate_on_submit():
                 creation_date = str(datetime.date(datetime.now()))
                 try:
-                    new_user = User(email=form2.email.data, user_type=applicant_type, school_id=school_id, bio="", active=False, creation_date=creation_date)
+                    new_user = User(email=form2.email.data, user_type=applicant_type, school_id=school_id, bio="", is_active=False, creation_date=creation_date)
                     new_user.set_password(form2.password.data)
                     db.session.add(new_user)
                     db.session.flush()
