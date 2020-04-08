@@ -4,7 +4,7 @@
 
 {% block header%}Pending Mentors{% endblock %}
 {% block content %}
-     {% if mentors|length %}
+     {% if queries|length %}
 {#         Variable is not empty #}
         <div class="container d-flex h-100 align-items-center">
             <div class="mx-auto text-center">
@@ -21,15 +21,15 @@
                         </tr>
                         </thead>
                         <tbody>
-                        {% for mentor in mentors %}
+                        {% for query in queries %}
                             <tr>
-                                <td>{{ queries[1].mentor_id }}</td>
-                                <td>{{ queries[1].first_name }}</td>
-                                <td>{{ queries[1].last_name }}</td>
-                                <td>{{ queries[0].user_id }}</td>
-                                <td>{{ queries[0].email }}</td>
+                                <td>{{ query[1].mentor_id }}</td>
+                                <td>{{ query[1].first_name }}</td>
+                                <td>{{ query[1].last_name }}</td>
+                                <td>{{ query[0].user_id }}</td>
+                                <td>{{ query[0].email }}</td>
                                 <td>
-                                    {{ render_field(form.approve, value=mentor.mentor_id)}}
+                                    {{ render_field(form.approve, value=query[1].mentor_id)}}
                                 </td>
                             </tr>
                         {% endfor %}

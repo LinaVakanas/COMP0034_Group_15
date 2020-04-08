@@ -4,7 +4,7 @@
 
 {% block header%}Pending Mentees{% endblock %}
 {% block content %}
-     {% if mentees|length %}
+     {% if queries|length %}
 {#         Variable is not empty #}
         <div class="container d-flex h-100 align-items-center">
             <div class="mx-auto text-center">
@@ -30,9 +30,8 @@
                                 <td>{{ query[1].last_name }}</td>
                                 <td>{{ query[0].user_id }}</td>
                                 <td>{{ query[0].email }}</td>
-    {#                            <td><input type="checkbox" id="{{ mentee }}" name="approve"></td>#}
                                 <td>
-                                    {{ render_field(form.approve, value=mentee.mentee_id)}}
+                                    {{ render_field(form.approve, value=query[1].mentee_id)}}
                                 </td>
 
                             </tr>

@@ -18,8 +18,9 @@
         </div>
     </form>
 </div>
-     {% if mentees|length %}
+     {% if queries|length %}
 {#         Variable is not empty #}
+        <div class="container d-flex h-100 align-items-center">
             <div class="mx-auto text-center">
                     <table class="table">
                         <thead class="thead-dark">
@@ -34,15 +35,15 @@
                         </tr>
                         </thead>
                         <tbody>
-                        {% for mentee in mentees %}
+                        {% for query in queries %}
                             <tr>
-                                <td>{{ mentee.mentee_id }}</td>
-                                <td>{{ mentee.school_id }}</td>
-                                <td>{{ mentee.first_name}}</td>
-                                <td>{{ mentee.last_name }}</td>
-                                <td>{{ mentee.user_id }}</td>
-                                <td>{{ mentee.email }}</td>
-                                <td>{{ mentee.paired }}</td>
+                                <td>{{ query[1].mentee_id }}</td>
+                                <td>{{ query[0].school_id }}</td>
+                                <td>{{ query[1].first_name}}</td>
+                                <td>{{ query[1].last_name }}</td>
+                                <td>{{ query[0].user_id }}</td>
+                                <td>{{ query[0].email }}</td>
+                                <td>{{ query[1].paired }}</td>
                             </tr>
                         {% endfor %}
                         </tbody>

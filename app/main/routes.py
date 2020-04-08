@@ -240,7 +240,7 @@ def controlpanel_mentee(): ############ ISNT SHOWING THE EMAILS
         for id in approved_list:
             approve('mentee', id, None)
         return redirect(url_for('main.controlpanel_home')) ##### Maybe flash a msg as well
-    return render_template('admin/admin_pending_mentees.html', queries=queries  , form=form)
+    return render_template('admin/admin_pending_mentees.html', queries=queries, form=form)
 
 
 @bp_main.route('/admin/view_mentees', methods=['POST', 'GET'])
@@ -248,10 +248,10 @@ def controlpanel_mentee(): ############ ISNT SHOWING THE EMAILS
 @requires_admin('admin')
 def controlpanel_view_mentees():
     search = SearchForm(request.form)
-    mentees = Mentee.query.join(User, User.user_id == Mentee.user_id).filter(User.is_active == True).all()
+    queries = db.session.query(User,Mentee).filter(User.is_active == True).join(User, User.user_id == Mentee.user_id).all()
     if request.method == 'POST':
         return search_results(search, 'mentee')
-    return render_template('admin/admin_view_mentees.html', search=search, mentees=mentees)
+    return render_template('admin/admin_view_mentees.html', search=search, queries=queries)
 
 
 @bp_main.route('/admin/<user_type>/search-results/')
@@ -316,10 +316,10 @@ def search_results(search, user_type):
 @requires_admin('admin')
 def controlpanel_view_mentors():
     search = SearchForm(request.form)
-    mentors = Mentor.query.join(User, User.user_id==Mentor.user_id).filter(User.is_active==True).all()
+    queries = db.session.query(User, Mentor).filter(Mentor.is_approved==True).join(Mentor, User.user_id==Mentor.user_id).all()
     if request.method == 'POST':
         return search_results(search, 'mentor')
-    return render_template('admin/admin_view_mentors.html', mentors=mentors, search=search)
+    return render_template('admin/admin_view_mentors.html', queries=queries, search=search)
 
 
 @bp_main.route('/admin/pending_mentors/', methods=['POST', 'GET'])
@@ -327,11 +327,11 @@ def controlpanel_view_mentors():
 @requires_admin('admin')
 def controlpanel_mentor(): #### Copy from above
     form = ApproveForm(request.form)
-    queries = db.session.query(User, Mentor).filter(User.is_active==False).join(Mentor, User.user_id==Mentor.user_id).all()
+    queries = db.session.query(User, Mentor).filter(Mentor.is_approved==False).join(Mentor, User.user_id==Mentor.user_id).all()
     if request.method == 'POST': ######### Validate on submit
         approved_list = request.form.getlist('approve')
         for id in approved_list:
-            approve('mentor', id, Mentor.is_approved)
+            approve('mentor', id, 'approve')
         return redirect(url_for('main.controlpanel_home')) ##### Maybe flash a msg as well
     return render_template('admin/admin_pending_mentors.html', queries=queries, form=form)
 
@@ -340,7 +340,7 @@ def controlpanel_mentor(): #### Copy from above
 @login_required
 @requires_admin('admin')
 def controlpanel_view_schools():
-    schools = School.query.all()
+    schools = School.query.filter(School.is_approved == True).all()
     schools_dict = dict()
     for school in schools:
         school_id = school.school_id
@@ -354,7 +354,7 @@ def controlpanel_view_schools():
 @requires_admin('admin')
 def controlpanel_school(): #### Copy from above
     form = ApproveForm(request.form)
-    schools = School.query.filter(School.is_approved==False).all()
+    schools = School.query.filter(School.is_approved==False, School.school_id!=0).all()
     if request.method == 'POST': ######### Validate on submit
         approved_list = request.form.getlist('approve')
         for id in approved_list:

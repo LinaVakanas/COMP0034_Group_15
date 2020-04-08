@@ -26,7 +26,7 @@ def populate_db():
     mentee_personal_info = PersonalInfo(carer_email='mum@parents.com', carer_name='Mum Mom', share_performance=True,
                                         user_id=2, share_personal_issues=True, share_med_cond=False)
 
-    user3 = User(user_type='mentee', school_id=1, email='wat@hotmail.com', active=False)
+    user3 = User(user_type='mentee', school_id=1, email='wat@hotmail.com', is_active=False)
     user3.set_password('password3')
     mentee2 = Mentee(user_id=3, school_id=1, first_name='Wat', last_name='Watkinson', paired=False)
     mentee2_location = Location(user_id=3, address="Aberdeen road", city="London",
