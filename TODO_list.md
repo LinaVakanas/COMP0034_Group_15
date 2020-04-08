@@ -19,7 +19,9 @@ To Do Before Move On:
 ~~* Filter by paired status~~
 ~~* Signup linked to school database - if school_id isn't saved in database --> validators.py~~
 * Make only 'id' for own table id's
-* Filter by admin approval when pairing 
+~~* Filter by admin approval when pairing~~ 
+* Error handling
+~~* Fix email in column~~
 * Sort out 'auth' folder 
 ~~* Admin search~~
 ~~* Fix home page signup, let schools sign up

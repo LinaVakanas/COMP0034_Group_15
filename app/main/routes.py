@@ -234,13 +234,13 @@ def controlpanel_home():
 @requires_admin('admin')
 def controlpanel_mentee(): ############ ISNT SHOWING THE EMAILS
     form = ApproveForm(request.form)
-    mentees = Mentee.query.join(User, User.user_id==Mentee.user_id).filter(User.is_active==False).all()
+    queries = db.session.query(User, Mentee).filter(User.is_active==False).join(Mentee, User.user_id==Mentee.user_id).all()
     if request.method == 'POST': ######## Validate on submit
         approved_list = request.form.getlist('approve')
         for id in approved_list:
-            approve('mentee', id)
+            approve('mentee', id, None)
         return redirect(url_for('main.controlpanel_home')) ##### Maybe flash a msg as well
-    return render_template('admin/admin_pending_mentees.html', mentees=mentees, form=form)
+    return render_template('admin/admin_pending_mentees.html', queries=queries  , form=form)
 
 
 @bp_main.route('/admin/view_mentees', methods=['POST', 'GET'])
@@ -255,6 +255,8 @@ def controlpanel_view_mentees():
 
 
 @bp_main.route('/admin/<user_type>/search-results/')
+@login_required
+@requires_admin('admin')
 def search_results(search, user_type):
     # set strings to data from form
     search_string = search.search.data.lower()
@@ -325,26 +327,13 @@ def controlpanel_view_mentors():
 @requires_admin('admin')
 def controlpanel_mentor(): #### Copy from above
     form = ApproveForm(request.form)
-    mentors = Mentor.query.join(User, User.user_id==Mentor.user_id).filter(User.is_active==False).all()
+    queries = db.session.query(User, Mentor).filter(User.is_active==False).join(Mentor, User.user_id==Mentor.user_id).all()
     if request.method == 'POST': ######### Validate on submit
         approved_list = request.form.getlist('approve')
         for id in approved_list:
             approve('mentor', id, Mentor.is_approved)
         return redirect(url_for('main.controlpanel_home')) ##### Maybe flash a msg as well
-    return render_template('admin/admin_pending_mentors.html', mentors=mentors, form=form)
-
-
-@bp_main.route('/admin/add_schools', methods=['POST', 'GET'])
-@login_required
-@requires_admin('admin')
-def controlpanel_add_schools():
-    form = AddSchoolForm(request.form)
-    if request.method == 'POST' and form.validate_on_submit():
-        new_school = School(is_approved=True, school_name=form.name.data, school_email=form.email.data, ofsted_ranking=form.ofsted_ranking.data)
-        db.session.add(new_school)
-        db.session.commit()
-        return redirect(url_for('main.controlpanel_home'))  ##### Maybe flash a msg as well
-    return render_template('admin/admin_add_school.html', form=form)
+    return render_template('admin/admin_pending_mentors.html', queries=queries, form=form)
 
 
 @bp_main.route('/admin/view_schools')
@@ -502,41 +491,48 @@ def location_form(applicant_type, applicant_id):
 
 @bp_main.route('/pairing/<applicant_type>/<applicant_id>/<location>/')
 def pairing(applicant_type, applicant_id, location):
-    if applicant_type == 'mentee':
-        pair_with_mentor = Mentor.query.join(Location, Mentor.user_id == Location.user_id).\
-            filter(Location.city==location, Mentor.paired==False).first()
-        if not pair_with_mentor:
-            flash("Unfortunately there are no mentors signed up in {} just yet! Sorry for the inconvenience, "
-                  "you'll be put on a waiting list and we'll let you know as soon as a mentor is found.\n"
-                  "For now, you can edit your profile, and get used to the website.".format(location))
-            return redirect(url_for('main.home', title='Edit Profile')) ####should be main.edit
-        pair_with_user = User.query.join(Mentor).filter_by(user_id=pair_with_mentor.user_id).first()
-        mentee = Mentee.query.filter_by(user_id=applicant_id).first()
-        new_pair = Pair(mentor_id=pair_with_mentor.mentor_id, mentee_id=mentee.mentee_id)
-        mentee.paired = True
-        pair_with_mentor.paired = True
-        db.session.add(new_pair)
-        db.session.commit()
-        return render_template('profiles/mentor_profile.html', title='Mentor Profile', mentor=pair_with_mentor, user=pair_with_user)
+    user = User.query.filter(User.user_id == applicant_id).first()
+    if user.is_active is False:
+        flash("You need to be approved by an admin before you can be paired.")
+        return redirect(url_for('main.home', title='Home'))
+    else:
+        if applicant_type == 'mentee':
+            pair_with_mentor = Mentor.query.join(Location, Mentor.user_id == Location.user_id).\
+                filter(Location.city==location, Mentor.paired==False).join(User, User.user_id==Mentor.user_id).\
+                filter(User.is_active == True).first()
+            if not pair_with_mentor:
+                flash("Unfortunately there are no mentors signed up in {} just yet! Sorry for the inconvenience, "
+                      "you'll be put on a waiting list and we'll let you know as soon as a mentor is found.\n"
+                      "For now, you can edit your profile, and get used to the website.".format(location))
+                return redirect(url_for('main.home', title='Edit Profile')) ####should be main.edit
+            pair_with_user = User.query.join(Mentor).filter_by(user_id=pair_with_mentor.user_id).first()
+            mentee = Mentee.query.filter_by(user_id=applicant_id).first()
+            new_pair = Pair(mentor_id=pair_with_mentor.mentor_id, mentee_id=mentee.mentee_id)
+            mentee.paired = True
+            pair_with_mentor.paired = True
+            db.session.add(new_pair)
+            db.session.commit()
+            return render_template('profiles/mentor_profile.html', title='Mentor Profile', mentor=pair_with_mentor, user=pair_with_user)
 
-    elif applicant_type == 'mentor':
-        pair_with_mentee = Mentee.query.join(Location, Mentee.user_id == Location.user_id).\
-            filter(Location.city==location, Mentee.paired==False).first()
-        if not pair_with_mentee:
-            flash("Unfortunately there are no mentees signed up in {} yet. Sorry for the inconvenience, "
-                  "you'll be put on a waiting list and we will let you know as soon as a mentee is found.\n"
-                  "For now, you can edit your profile, and get used to the website.".format(location))
-            return render_template('home.html', title='Home')  ####for now
-        pair_with_user = User.query.join(Mentee).filter_by(user_id=pair_with_mentee.user_id).first()
-        mentor = Mentor.query.filter_by(user_id=applicant_id).first()
-        new_pair = Pair(mentor_id=mentor.mentor_id, mentee_id=pair_with_mentee.mentee_id)
-        mentor.paired = True
-        pair_with_mentee.paired = True
-        db.session.add(new_pair)
-        db.session.commit()
-        return render_template('profiles/mentee_profile.html', mentee=pair_with_mentee, user=pair_with_user, title='Mentee Profile')
-    
-    return render_template('home.html', title='Home') ####for now
+        elif applicant_type == 'mentor':
+            pair_with_mentee = Mentee.query.join(Location, Mentee.user_id == Location.user_id).\
+                filter(Location.city==location, Mentee.paired==False).join(User, User.user_id==Mentee.user_id).\
+                filter(User.is_active == True).first()
+            if not pair_with_mentee:
+                flash("Unfortunately there are no mentees signed up in {} yet. Sorry for the inconvenience, "
+                      "you'll be put on a waiting list and we will let you know as soon as a mentee is found.\n"
+                      "For now, you can edit your profile, and get used to the website.".format(location))
+                return render_template('home.html', title='Home')  ####for now
+            pair_with_user = User.query.join(Mentee).filter_by(user_id=pair_with_mentee.user_id).first()
+            mentor = Mentor.query.filter_by(user_id=applicant_id).first()
+            new_pair = Pair(mentor_id=mentor.mentor_id, mentee_id=pair_with_mentee.mentee_id)
+            mentor.paired = True
+            pair_with_mentee.paired = True
+            db.session.add(new_pair)
+            db.session.commit()
+            return render_template('profiles/mentee_profile.html', mentee=pair_with_mentee, user=pair_with_user, title='Mentee Profile')
+
+        return render_template('home.html', title='Home') ####for now
 
 
 @bp_main.route('/book-meeting/<pair_id>/<mentee_id>/<mentee_user_id>/', methods=['POST', 'GET'])

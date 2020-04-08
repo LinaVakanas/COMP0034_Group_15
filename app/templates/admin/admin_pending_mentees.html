@@ -22,14 +22,14 @@
                         </tr>
                         </thead>
                         <tbody>
-                        {% for mentee in mentees %}
+                        {% for query in queries %}
                             <tr>
-                                <td>{{ mentee.mentee_id }}</td>
-                                <td>{{ mentee.school_id }}</td>
-                                <td>{{ mentee.first_name }}</td>
-                                <td>{{ mentee.last_name }}</td>
-                                <td>{{ mentee.user_id }}</td>
-                                <td>{{ mentee.email }}</td>
+                                <td>{{ query[1].mentee_id }}</td>
+                                <td>{{ query[0].school_id }}</td>
+                                <td>{{ query[1].first_name }}</td>
+                                <td>{{ query[1].last_name }}</td>
+                                <td>{{ query[0].user_id }}</td>
+                                <td>{{ query[0].email }}</td>
     {#                            <td><input type="checkbox" id="{{ mentee }}" name="approve"></td>#}
                                 <td>
                                     {{ render_field(form.approve, value=mentee.mentee_id)}}

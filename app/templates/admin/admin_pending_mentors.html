@@ -23,11 +23,11 @@
                         <tbody>
                         {% for mentor in mentors %}
                             <tr>
-                                <td>{{ mentor.mentor_id }}</td>
-                                <td>{{ mentor.first_name }}</td>
-                                <td>{{ mentor.last_name }}</td>
-                                <td>{{ mentor.user_id }}</td>
-                                <td>{{ mentor.email }}</td>
+                                <td>{{ queries[1].mentor_id }}</td>
+                                <td>{{ queries[1].first_name }}</td>
+                                <td>{{ queries[1].last_name }}</td>
+                                <td>{{ queries[0].user_id }}</td>
+                                <td>{{ queries[0].email }}</td>
                                 <td>
                                     {{ render_field(form.approve, value=mentor.mentor_id)}}
                                 </td>
