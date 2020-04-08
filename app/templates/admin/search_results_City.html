@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block title %}{{ user_type }} - {{ search_term }} Search Results{% endblock %}
+
+{% block header%}View {{ user_type }} in {{ search_term }} Search Results{% endblock %}
+{% block content %}
+
+{#         Variable is not empty #}
+        <div class="container d-flex h-100 align-items-center">
+            <div class="mx-auto text-center">
+                {% if results|length %}
+                    <table class="table">
+                        <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">User ID</th>
+                            <th scope="col">User Type</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">School ID</th>
+                            <th scope="col">Active</th>
+                            <th scope="col">Address</th>
+                            <th scope="col">City</th>
+                            <th scope="col">Postcode</th>
+                            <th scope="col">Avoid Area</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for result in results %}
+                            <tr>
+                                <td>{{ result[1].user_id }}</td>
+                                <td>{{ result[1].user_type }}</td>
+                                <td>{{ result[2].first_name }} {{ result[2].last_name }}</td>
+                                <td>{{ result[1].email }}</td>
+                                <td>{{ result[1].school_id }}</td>
+                                <td>{{ result[1].active }}</td>
+                                <td>{{ result[0].address}}</td>
+                                <td>{{ result[0].city }}</td>
+                                <td>{{ result[0].postcode }}</td>
+                                <td>{{ result[0].avoid_area }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p>Sorry, we have no {{ user_type.lower() }} in {{ search_term }}</p>
+                {% endif %}
+            </div>
+        </div>
+
+{% endblock %}

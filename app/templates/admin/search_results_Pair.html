@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}{{ user_type }} - {{ search_type }} Results{% endblock %}
+
+{% block header%}View {{ user_type }} - {{ search_type }} Search Results{% endblock %}
+{% block content %}
+
+<div class="container d-flex h-100 align-items-center">
+
+    <div id="pair" class="container d-flex h-100 align-items-center">
+        <div class="mx-auto text-center">
+            {% if pair|length %}
+                <h2>Pair Table</h2>
+                <table class="table">
+                    <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">User ID</th>
+                        <th scope="col">Pair ID</th>
+                        <th scope="col">{{ user_type.capitalize() }} ID</th>
+                        {% if user_type == 'mentee'  %}
+                            <th scope="col">Mentor ID</th>
+                            <th scope="col">Mentor Name</th>
+                        {% elif user_type == 'mentor' %}
+                            <th scope="col">Mentee ID</th>
+                            <th scope="col">Mentee Name</th>
+                        {% endif %}
+                        <th scope="col">Pair Creation Date</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{ pair[0].user_id }}</td>
+                            <td>{{ pair[2].pair_id }}</td>
+                            {% if user_type == 'mentee' %}
+                                <td>{{ pair[1].mentee_id }}</td>
+                                <td>{{ pair[3].mentor_id}}</td>
+                                <td>{{ pair[3].first_name }} {{ pair[3].last_name }}</td>
+                            {% elif user_type == 'mentor' %}
+                                <td>{{ pair[1].mentor_id }}</td>
+                                <td>{{ pair[3].mentee_id}}</td>
+                                <td>{{ pair[3].first_name }} {{ pair[3].last_name }}</td>
+                            {% endif %}
+                            <td>{{ pair[2].creation_date }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            {% else %}
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

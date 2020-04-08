@@ -15,14 +15,26 @@ from flask import current_app as app
     ## file for student or employment ##
 
 
+class SearchByForm(FlaskForm):
+    choices = [('', ''),
+               ('School', 'School Name'),
+               ('City', 'City')]
+    select = SelectField(choices=choices)
+    choices2 = [('All', 'All'),
+                ('Mentee', 'Mentee'),
+                ('Mentor', 'Mentor')]
+    select2 = SelectField(choices=choices2)
+    search = StringField('Or search by:', validators=[DataRequired()])
+
+
 class SearchForm(FlaskForm):
-    choices = [('User&Type','User & Type'),
+    choices = [('', ''),
+               ('User&Type','User & Type'),
                ('PersonalInfo', 'Personal Info'),
                ('Location', 'Location Info'),
-               ('Meeting', 'Meetings'),
-               ('StudentReview', 'Student Review')]
-    select = SelectField('', choices=choices)
-    search = StringField(validators=[DataRequired()])
+               ('Meeting', 'Meetings')]
+    select = SelectField('Filter by:', choices=choices)
+    search = StringField('Search for a specific user', validators=[DataRequired()])
 
 
 class SignUpForm(FlaskForm):

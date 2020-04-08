@@ -6,6 +6,7 @@
 {% block content %}
     <div class="container vh-70 d-flex mt-6 col justify-content-center">
         <form action="" method="post" novalidate>
+            {{ form.csrf_token }}
             <div class="col-6">
                 <img src="{{ url_for('static',filename='media/default_user/profile_pic.png') }}" class="rounded-circle img-fluid" alt="Profile Picture" width="400", height="400">
                 <h2>{{ mentee.first_name.capitalize() }} {{ mentee.last_name.capitalize() }}</h2>

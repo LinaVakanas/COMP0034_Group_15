@@ -3,9 +3,8 @@
     - medication form
     - personal issues => kinda did
     - hobbies
-* Pair mentee, mentor randomly => doing
+~~* Pair mentee, mentor randomly => doing~~
 * Put character limits in
-* instead of flashing to home page for mentor out of London, redirect to another page, and then have button for home?
 * Refactor => make code more concise. 
     - A lot of the stuff are repeated b/c of mentor/mentee, w/ only difference being 
 whether it says mentor or mentee, and the if statement ==> define separate functions?

@@ -1,0 +1,235 @@
+{% extends 'base.html' %}
+{% block title %}{{ user_type }} - {{ search_type }} Results{% endblock %}
+
+{% block header%}View {{ user_type }} - {{ search_type }} Search Results{% endblock %}
+{% block content %}
+
+<div class="container d-flex h-100 align-items-center">
+
+    <div id="user" class="container d-flex h-100 align-items-center">
+        <div class="mx-auto text-center">
+            {% if user|length %}
+            <h2>User and {{ user_type.capitalize() }} Info</h2>
+                <table class="table">
+                    <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">User ID</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">School ID</th>
+                        <th scope="col">Active</th>
+                        <th scope="col">Creation Date</th>
+                        <th scope="col">{{ user_type.capitalize() }} ID</th>
+                        <th scope="col">First Name</th>
+                        <th scope="col">Last Name</th>
+                        <th scope="col">Paired</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{ user[0].user_id }}</td>
+                            <td>{{ user[0].email }}</td>
+                            <td>{{ user[0].school_id }}</td>
+                            <td>{{ user[0].active }}</td>
+                            <td>{{ user[0].creation_date }}</td>
+                            {% if user_type == 'mentee' %}
+                                <td>{{ user[1].mentee_id }}</td>
+                            {% elif user_type == 'mentor' %}
+                                <td>{{ user[1].mentor_id }}</td>
+                            {% endif %}
+                            <td>{{ user[1].first_name }}</td>
+                            <td>{{ user[1].last_name }}</td>
+                            <td>{{ user[1].paired }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            {% else %}
+                <p>Sorry, no {{ user_type }} with that email exists</p>
+            {% endif %}
+{#            Make it flash a msg#}
+        </div>
+    </div>
+
+    <hr>
+
+    <div id="personal_info" class="container d-flex h-100 align-items-center">
+        <div class="mx-auto text-center">
+             {% if personal_info|length %}
+    {#         Variable is not empty #}
+                <h2>Personal Info Table</h2>
+                <table class="table">
+                    <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">User ID</th>
+                        <th scope="col">{{ user_type.capitalize() }} ID</th>
+                        <th scope="col">Form ID</th>
+                        {% if user_type == 'mentee' %}
+                            <th scope="col">Carer Name</th>
+                            <th scope="col">Carer Email</th>
+                            <th scope="col">Share Personal Issues</th>
+                            <th scope="col">Share Performance</th>
+                            <th scope="col">Share Medical Conditions</th>
+                        {% elif user_type == 'mentor' %}
+                            <th scope="col">Status</th>
+                            <th scope="col">Experience</th>
+                        {% endif %}
+                    </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{ personal_info[0].user_id }}</td>
+                            {% if user_type == 'mentee' %}
+                                <td>{{ personal_info[1].mentee_id }}</td>
+                            {% elif user_type == 'mentor' %}
+                                <td>{{ personal_info[1].mentor_id }}</td>
+                            {% endif %}
+                            <td>{{ personal_info[2].form_id }}</td>
+                            {% if user_type == 'mentee' %}
+                                <td>{{ personal_info[2].carer_name}}</td>
+                                <td>{{ personal_info[2].carer_email }}</td>
+                                <td>{{ personal_info[2].share_personal_issues }}</td>
+                                <td>{{ personal_info[2].share_performance}}</td>
+                                <td>{{ personal_info[2].share_medical_cond }}</td>
+                            {% elif user_type == 'mentor' %}
+                                <td>{{ personal_info[2].status }}</td>
+                                <td>{{ personal_info[2].xperience }}</td>
+                            {% endif %}
+                        </tr>
+                    </tbody>
+                </table>
+                    {% else %}
+                    {% endif %}
+             </div>
+         </div>
+
+    <hr>
+
+    <div id="meetings" class="container d-flex h-100 align-items-center">
+        <div class="mx-auto text-center">
+            {% if meetings|length %}
+                <h2>Meetings Table</h2>
+                <table class="table">
+                    <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">{{ user_type.capitalize() }} ID</th>
+                        <th scope="col">Meeting ID</th>
+                        <th scope="col">Pair ID</th>
+                        <th scope="col">Meeting Date</th>
+                        <th scope="col">Meeting Time</th>
+                        <th scope="col">Meeting Duration</th>
+                        <th scope="col">Addres</th>
+                        <th scope="col">Postcode</th>
+                        <th scope="col">Meeting Type</th>
+                        <th scope="col">Mentee Approval</th>
+                        <th scope="col">School Approval</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            {% if user_type == 'mentee' %}
+                                <td>{{ meetings[1].mentee_id }}</td>
+                            {% elif user_type == 'mentor' %}
+                                <td>{{ meetings[1].mentor_id }}</td>
+                            {% endif %}
+                            <td>{{ meetings[2].meeting_id }}</td>
+                            <td>{{ meetings[2].pair_id }}</td>
+                            <td>{{ meetings[2].date}}</td>
+                            <td>{{ meetings[2].time }}</td>
+                            <td>{{ meetings[2].duration }}</td>
+                            <td>{{ meetings[2].address }}</td>
+                            <td>{{ meetings[2].postcode }}</td>
+                            <td>{{ meetings[2].type }}</td>
+                            <td>{{ meetings[2].mentee_approval }}</td>
+                            <td>{{ meetings[2].school_approval }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+    {#            Make it flash a msg#}
+            {% else %}
+            {% endif %}
+        </div>
+    </div>
+
+    <hr>
+
+    <div id="location" class="container d-flex h-100 align-items-center">
+        <div class="mx-auto text-center">
+            {% if mentees|length %}
+                <h2>Location Table</h2>
+                <table class="table">
+                    <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">User ID</th>
+                        <th scope="col">{{ user_type.capitalize() }} ID</th>
+                        <th scope="col">Form ID</th>
+                        <th scope="col">Address</th>
+                        <th scope="col">City</th>
+                        <th scope="col">Postcode</th>
+                        <th scope="col">Avoid Area</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{ location[0].user_id }}</td>
+                            {% if user_type == 'mentee' %}
+                                <td>{{ location[1].mentee_id }}</td>
+                            {% elif user_type == 'mentor' %}
+                                <td>{{ location[1].mentor_id }}</td>
+                            {% endif %}
+                            <td>{{ location[2].form_id }}</td>
+                            <td>{{ location[2].address}}</td>
+                            <td>{{ location[2].city }}</td>
+                            <td>{{ location[2].postcode }}</td>
+                            <td>{{ location[2].avoid_area }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            {% else %}
+            {% endif %}
+        </div>
+    </div>
+
+    <div id="pair" class="container d-flex h-100 align-items-center">
+        <div class="mx-auto text-center">
+            {% if pair|length %}
+                <h2>Pair Table</h2>
+                <table class="table">
+                    <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">User ID</th>
+                        <th scope="col">Pair ID</th>
+                        <th scope="col">{{ user_type.capitalize() }} ID</th>
+                        {% if user_type == 'mentee'  %}
+                            <th scope="col">Mentor ID</th>
+                            <th scope="col">Mentor Name</th>
+                        {% elif user_type == 'mentor' %}
+                            <th scope="col">Mentee ID</th>
+                            <th scope="col">Mentee Name</th>
+                        {% endif %}
+                        <th scope="col">Pair Creation Date</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{ pair[0].user_id }}</td>
+                            <td>{{ pair[2].pair_id }}</td>
+                            {% if user_type == 'mentee' %}
+                                <td>{{ pair[1].mentee_id }}</td>
+                                <td>{{ pair[3].mentor_id}}</td>
+                                <td>{{ pair[3].first_name }} {{ pair[3].last_name }}</td>
+                            {% elif user_type == 'mentor' %}
+                                <td>{{ pair[1].mentor_id }}</td>
+                                <td>{{ pair[3].mentee_id}}</td>
+                                <td>{{ pair[3].first_name }} {{ pair[3].last_name }}</td>
+                            {% endif %}
+                            <td>{{ pair[2].creation_date }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            {% else %}
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

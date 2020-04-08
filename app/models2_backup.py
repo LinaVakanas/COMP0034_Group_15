@@ -133,6 +133,8 @@ class PersonalInfo(db.Model):
     xperience = db.Column(db.String(3), nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
     user = db.relationship("User", backref='personal_info')
+    share_personal_issues = db.Column(db.Boolean, nullable=True)
+    share_med_cond = db.Column(db.Boolean, nullable=False)
 
 
 class PersonalIssues(db.Model):
@@ -145,7 +147,6 @@ class PersonalIssues(db.Model):
     family = db.Column(db.Boolean)
     drugs = db.Column(db.Boolean)
     ed = db.Column(db.Boolean)
-    share_personal_issues = db.Column(db.Boolean, nullable=True)
 
 
 class Hobbies(db.Model):
@@ -161,7 +162,6 @@ class MedicalCond(db.Model):
     __tablename__ = 'medical_condition'
     form_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     cond1 = db.Column(db.Boolean)
-    share_med_cond = db.Column(db.Boolean, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
     user = db.relationship("User", backref='medical_cond')
 

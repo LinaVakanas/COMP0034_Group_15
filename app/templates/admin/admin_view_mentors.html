@@ -4,6 +4,20 @@
 
 {% block header%}View Mentors{% endblock %}
 {% block content %}
+    <div>
+        <form action="" method="post" novalidate>
+            {{ search.csrf_token }}
+            <div class="col-auto mb-4" >
+                {{ render_field(search.search, value='Mentor Email') }}
+            </div>
+            <div class="col-auto mb-3">
+                {{ render_field(search.select) }}
+            </div>
+            <div class="col-2 mb-0">
+                <input type="submit" value="Submit" class="btn btn-primary">
+            </div>
+        </form>
+    </div>
      {% if mentors|length %}
 {#         Variable is not empty #}
         <div class="container d-flex h-100 align-items-center">

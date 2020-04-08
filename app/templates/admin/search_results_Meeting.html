@@ -3,48 +3,52 @@
 
 {% block header%}View {{ user_type }} - {{ search_type }} Search Results{% endblock %}
 {% block content %}
-     {% if mentees|length %}
+
 {#         Variable is not empty #}
         <div class="container d-flex h-100 align-items-center">
             <div class="mx-auto text-center">
-                <table class="table">
-                    <thead class="thead-dark">
-                    <tr>
-                        <th scope="col">Mentee ID</th>
-                        <th scope="col">Meeting ID</th>
-                        <th scope="col">Pair ID</th>
-                        <th scope="col">Meeting Date</th>
-                        <th scope="col">Meeting Time</th>
-                        <th scope="col">Meeting Duration</th>
-                        <th scope="col">Addres</th>
-                        <th scope="col">Postcode</th>
-                        <th scope="col">Meeting Type</th>
-                        <th scope="col">Mentee Approval</th>
-                        <th scope="col">School Approval</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for mentee in mentees %}
+                {% if mentees|length %}
+                    <table class="table">
+                        <thead class="thead-dark">
                         <tr>
-                            <td>{{ mentee.mentee_id }}</td>
-                            <td>{{ mentee.meeting_id }}</td>
-                            <td>{{ mentee.pair_id }}</td>
-                            <td>{{ mentee.date}}</td>
-                            <td>{{ mentee.time }}</td>
-                            <td>{{ mentee.duration }}</td>
-                            <td>{{ mentee.Meeting.address }}</td>
-                            <td>{{ mentee.Meeting.postcode }}</td>
-                            <td>{{ mentee.Meeting.type }}</td>
-                            <td>{{ mentee.Meeting.mentee_approval }}</td>
-                            <td>{{ mentee.Meeting.school_approval }}</td>
+                            <th scope="col">{{ user_type.capitalize() }} ID</th>
+                            <th scope="col">Meeting ID</th>
+                            <th scope="col">Pair ID</th>
+                            <th scope="col">Meeting Date</th>
+                            <th scope="col">Meeting Time</th>
+                            <th scope="col">Meeting Duration</th>
+                            <th scope="col">Addres</th>
+                            <th scope="col">Postcode</th>
+                            <th scope="col">Meeting Type</th>
+                            <th scope="col">Mentee Approval</th>
+                            <th scope="col">School Approval</th>
                         </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                {% if user_type == 'mentee' %}
+                                <td>{{ meetings[1].mentee_id }}</td>
+                            {% elif user_type == 'mentor' %}
+                                <td>{{ meetings[1].mentor_id }}</td>
+                            {% endif %}
+                                <td>{{ mentees[2].meeting_id }}</td>
+                                <td>{{ mentees[2].pair_id }}</td>
+                                <td>{{ mentees[2].date}}</td>
+                                <td>{{ mentees[2].time }}</td>
+                                <td>{{ mentees[2].duration }}</td>
+                                <td>{{ mentees[2].address }}</td>
+                                <td>{{ mentees[2].postcode }}</td>
+                                <td>{{ mentees[2].type }}</td>
+                                <td>{{ mentees[2].mentee_approval }}</td>
+                                <td>{{ mentees[2].school_approval }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
     {#            Make it flash a msg#}
+                {% else %}
+                    <p>Sorry, no {{ user_type }} exist</p>
+                {% endif %}
             </div>
         </div>
-    {% else %}
-        <p>Sorry, no mentees exist</p>
-    {% endif %}
+
 {% endblock %}

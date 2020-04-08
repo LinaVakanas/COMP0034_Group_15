@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %}{{ user_type }} - {{ search_type }} Results{% endblock %}
+
+{% block header%}View {{ user_type }} - {{ search_type }} Search Results{% endblock %}
+{% block content %}
+
+{#         Variable is not empty #}
+        <div class="container d-flex h-100 align-items-center">
+            <div class="mx-auto text-center">
+                {% if results|length %}
+                    <table class="table">
+                        <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">User ID</th>
+                            <th scope="col">Mentee ID</th>
+                            <th scope="col">Mentee Name</th>
+                            <th scope="col">Form ID</th>
+                            <th scope="col">Address</th>
+                            <th scope="col">City</th>
+                            <th scope="col">Postcode</th>
+                            <th scope="col">Avoid Area</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>{{ results[0].user_id }}</td>
+                                <td>{{ results[1].mentee_id }}</td>
+                                <td>{{ results[1].first_name }} {{ results[1].last_name }}</td>
+                                <td>{{ results[2].form_id }}</td>
+                                <td>{{ results[2].address}}</td>
+                                <td>{{ results[2].city }}</td>
+                                <td>{{ results[2].postcode }}</td>
+                                <td>{{ results[2].avoid_area }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p>Sorry, no results exist</p>
+                {% endif %}
+            </div>
+        </div>
+
+{% endblock %}

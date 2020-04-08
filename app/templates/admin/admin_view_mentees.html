@@ -4,11 +4,23 @@
 
 {% block header%}View Mentees{% endblock %}
 {% block content %}
+<div>
+    <form action="" method="post" novalidate>
+        {{ search.csrf_token }}
+        <div class="col-auto mb-4">
+            {{ render_field(search.search, value='Mentee Email') }}
+        </div>
+        <div class="col-auto mb-3">
+            {{ render_field(search.select) }}
+        </div>
+        <div class="col-2 mb-0">
+            <input type="submit" value="Submit" class="btn btn-primary">
+        </div>
+    </form>
+</div>
      {% if mentees|length %}
 {#         Variable is not empty #}
-        <div class="container d-flex h-100 align-items-center">
             <div class="mx-auto text-center">
-                <form action="" method="post" novalidate>
                     <table class="table">
                         <thead class="thead-dark">
                         <tr>
@@ -35,9 +47,6 @@
                         {% endfor %}
                         </tbody>
                     </table>
-                    <input type="submit" value="Submit" class="btn btn-primary">
-    {#            Make it flash a msg#}
-                </form>
             </div>
         </div>
     {% else %}
