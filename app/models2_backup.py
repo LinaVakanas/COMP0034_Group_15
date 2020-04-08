@@ -43,6 +43,7 @@ class Mentor(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
     user = db.relationship("User", backref='mentor')
     paired = db.Column(db.Boolean)
+    is_approved = db.Column(db.Boolean)
     # email = db.Column(db.Text, db.ForeignKey('user.email'), nullable=False)
     # user_email = db.relationship("User", foreign_keys=[email])
 

@@ -15,7 +15,7 @@ def populate_db():
                      ofsted_ranking="3")
     user1 = User(user_type='mentor', school_id=0, email='harrypj@ucl.ac.uk', is_active=True)
     user1.set_password('password1')
-    mentor = Mentor(user_id=1, school_id=0, first_name='Harry', last_name='Potter', paired=True)
+    mentor = Mentor(user_id=1, school_id=0, first_name='Harry', last_name='Potter', paired=True, is_approved=True)
     user2 = User(user_type='mentee', school_id=1, email='lily@ucl.ac.uk', is_active=True)
 
     user2.set_password('password2')
@@ -39,7 +39,7 @@ def populate_db():
     mentee3 = Mentee(user_id=4, school_id=2, first_name='Bob', last_name='Jones', paired=False)
     user5 = User(user_type='mentor', school_id=0, email='larry_jake@gmail.com', is_active=False)
     user5.set_password('password5')
-    mentor2 = Mentor(user_id=5, school_id=0, first_name='Larry', last_name='Jake', paired=False)
+    mentor2 = Mentor(user_id=5, school_id=0, first_name='Larry', last_name='Jake', paired=False, is_approved=False)
     mentor2_location = Location(user_id=5, address="Heber road", city="London",
                                postcode="NW3 5AQ", avoid_area="Neasden")
     mentor2_personal_info = PersonalInfo(carer_name='', carer_email='', xperience='>=2', status='S', user_id=5, share_med_cond=True)

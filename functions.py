@@ -33,14 +33,22 @@ def is_unique(model, field, data, model2=None, field2=None, data2=None):
 
 
 
-def approve(user_type, id):
+def approve(user_type, id, approve_type):
     if user_type == 'mentor':
         UserType = Mentor
         user_type_id = UserType.mentor_id
-    if user_type == 'mentee':
+    elif user_type == 'mentee':
         UserType = Mentee
         user_type_id = UserType.mentee_id
     query = db.session.query(UserType, User).filter(user_type_id == id). \
         join(User, User.user_id == UserType.user_id).first()
-    query[1].is_active = True
+
+    if user_type == 'mentor':
+        if approve_type == 'approve':
+            query[1].is_approved = True
+        elif approve_type == 'active':
+            query[1].is_active = True
+    elif user_type == 'mentee':
+        query[1].is_active = True
+
     db.session.commit()

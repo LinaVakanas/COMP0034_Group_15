@@ -26,7 +26,8 @@ To Do Before Move On:
 ~~* Let mentors sign up on home page~~
 ~~* Fix inactive user thingy~~
 ~~* Let admin approve schools~~
-* Make personal form check for if school is active as well 
+~~* Make personal form check for if school is active as well~~
+~~* Make location form check if a mentor is approved~~  
 * Finish refactoring code
 * Control panel, need to fix email column. need to pass user
 * Redo testing

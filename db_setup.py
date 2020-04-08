@@ -37,6 +37,7 @@ c.execute('''
           last_name TEXT NOT NULL,
           user_id INTEGER NOT NULL,
           paired BOOLEAN,
+          is_approved BOOLEAN,
           FOREIGN KEY (user_id) REFERENCES user(user_id))
           ''')
 
