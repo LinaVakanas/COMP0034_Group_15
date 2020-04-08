@@ -49,8 +49,16 @@
             <div class="row justify-content-center">
                 <table class="buttons">
                     <tr>
-                        <td><a href="{{ url_for('main.controlpanel_view_mentors') }}" >
-                            <input type="button" value="View Mentors" class="btn btn-primary">
+                        <td><a href="{{ url_for('main.controlpanel_school') }}" >
+                            <input type="button" value="Approve Schools" class="btn btn-primary">
+                        </a></td>
+                        <td><a href="{{ url_for('main.controlpanel_view_schools') }}" >
+                            <input type="button" value="View School" class="btn btn-primary">
+                        </a></td>
+                    </tr>
+                    <tr>
+                        <td><a href="{{url_for('main.controlpanel_mentee')}}" >
+                            <input type="button" value="Approve Mentees" class="btn btn-primary">
                         </a></td>
                         <td><a href="{{ url_for('main.controlpanel_view_mentees') }}" >
                             <input type="button" value="View Mentees" class="btn btn-primary">
@@ -60,16 +68,8 @@
                         <td><a href="{{url_for('main.controlpanel_mentor')}}" >
                             <input type="button" value="Approve Mentors" class="btn btn-primary">
                         </a></td>
-                        <td><a href="{{url_for('main.controlpanel_mentee')}}" >
-                            <input type="button" value="Approve Mentees" class="btn btn-primary">
-                        </a></td>
-                    </tr>
-                    <tr>
-                        <td><a href="{{ url_for('main.controlpanel_school') }}" >
-                            <input type="button" value="Approve Schools" class="btn btn-primary">
-                        </a></td>
-                        <td><a href="{{ url_for('main.controlpanel_view_schools') }}" >
-                            <input type="button" value="View School" class="btn btn-primary">
+                        <td><a href="{{ url_for('main.controlpanel_view_mentors') }}" >
+                            <input type="button" value="View Mentors" class="btn btn-primary">
                         </a></td>
                     </tr>
                 </table>

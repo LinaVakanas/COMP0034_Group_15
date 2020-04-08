@@ -44,16 +44,11 @@ def approve(user_type, id, approve_type):
         join(User, User.user_id == UserType.user_id).first()
 
     if user_type == 'mentor':
-        print('mentor')
         if approve_type == 'approve':
-            print('approving')
             query[0].is_approved = True
-            print(query[0].is_approved)
         elif approve_type == 'active':
-            query[0].is_active = True
+            query[1].is_active = True
     elif user_type == 'mentee':
-        print(query[1].is_active) ####### Confused, why can i access is_active from the query[1], thats the mentee
-        query[0].is_active = True ### I couldnt access email though?? I'll change it to query[0] anyway
-        print(query[1].is_active)
+        query[1].is_active = True
 
     db.session.commit()

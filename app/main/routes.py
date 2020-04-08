@@ -119,15 +119,6 @@ def login():
                     UserType = Mentor
                 type_obj = UserType.query.join(User, User.user_id == UserType.user_id).filter(UserType.user_id == user.user_id).first()
                 flash('Logged in successfully as {} {}'.format(type_obj.first_name, type_obj.last_name))
-
-            # if user.user_type == 'mentee':
-            #     mentee = Mentee.query.join(User, User.user_id == Mentee.user_id).filter(Mentee.user_id == user.user_id).first()
-            #     first_name = mentee.first_name
-            #     last_name = mentee.last_name
-            # elif user.user_type == 'mentor':
-            #     mentor = Mentor.query.join(User, User.user_id == Mentor.user_id).filter(Mentor.user_id == user.user_id).first()
-            #     first_name = mentor.first_name
-            #     last_name = mentor.last_name
             elif user.user_type == 'admin':
                 flash('Logged in successfully as System Admin')
             if not is_safe_url(next):
@@ -248,7 +239,7 @@ def controlpanel_mentee(): ############ ISNT SHOWING THE EMAILS
 @requires_admin('admin')
 def controlpanel_view_mentees():
     search = SearchForm(request.form)
-    queries = db.session.query(User,Mentee).filter(User.is_active == True).join(User, User.user_id == Mentee.user_id).all()
+    queries = db.session.query(User,Mentee).filter(User.is_active == True).join(Mentee, User.user_id == Mentee.user_id).all()
     if request.method == 'POST':
         return search_results(search, 'mentee')
     return render_template('admin/admin_view_mentees.html', search=search, queries=queries)
