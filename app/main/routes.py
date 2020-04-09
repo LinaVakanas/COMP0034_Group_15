@@ -226,7 +226,7 @@ def controlpanel_home():
 def controlpanel_mentee():
     form = ApproveForm(request.form)
     queries = db.session.query(User, Mentee).filter(User.is_active==False).join(Mentee, User.user_id==Mentee.user_id).all()
-    if request.method == 'POST': ######## Validate on submit
+    if request.method == 'POST' and form.validate_on_submit(): ######## Validate on submit
         approved_list = request.form.getlist('approve')
         for id in approved_list:
             approve('mentee', id, None)
@@ -319,7 +319,7 @@ def controlpanel_view_mentors():
 def controlpanel_mentor(): #### Copy from above
     form = ApproveForm(request.form)
     queries = db.session.query(User, Mentor).filter(Mentor.is_approved==False).join(Mentor, User.user_id==Mentor.user_id).all()
-    if request.method == 'POST': ######### Validate on submit
+    if request.method == 'POST' and form.validate_on_submit():
         approved_list = request.form.getlist('approve')
         for id in approved_list:
             approve('mentor', id, 'approve')
@@ -343,10 +343,10 @@ def controlpanel_view_schools():
 @bp_main.route('/admin/pending_schools/', methods=['POST', 'GET'])
 @login_required
 @requires_admin('admin')
-def controlpanel_school(): #### Copy from above
+def controlpanel_school():
     form = ApproveForm(request.form)
     schools = School.query.filter(School.is_approved==False, School.school_id!=0).all()
-    if request.method == 'POST': ######### Validate on submit
+    if request.method == 'POST' and form.validate_on_submit(): ######### Validate on submit
         approved_list = request.form.getlist('approve')
         for id in approved_list:
             school = School.query.filter(School.school_id==id).first()
@@ -369,7 +369,6 @@ def school_signup():
 
 @bp_main.route('/personal_form/<applicant_type>/<school_id>/', methods=['POST', 'GET'])
 def personal_form(applicant_type, school_id):
-    # Check that school already exists in the database
     if current_user.is_authenticated is True:
         flash('You already have an account.')
         return redirect(url_for('main.home'))
