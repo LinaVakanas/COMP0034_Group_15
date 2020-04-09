@@ -1,28 +1,11 @@
 {% extends 'base.html' %}
 {% from "_formhelpers.html" import render_field %}
-{% block title %}Pending Mentors{% endblock %}
+{% block title %}Administrator Control Panel{% endblock %}
 
 {% block header%}Administrator Control Panel{% endblock %}
 {% block content %}
-{#    <div class="container d-flex h-100 align-items-xl-start">#}
-{#    </div>#}
-    <div class="container d-flex h-100 align-items-center">
-        <form action="" method="post" novalidate>
-            {{ search.csrf_token }}
-            <div class="col-auto mb-4">
-                {{ render_field(search.search) }}
-            </div>
-            <div class="col-auto mb-3">
-                <div class="row">
-                    {{ render_field(search.select) }}
-                    {{ render_field(search.select2) }}
-                </div>
-            </div>
-            <div class="col-2 mb-0">
-                <input type="submit" value="Submit" class="btn btn-primary">
-            </div>
-        </form>
-        <div class="mx-auto text-center">
+    <div class="container d-flex h-600 align-items-center">
+        <div class="col-4 mx-auto text-center">
             <h1>USER STATISTICS</h1>
             <h2>Total Users: {{ stats_dict['users_total'] }}</h2>
             <h2>Total Unapproved: {{ stats_dict['unapproved_total'] }}</h2>
@@ -85,7 +68,39 @@
                 </table>
             </div>
         </div>
+        <div class="align-self-flex-center justify-content-flex-start">
+            <form action="" method="post" novalidate >
+                {{ search.csrf_token }}
+                <div class="col-auto mb-4">
+                    {{ render_field(search.search) }}
+                </div>
+                <div class="col-auto mb-3">
+                    <div class="row">
+                        {{ render_field(search.select) }}
+                        {{ render_field(search.select2) }}
+                    </div>
+                </div>
+                <div class="col-2 mb-0">
+                    <input type="submit" value="Submit" class="btn btn-primary">
+                </div>
+            </form>
+        </div>
     </div>
-
-
+    <div class="container d-flex h-100 flex-wrap">
+        <form action="" method="post" novalidate >
+            {{ search.csrf_token }}
+            <div class="col-auto mb-4">
+                {{ render_field(search.search) }}
+            </div>
+            <div class="col-auto mb-3">
+                <div class="row">
+                    {{ render_field(search.select) }}
+                    {{ render_field(search.select2) }}
+                </div>
+            </div>
+            <div class="col-2 mb-0">
+                <input type="submit" value="Submit" class="btn btn-primary">
+            </div>
+        </form>
+    </div>
 {% endblock %}

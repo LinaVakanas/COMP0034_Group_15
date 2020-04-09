@@ -6,7 +6,7 @@ from flask_login import login_user, login_required, logout_user, current_user
 from sqlalchemy.exc import IntegrityError
 
 from app import db, login_manager
-from app.main.forms import PersonalForm, SignUpForm, LocationForm, LoginForm, SchoolSignupForm
+from app.auth.forms import PersonalForm, SignUpForm, LocationForm, LoginForm, SchoolSignupForm
 from app.models2_backup import User, OccupationalField, Hobbies, School, PersonalInfo, PersonalIssues, \
     Mentee, Mentor, Location
 from functions import is_unique, approve

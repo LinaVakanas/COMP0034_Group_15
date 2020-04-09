@@ -1,47 +1,85 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, Form, SelectField, BooleanField, SelectMultipleField
-from wtforms.validators import DataRequired, EqualTo, Email, AnyOf
-from app.util.validators import correct_date, Unique
-from app.models2_backup import Meeting
+from wtforms import StringField, PasswordField, Form, SelectField, BooleanField, SelectMultipleField, RadioField
+from wtforms.validators import DataRequired, EqualTo, Email, AnyOf, ValidationError
 import json
+
+from app import db
+from app.models2_backup import User
+from app.util.validators import correct_date
 from datetime import datetime
 from flask import current_app as app
 
 
+class SearchByForm(FlaskForm):
+    choices = [('School', 'School Name'),
+               ('City', 'City')]
+    select = SelectField(choices=choices)
+    choices2 = [('Mentees and Mentors', 'All'),
+                ('Mentee', 'Mentee'),
+                ('Mentor', 'Mentor')]
+    select2 = SelectField(choices=choices2)
+    search = StringField('Or search by:', validators=[DataRequired()])
+
+
+class SearchForm(FlaskForm):
+    choices = [('', ''),
+               ('User&Type','User & Type'),
+               ('PersonalInfo', 'Personal Info'),
+               ('Location', 'Location Info'),
+               ('Meeting', 'Meetings')]
+    select = SelectField('Filter by:', choices=choices)
+    search = StringField('Search for a specific user', validators=[DataRequired()])
+
+
 class SignUpForm(FlaskForm):
-    first_name = StringField("First name:")
-    last_name = StringField("Last name:")
+    first_name = StringField("First name:", id="first name")
+    last_name = StringField("Last name:", id="last name")
     email = StringField('Email address', validators=[DataRequired(), Email()])
+    password = PasswordField('Password', validators=[DataRequired()])
+
+    def validate_password(self, password):
+        if len(password.data) < 8:
+            raise ValidationError("Your password must be more than 8 characters.")
 
 
-class PersonalInfoForm(FlaskForm):
+class PersonalForm(FlaskForm):
     carer_name = StringField("Carer's full name:", validators=[DataRequired()])
     carer_email = StringField("Carer's email address:", validators=[DataRequired(), Email()])
-    share_performance = BooleanField(label='Share school performance', default="unchecked")
+    football = BooleanField('Football', default="unchecked")
+    drawing = BooleanField('Drawing', default="unchecked")
+    blob = BooleanField()
 
+    depression = BooleanField(label='Depression', default="unchecked")
+    self_harm = BooleanField(label='Self-harm', default="unchecked")
+    family = BooleanField(label='Family Problems', default="unchecked")
+    drugs = BooleanField(label='Drugs', default="unchecked")
+    ed = BooleanField(label='Eating Disorder', default="unchecked")
+
+    share_personal_issues = BooleanField('Permission to share your problems with mentor', default="unchecked")
     choices4 = [('S', 'University student'),
                 ('W', 'Working'),
                 ('N', 'Neither')]
-    mentor_occupation = SelectField('What is your current status:', choices=choices4, validators=None)
-
+    mentor_occupation = SelectField('What is your current status:', choices=choices4)
     choices5 = [('<2', 'Less than 2 years'),
                 ('>=2', '2 years or longer')]
-    mentor_xperience = SelectField('How long have you had this occupation for?', choices=choices5, validators=None)
+    mentor_xperience = SelectField('How long have you had this occupation for?', choices=choices5)
 
-    def __repr__(self):
-        return '<AUTH PERSONAL INFO FORM>'
+    eng = BooleanField('Engineering', default="unchecked")
+    chem = BooleanField('Chemistry', default="unchecked")
+    bio = BooleanField('Biology', default="unchecked")
+    pharm = BooleanField('Pharmacy', default="unchecked")
+    phys = BooleanField('Physics', default="unchecked")
+    med = BooleanField('Medicine', default="unchecked")
+    hist = BooleanField('History', default="unchecked")
+    maths = BooleanField('Maths', default="unchecked")
+    engl = BooleanField('English', default="unchecked")
+    geo = BooleanField('Geography', default="unchecked")
+    law = BooleanField('Law', default="unchecked")
+    finance = BooleanField('Finance', default="unchecked")
 
-# football = BooleanField('Football', default="unchecked")
-# drawing = BooleanField('Drawing', default="unchecked")
-# blob = BooleanField()
-#
-# depression = BooleanField(label='Depression', default="unchecked")
-# self_harm = BooleanField(label='Self-harm', default="unchecked")
-# family = BooleanField(label='Family Problems', default="unchecked")
-# drugs = BooleanField(label='Drugs', default="unchecked")
-# ed = BooleanField(label='Eating Disorder', default="unchecked")
-#
-# share_personal_issues = BooleanField('Permission to share your problems with mentor', default="unchecked")
+    med1 = BooleanField('???', default="unchecked" )  # search what medical stuff usually have
+    share_med_cond = BooleanField('Permission to share medical conditions with mentor.', default="unchecked")
+    share_performance = BooleanField('Permission to share school performance with mentor', default="unchecked ")
 
 
 class LocationForm(FlaskForm):
@@ -62,10 +100,21 @@ class LocationForm(FlaskForm):
         self.city.choices = cities_list
 
 
+
+class SchoolSignupForm(FlaskForm):
+    name = StringField('Name:', validators=[DataRequired()])
+    email = StringField('School Email:', validators=[DataRequired(), Email()])
+    ofsted_ranking = StringField('Ofsted Ranking:', validators=[DataRequired()])
+
+
+class ApproveForm(FlaskForm):
+    approve = BooleanField("",default="unchecked")
+
+
 class BookMeeting(FlaskForm):
     days = []
     for i in range(31):
-        days.append(i)
+        days.append(('{}'.format(i), '{}'.format(i)))
     day = SelectField(choices=days, validators=[DataRequired()])
     months = [('1', 'Jan'), ('2', 'Feb'), ('3', 'Mar'), ('4', 'Apr'), ('5', 'May'), ('6', 'Jun'),
               ('7', 'Jul'), ('8', 'Augu'), ('9', 'Sept'), ('10', 'Oct'), ('11', 'Nov'), ('12', 'Dec')]
@@ -80,10 +129,25 @@ class BookMeeting(FlaskForm):
     durations = [('1', '1 hour'), ('1.5', '1.5 hour'), ('2', '2 hours'), ('2.5', '2.5 hours')]
     duration = SelectField(choices=durations, validators=[DataRequired()])
 
-    area_types = [('libr', 'Library'), ('museum', 'Museum'), ('school', 'School'), ('coffe', 'Coffee Shop')]
+    area_types = [('Library', 'Library'), ('Museum', 'Museum'), ('School', 'School'), ('Coffee Shop', 'Coffee Shop')]
     type = SelectField(choices=area_types, validators=[DataRequired()]) # to validate if mentee said not to go there
     address = StringField('Address:', validators=[DataRequired()])
     postcode = StringField('Postcode:', validators=[DataRequired()])
+
+    def validate_address(self, address, mentee_avoid_area):
+        if address.data == mentee_avoid_area:
+            raise ValidationError("Sorry bud, your mentee doesn't feel comfortable going there. "
+                                   "In the interest of their well-being, please pick another area!")
+
+    def validate_postcode(self, postcode, mentee_avoid_area):
+        if postcode.data == mentee_avoid_area:
+            raise ValidationError("Sorry bud, your mentee doesn't feel comfortable going there. "
+                                   "In the interest of their well-being, please pick another area!")
+
+
+class ApproveMeeting(FlaskForm):
+    choices = [(1, 'I can make it'), (0, "I can't make it")]
+    approval = RadioField(choices=choices, validators=[DataRequired()])
 
 
 class LoginForm(FlaskForm):

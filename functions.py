@@ -1,4 +1,4 @@
-from flask import flash, request, redirect, url_for
+from flask import request
 
 # class Unique(object):
 #     def __init__(self, model, field, message="", data):
@@ -9,7 +9,7 @@ from flask import flash, request, redirect, url_for
 
 # Checks if already exists in database
 from app import db
-from app.main.forms import SearchByForm
+from app.auth.forms import SearchByForm
 from app.models2_backup import Mentor, User, Mentee, School, Location, Pair, Meeting
 
 

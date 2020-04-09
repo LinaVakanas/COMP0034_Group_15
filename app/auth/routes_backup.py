@@ -3,7 +3,7 @@ from datetime import datetime
 import secrets
 
 from app import db
-from app.auth.forms import PersonalInfoForm, SignUpForm
+from app.auth.forms_remove import PersonalInfoForm, SignUpForm
 from app.models2_backup import User, MedicalCond, Message, Chatroom, OccupationalField, Hobbies, School, StudentReview, \
     Pair, PersonalInfo, Report, PersonalIssues, Mentee, Mentor, Location
 

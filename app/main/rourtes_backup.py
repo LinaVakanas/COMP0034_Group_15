@@ -1,20 +1,15 @@
 from urllib.parse import urlparse, urljoin
 
-from flask import render_template, Blueprint, url_for, flash, redirect, request, Markup, abort
+from flask import render_template, Blueprint, url_for, flash, redirect, request, abort
 from datetime import datetime, timedelta
-import secrets
 
-from sqlalchemy import or_
-
-from app import db, mail
-from app.main.forms import PersonalForm, SignUpForm, LocationForm, ApproveForm, AddSchoolForm, BookMeeting, ApproveMeeting, SearchForm, SearchByForm
+from app.auth.forms import SearchForm, SearchByForm
 from flask_login import login_user, login_required, logout_user, current_user
 
-from app import db, mail, login_manager
-from app.main.forms import PersonalForm, SignUpForm, LocationForm, ApproveForm, AddSchoolForm, BookMeeting, \
+from app import db, login_manager
+from app.auth.forms import PersonalForm, SignUpForm, LocationForm, ApproveForm, AddSchoolForm, BookMeeting, \
     ApproveMeeting, LoginForm
-from app.models2_backup import User, MedicalCond, Message, Chatroom, OccupationalField, Hobbies, School, StudentReview, \
-    Pair, PersonalInfo, Report, PersonalIssues, Mentee, Mentor, Location, Meeting
+from app.models2_backup import User, OccupationalField, Hobbies, School, Pair, PersonalInfo, PersonalIssues, Mentee, Mentor, Location, Meeting
 from app.util.decorators import requires_admin
 from functions import is_unique, approve
 from sqlalchemy.exc import IntegrityError

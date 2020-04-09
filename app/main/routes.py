@@ -3,7 +3,7 @@ from flask import render_template, Blueprint, url_for, flash, redirect, request
 from flask_login import login_required
 
 from app import db
-from app.main.forms import ApproveForm, BookMeeting, \
+from app.auth.forms import ApproveForm, BookMeeting, \
     ApproveMeeting, SearchForm, SearchByForm
 from app.models2_backup import User, School, Pair, PersonalInfo, Mentee, Mentor, Location, Meeting
 from app.util.decorators import requires_admin
