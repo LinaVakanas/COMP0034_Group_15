@@ -384,7 +384,8 @@ def personal_form(applicant_type, school_id):
                 if request.method == 'POST'and form2.validate_on_submit():
                     creation_date = str(datetime.date(datetime.now()))
                     try:
-                        new_user = User(email=form2.email.data, user_type=applicant_type, school_id=school_id, bio="", is_active=False, creation_date=creation_date)
+                        new_user = User(email=form2.email.data, user_type=applicant_type, school_id=school_id, bio="",
+                                        is_active=False, creation_date=creation_date)
                         new_user.set_password(form2.password.data)
                         db.session.add(new_user)
                         db.session.flush()
@@ -454,17 +455,21 @@ def location_form(applicant_type, applicant_id):
             if mentor.is_approved is False:
                 flash("Sorry, you haven't been approved yet. Please wait until an admin approves you.")
                 return redirect(url_for('main.home', title='Home'))
+
         if is_unique(PersonalInfo, PersonalInfo.user_id, applicant_id) is True:
             flash("Sorry you have entered an invalid registration link, as you haven't completed the section before this in "
                   "the registration process. If you have and you think it's a mistake, please contact a system admin.")
             return redirect(url_for('main.home', title='Home'))
+
         elif is_unique(User, User.user_id, applicant_id) is True:
             flash("Sorry, you can't access this page because we don't have you down as a user. Please contact a system admin"
                   " if you think this is a mistake.")
             return redirect(url_for('main.home', title='Home'))
+
         elif is_unique(Location, Location.user_id, applicant_id) is False:
             flash("Hm... looks like you've already signed up. You can sign in.")
             return redirect(url_for('main.home', title='Home'))  ### SIGN IN PAGE WHEN MAKE
+
         else:
             if request.method == 'POST' and form.validate_on_submit():
                 new_location = Location(user_id=applicant_id, address=form.address.data, city=form.city.data.capitalize(),
@@ -487,77 +492,74 @@ def pairing(applicant_type, applicant_id, location):
         return redirect(url_for('main.home', title='Home'))
     else:
         if applicant_type == 'mentee':
-            pair_with_mentor = Mentor.query.join(Location, Mentor.user_id == Location.user_id).\
-                filter(Location.city==location, Mentor.paired==False).join(User, User.user_id==Mentor.user_id).\
-                filter(User.is_active == True).first()
-            if not pair_with_mentor:
+            pair_with_type = 'mentor'
+            pair_with = db.session.query(Mentor, User).filter(Mentor.paired==False).join(User, User.user_id==Mentor.user_id).\
+                filter(User.is_active == True).join(Location, Mentor.user_id == Location.user_id).filter(Location.city==location).first()
+            mentor = pair_with[0]
+            user = pair_with[1]
+            if not mentor:
                 flash("Unfortunately there are no mentors signed up in {} just yet! Sorry for the inconvenience, "
-                      "you'll be put on a waiting list and we'll let you know as soon as a mentor is found.\n"
-                      "For now, you can edit your profile, and get used to the website.".format(location))
-                return redirect(url_for('main.home', title='Edit Profile')) ####should be main.edit
-            pair_with_user = User.query.join(Mentor).filter_by(user_id=pair_with_mentor.user_id).first()
+                      "you'll be put on a waiting list and we'll let you know as soon as a mentor is found".format(location))
+                return redirect(url_for('main.home', title='Home'))
             mentee = Mentee.query.filter_by(user_id=applicant_id).first()
-            new_pair = Pair(mentor_id=pair_with_mentor.mentor_id, mentee_id=mentee.mentee_id)
-            mentee.paired = True
-            pair_with_mentor.paired = True
-            db.session.add(new_pair)
-            db.session.commit()
-            return render_template('profiles/mentor_profile.html', title='Mentor Profile', mentor=pair_with_mentor, user=pair_with_user)
 
         elif applicant_type == 'mentor':
-            pair_with_mentee = Mentee.query.join(Location, Mentee.user_id == Location.user_id).\
-                filter(Location.city==location, Mentee.paired==False).join(User, User.user_id==Mentee.user_id).\
-                filter(User.is_active == True).first()
-            if not pair_with_mentee:
+            pair_with_type = 'mentee'
+            pair_with = db.session.query(Mentee, User).filter(Mentee.paired == False).join(User,User.user_id == Mentee.user_id). \
+                filter(User.is_active == True).join(Location, Mentee.user_id == Location.user_id).filter(
+                Location.city == location).first()
+            mentee = pair_with[0]
+            user = pair_with[1]
+            if not mentee:
                 flash("Unfortunately there are no mentees signed up in {} yet. Sorry for the inconvenience, "
                       "you'll be put on a waiting list and we will let you know as soon as a mentee is found.\n"
                       "For now, you can edit your profile, and get used to the website.".format(location))
                 return render_template('home.html', title='Home')  ####for now
-            pair_with_user = User.query.join(Mentee).filter_by(user_id=pair_with_mentee.user_id).first()
             mentor = Mentor.query.filter_by(user_id=applicant_id).first()
-            new_pair = Pair(mentor_id=mentor.mentor_id, mentee_id=pair_with_mentee.mentee_id)
-            mentor.paired = True
-            pair_with_mentee.paired = True
-            db.session.add(new_pair)
-            db.session.commit()
-            return render_template('profiles/mentee_profile.html', mentee=pair_with_mentee, user=pair_with_user, title='Mentee Profile')
 
-        return render_template('home.html', title='Home') ####for now
+        mentor.paired = True
+        mentee.paired = True
+        new_pair = Pair(mentor_id=mentor.mentor_id, mentee_id=mentee.mentee_id)
+        db.session.add(new_pair)
+        db.session.commit()
+
+        if applicant_type == 'mentor':
+            return render_template('profiles/mentee_profile.html', mentee=mentee, user=user, title='Mentee Profile')
+        elif applicant_type == 'mentee':
+            return render_template('profiles/mentor_profile.html', mentor=mentor, user=user,
+                                   title='Mentor Profile')
+
+        return render_template('home.html', title='Home')
 
 
-@bp_main.route('/book-meeting/<pair_id>/<mentee_id>/<mentee_user_id>/', methods=['POST', 'GET'])
-def book_meeting(pair_id, mentee_id, mentee_user_id):
+@bp_main.route('/book-meeting/<mentee_id>/<mentee_user_id>/', methods=['POST', 'GET'])
+def book_meeting(mentee_id, mentee_user_id):
     form = BookMeeting(request.form)
-    mentee = Mentee.query.filter(Mentee.mentee_id == mentee_id).first()
+    query = db.session.query(Mentee, Location).filter(Mentee.mentee_id == mentee_id).\
+        join(Location, Location.user_id == mentee_user_id).join(Pair, Pair.mentee_id==mentee_id).first()
+    mentee = query[0]
+    mentee_form = query[1]
+    pair = query[2]
     if request.method == 'POST' and form.validate_on_submit:
         date = '{day}/{month}/{year}'.format(day=form.day.data, month=form.month.data, year=str(form.year.data))
-        mentee_user = User.query.filter(User.user_id == mentee_user_id).first()
 
         # check if the area is a place mentee didnt want to go
-        mentee_form = Location.query.join(User).filter(User.user_id == mentee_user.user_id).first()
         if form.address.data == mentee_form.avoid_area:
             flash("Sorry bud, your mentee doesn't feel comfortable going there. In the interest of their well-being, please pick another area!")
             return render_template('forms/BookingForm.html', title="Book Meeting", form=form, mentee=mentee)
 
         # check if that day is already booked
-        elif is_unique(Meeting, Meeting.date, date, model2=Pair, field2=Pair.id, data2=pair_id) is False:
-            flash("Hm... looks like you've already booked a meeting on {date}."
-                  .format(date=date)) ### try to do w js so doesn't need to render
+        elif is_unique(Meeting, Meeting.date, date, model2=Pair, field2=Pair.id, data2=pair.id) is False:
+            flash("Hm... looks like you've already booked a meeting on {date}.".format(date=date))
             # when make a view booking page, link to that one
             return render_template('forms/BookingForm.html', title="Book Meeting", form=form, mentee=mentee)
 
         else:
             time = '{hour}:{minute}'.format(hour=form.hour.data, minute=form.minute.data)
-            new_meeting = Meeting(pair_id=pair_id, day=form.day.data, month=form.month.data, year=str(form.year.data),
-                                  date=date, minute=form.minute.data, hour=form.hour.data, time=time,
-                                  duration=form.duration.data, address=form.address.data, postcode=form.postcode.data,
-                                  type=form.type.data) #### IM THINKING WE SHOULD ONLY KEEP DATE AND TIME, NOT DAY, MONTH ETC...
+            new_meeting = Meeting(pair_id=pair.id, date=date, time=time, duration=form.duration.data,
+                                  address=form.address.data, postcode=form.postcode.data, type=form.type.data)
             db.session.add(new_meeting)
             db.session.commit()
-            # email = Message(subject="Confirm your Meeting", recipients=mentee_user.email,
-            #                 body="Hi {name}, \nYour mentor has booked a meeting with you on {date} at {time}. "
-            #                      "Please click the link below to review this.".format(name=mentee_user.name, date=new_meeting.date, time=new_meeting.time))
-            # mail.send(email)
             return render_template('meeting/meeting_confirmation.html', title="Meeting Confirmation", approval="1", user="mentor")
 
     return render_template("forms/BookingForm.html", title="Book Meeting", form=form, mentee=mentee)

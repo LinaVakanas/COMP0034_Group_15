@@ -46,8 +46,8 @@ def populate_db():
 
     pair = Pair(mentor_id=1, mentee_id=1, creation_date="4/2/2020")
     db.session.add(pair)
-    book_meeting = Meeting(pair_id=1, day='3', month='5', year=2020, date='352020', hour='17', minute='00', time='1700',
-                            duration='1', address="Kilburn Road", postcode="WY4 5UU", type="libr")
+    book_meeting = Meeting(pair_id=1, date='3/5/2020', time='17:00',
+                            duration='1', address="Kilburn Road", postcode="WY4 5UU", type="Library")
     db.session.add_all([user0,admin])
     db.session.add_all([user1, mentor])
     db.session.add_all([user2, mentee, mentee_personal_info])

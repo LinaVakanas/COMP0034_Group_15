@@ -215,12 +215,7 @@ class Meeting(db.Model):
     meeting_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     pair_id = db.Column(db.Integer, db.ForeignKey('pair.id'))
     # time-related
-    day = db.Column(db.String(2), nullable=False)
-    month = db.Column(db.String(2), nullable=False)
-    year = db.Column(db.String(4), nullable=False)
     date = db.Column(db.String(10), unique=True)
-    hour = db.Column(db.String(2), nullable=False)
-    minute = db.Column(db.String(2), nullable=False)
     time = db.Column(db.String(5), unique=True)
     duration = db.Column(db.String(3), nullable=False)
     # location-related

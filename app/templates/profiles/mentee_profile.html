@@ -15,7 +15,9 @@
                     <h3 style="font-weight: 500">Bio</h3>
                     <p>{{ user.bio }}</p>
                 </div>
-                <a class="btn btn-primary" href="#" role="button">Book Meeting</a>
+                <a href="{{ url_for('main.book_meeting', mentee_id=mentee.mentee_id, mentee_user_id=mentee.user_id) }}" >
+                    <input type="button" value="View Mentors" class="btn btn-primary">
+                </a>
             </div>
         {% endblock %}
     </div>

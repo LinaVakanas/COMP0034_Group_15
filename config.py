@@ -13,7 +13,7 @@ class Config(object):
     DEBUG = False
     TESTING = False
 
-    #Forms config
+    #forms config
     WTF_CSRF_SECRET_KEY = 'this-is-not-random-but-should-be'
 
     # Database config

@@ -100,7 +100,7 @@ c.execute('''
           pair_id INTEGER NOT NULL,
           creation_date TEXT NOT NULL,
           user_id INTEGER NOT NULL,
-           FOREIGN KEY (pair_id) REFERENCES pair(pair_id) )
+           FOREIGN KEY (pair_id) REFERENCES pair(id) )
           ''')
 
 c.execute('''
@@ -201,11 +201,6 @@ c.execute('''
 c.execute('''
           CREATE TABLE meeting
           (meeting_id INTEGER PRIMARY KEY,
-          day TEXT,
-          month TEXT,
-          year TEXT,
-          hour TEXT,
-          minute TEXT,
           duration TEXT,
           date TEXT,
           time TEXT,
