@@ -4,7 +4,9 @@
 
 {% block header%}Administrator Control Panel{% endblock %}
 {% block content %}
-    <div>
+{#    <div class="container d-flex h-100 align-items-xl-start">#}
+{#    </div>#}
+    <div class="container d-flex h-100 align-items-center">
         <form action="" method="post" novalidate>
             {{ search.csrf_token }}
             <div class="col-auto mb-4">
@@ -20,8 +22,6 @@
                 <input type="submit" value="Submit" class="btn btn-primary">
             </div>
         </form>
-    </div>
-    <div class="container d-flex h-100 align-items-center">
         <div class="mx-auto text-center">
             <h1>USER STATISTICS</h1>
             <h2>Total Users: {{ stats_dict['users_total'] }}</h2>
