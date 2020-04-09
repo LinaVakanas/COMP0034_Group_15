@@ -1,26 +1,20 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, Form, SelectField, BooleanField, SelectMultipleField, RadioField
-from wtforms.validators import DataRequired, EqualTo, Email, AnyOf
+from wtforms.validators import DataRequired, EqualTo, Email, AnyOf, ValidationError
 import json
+
+from app import db
+from app.models2_backup import User
 from app.util.validators import correct_date
 from datetime import datetime
 from flask import current_app as app
 
 
-# class MentorSignUpForm(FlaskForm):
-#     first_name = StringField("First name:")
-#     last_name = StringField("Last name:")
-#     email = StringField('Email address', validators=[DataRequired(), Email()])
-    ## file for DBS ##
-    ## file for student or employment ##
-
-
 class SearchByForm(FlaskForm):
-    choices = [('', ''),
-               ('School', 'School Name'),
+    choices = [('School', 'School Name'),
                ('City', 'City')]
     select = SelectField(choices=choices)
-    choices2 = [('All', 'All'),
+    choices2 = [('Mentees and Mentors', 'All'),
                 ('Mentee', 'Mentee'),
                 ('Mentor', 'Mentor')]
     select2 = SelectField(choices=choices2)
@@ -42,6 +36,10 @@ class SignUpForm(FlaskForm):
     last_name = StringField("Last name:", id="last name")
     email = StringField('Email address', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
+
+    def validate_password(self, password):
+        if len(password.data) < 8:
+            raise ValidationError("Your password must be more than 8 characters.")
 
 
 class PersonalForm(FlaskForm):
@@ -103,7 +101,7 @@ class LocationForm(FlaskForm):
 
 
 
-class AddSchoolForm(FlaskForm):
+class SchoolSignupForm(FlaskForm):
     name = StringField('Name:', validators=[DataRequired()])
     email = StringField('School Email:', validators=[DataRequired(), Email()])
     ofsted_ranking = StringField('Ofsted Ranking:', validators=[DataRequired()])
@@ -135,6 +133,16 @@ class BookMeeting(FlaskForm):
     type = SelectField(choices=area_types, validators=[DataRequired()]) # to validate if mentee said not to go there
     address = StringField('Address:', validators=[DataRequired()])
     postcode = StringField('Postcode:', validators=[DataRequired()])
+
+    def validate_address(self, address, mentee_avoid_area):
+        if address.data == mentee_avoid_area:
+            raise ValidationError("Sorry bud, your mentee doesn't feel comfortable going there. "
+                                   "In the interest of their well-being, please pick another area!")
+
+    def validate_postcode(self, postcode, mentee_avoid_area):
+        if postcode.data == mentee_avoid_area:
+            raise ValidationError("Sorry bud, your mentee doesn't feel comfortable going there. "
+                                   "In the interest of their well-being, please pick another area!")
 
 
 class ApproveMeeting(FlaskForm):

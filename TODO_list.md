@@ -24,6 +24,7 @@ To Do Before Move On:
 ~~* Fix email in column~~
 * Sort out 'auth' folder 
 * Mentee/Mentor view meetings
+* View own and paired profile
 ~~* Admin search~~
 ~~* Fix home page signup, let schools sign up
 ~~* Let mentors sign up on home page~~

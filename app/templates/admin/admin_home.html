@@ -24,25 +24,35 @@
     <div class="container d-flex h-100 align-items-center">
         <div class="mx-auto text-center">
             <h1>USER STATISTICS</h1>
-            <h2>Total Users: {{ users_total }}</h2>
-            <h2>Total Unapproved: {{ unapproved_total }}</h2>
+            <h2>Total Users: {{ stats_dict['users_total'] }}</h2>
+            <h2>Total Unapproved: {{ stats_dict['unapproved_total'] }}</h2>
             <table class="table">
                 <thead class="thead-dark">
                 <tr>
-                    <th scope="col">Total Mentors</th>
-                    <th scope="col">Unapproved Mentors</th>
-                    <th scope="col">Total Mentees</th>
-                    <th scope="col">Unapproved Mentees</th>
-                    <th scope="col">Total Schools</th>
+                    <th></th>
+                    <th scope="col">School</th>
+                    <th scope="col">Mentee</th>
+                    <th scope="col">Mentor</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
-                    <td>{{ mentors_total }}</td>
-                    <td>{{unapproved_mentors_total}}</td>
-                    <td>{{ mentees_total }}</td>
-                    <td>{{unapproved_mentees_total}}</td>
-                    <td>{{ schools_total }}</td>
+                    <th scope="row">Approved Total</th>
+                    <td>{{stats_dict['approved_schools_total']}}</td>
+                    <td>{{ stats_dict['approved_mentees_total'] }}</td>
+                    <td>{{stats_dict['approved_mentors_total']}}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Unapproved Total</th>
+                    <td>{{stats_dict['unapproved_schools_total']}}</td>
+                    <td>{{ stats_dict['unapproved_mentees_total'] }}</td>
+                    <td>{{stats_dict['unapproved_mentors_total']}}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Total</th>
+                    <td>{{stats_dict['schools_total']}}</td>
+                    <td>{{ stats_dict['mentees_total'] }}</td>
+                    <td>{{stats_dict['mentors_total']}}</td>
                 </tr>
                 </tbody>
             </table>

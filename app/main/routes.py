@@ -1,73 +1,20 @@
 from urllib.parse import urlparse, urljoin
 
-from flask import render_template, Blueprint, url_for, flash, redirect, request, Markup, abort
+from flask import render_template, Blueprint, url_for, flash, redirect, request, abort
 from datetime import datetime, timedelta
-import secrets
 
-from sqlalchemy import or_
-
-from app import db, mail
-from app.main.forms import PersonalForm, SignUpForm, LocationForm, ApproveForm, AddSchoolForm, BookMeeting, ApproveMeeting, SearchForm, SearchByForm
 from flask_login import login_user, login_required, logout_user, current_user
 
-from app import db, mail, login_manager
-from app.main.forms import PersonalForm, SignUpForm, LocationForm, ApproveForm, AddSchoolForm, BookMeeting, \
-    ApproveMeeting, LoginForm
-from app.models2_backup import User, MedicalCond, Message, Chatroom, OccupationalField, Hobbies, School, StudentReview, \
-    Pair, PersonalInfo, Report, PersonalIssues, Mentee, Mentor, Location, Meeting
+from app import db, login_manager
+from app.main.forms import PersonalForm, SignUpForm, LocationForm, ApproveForm, BookMeeting, \
+    ApproveMeeting, LoginForm, SearchForm, SearchByForm, SchoolSignupForm
+from app.models2_backup import User, OccupationalField, Hobbies, School, Pair, PersonalInfo, PersonalIssues, \
+    Mentee, Mentor, Location, Meeting
 from app.util.decorators import requires_admin
-from functions import is_unique, approve
+from functions import is_unique, approve, get_stats, search_by_type, get_data_from_user
 from sqlalchemy.exc import IntegrityError
 
 bp_main = Blueprint('main', __name__)
-
-
-def get_data_from_user(UserType, DataType, user_field, data):
-
-    if UserType == Mentee:
-        # id's and class of user PAIRED WITH the user searching for
-        PairedType = Mentor
-        paired_w_type_id = Mentor.mentor_id
-        paired_w_id = Pair.mentor_id
-
-        # id's of user searching for
-        type_id = Mentee.mentee_id
-        paired_id = Pair.mentee_id
-
-    else:
-        # id's and class of user PAIRED WITH the user searching for
-        PairedType = Mentee
-        paired_w_type_id = Mentee.mentee_id
-        paired_w_id = Pair.mentee_id
-
-        # id's of user searching for
-        type_id = Mentor.mentor_id
-        paired_id = Pair.mentor_id
-
-    if DataType == Meeting:
-        results = db.session.query(User, UserType, Meeting). \
-            filter(user_field.contains(data)). \
-            join(UserType, User.user_id == UserType.user_id).join(Pair, paired_id == type_id). \
-            join(Meeting, Meeting.pair_id == Pair.id).first()
-
-    elif DataType == Pair:
-        results = db.session.query(User, UserType, Pair, PairedType).\
-            filter(user_field.contains(data)).\
-            join(UserType, User.user_id == UserType.user_id).join(Pair, paired_id == type_id).\
-            join(PairedType, paired_w_id == paired_w_type_id).first()
-
-    elif DataType == 'User&Type':
-        results = db.session.query(User, UserType). \
-            filter(user_field.contains(data)). \
-            join(UserType, User.user_id == UserType.user_id).first()
-
-        # if results hasn't been defined yet
-    else:
-        results = db.session.query(User, UserType, DataType). \
-            filter(user_field.contains(data)). \
-            join(UserType, User.user_id == UserType.user_id). \
-            join(DataType, DataType.user_id == User.user_id).first()
-    return results
 
 
 def is_safe_url(target):
@@ -160,64 +107,80 @@ def testing():
 @requires_admin('admin')
 def controlpanel_home():
     search = SearchByForm(request.form)
-    users = User.query.all()
-    users_total = User.query.count()
-    mentees = Mentee.query.all()
-    mentees_total = Mentee.query.count()
-    mentors = Mentor.query.all() ## will need filtering for specific numbers such as unapproved etc
-    mentors_total = Mentor.query.count()
-    schools_total = School.query.count() ###### ACTUAL
-    unapproved_mentees_total = Mentee.query.join(User, User.user_id==Mentee.user_id).filter(User.is_active==False).count()
-    unapproved_mentors_total = Mentor.query.join(User, User.user_id==Mentor.user_id).filter(User.is_active==False).count()
-    unapproved_total = unapproved_mentees_total + unapproved_mentors_total
+    stats_dict = get_stats()
 
     if request.method == 'POST' and search.validate_on_submit():
         search_type = search.select.data
         user_type = search.select2.data
         search_string = search.search.data
 
-        if user_type == 'Mentee':
-            if search_type == 'City':
-                results = db.session.query(Location, User, Mentee).filter(Location.city.contains(search_string)).\
-                join(User, Location.user_id == User.user_id).join(Mentee, User.user_id == Mentee.user_id).all()
-            elif search_type == 'School':
-                results = db.session.query(School, User, Mentee).filter(School.school_name.contains(search_string)).\
-                    join(User, School.school_id == User.school_id).join(Mentee, User.user_id == Mentee.user_id).all()
+        if user_type == 'Mentees and Mentors':
+            results = []
+            mentees_results = search_by_type('Mentee', search_type, search_string)
+            results.extend(mentees_results)
+            mentor_results = search_by_type('Mentor', search_type, search_string)
+            results.extend(mentor_results)
+        else:
+            results = search_by_type(user_type, search_type, search_string)
 
-        elif user_type == 'Mentor':
-            if search_type == 'City':
-                results = db.session.query(Location, User, Mentor).filter(Location.city.contains(search_string)). \
-                    join(User, Location.user_id == User.user_id).join(Mentor, User.user_id == Mentor.user_id).all()
-            elif search_type == 'School':
-                results = db.session.query(School, User, Mentor).filter(School.school_name.contains(search_string)). \
-                    join(User, School.school_id == User.school_id).join(Mentor, User.user_id == Mentor.user_id).all()
-
-        elif user_type == 'All':
-            user_type = 'Mentees and Mentors'
-            if search_type == 'City':
-                results = []
-                mentors = db.session.query(Location, User, Mentor).filter(Location.city.contains(search_string)). \
-                    join(User, Location.user_id == User.user_id).join(Mentor, User.user_id == Mentor.user_id).all()
-                results.extend(mentors)
-                mentees = db.session.query(Location, User, Mentee).filter(Location.city.contains(search_string)). \
-                    join(User, Location.user_id == User.user_id).join(Mentee, User.user_id == Mentee.user_id).all()
-                results.extend(mentees)
-
-            elif search_type == 'School':
-                results = []
-                mentors = db.session.query(School, User, Mentor).filter(School.school_name.contains(search_string)). \
-                    join(User, School.school_id == User.school_id).join(Mentor, User.user_id == Mentor.user_id).all()
-                results.extend(mentors)
-                mentees = db.session.query(School, User, Mentee).filter(School.school_name.contains(search_string)). \
-                    join(User, School.school_id == User.school_id).join(Mentee, User.user_id == Mentee.user_id).all()
-                results.extend(mentees)
-
-        return render_template('admin/search_results_{}.html'.format(search_type), search_term=search_string,
+        return render_template('admin/search_results/{}.html'.format(search_type), search_term=search_string,
                                results=results, user_type=user_type)
 
-    return render_template('admin/admin_home.html', search=search,  users=users, users_total=users_total, mentees=mentees, mentees_total=mentees_total, mentors=mentors,
-                           mentors_total=mentors_total, schools_total=schools_total, unapproved_mentees_total=unapproved_mentees_total,
-                           unapproved_mentors_total=unapproved_mentors_total, unapproved_total=unapproved_total)
+    return render_template('admin/admin_home.html', search=search,stats_dict=stats_dict)
+
+
+@bp_main.route('/admin/view_schools')
+@login_required
+@requires_admin('admin')
+def controlpanel_view_schools():
+    schools = School.query.filter(School.is_approved == True).all()
+    schools_dict = dict()
+    for school in schools:
+        school_id = school.school_id
+        num_mentees = Mentee.query.filter(Mentee.school_id==school_id).count()
+        schools_dict[school_id] = num_mentees
+    return render_template('admin/admin_view_schools.html', schools=schools, schools_dict=schools_dict)
+
+
+@bp_main.route('/admin/pending_schools/', methods=['POST', 'GET'])
+@login_required
+@requires_admin('admin')
+def controlpanel_school():
+    form = ApproveForm(request.form)
+    schools = School.query.filter(School.is_approved==False, School.school_id!=0).all()
+    if request.method == 'POST' and form.validate_on_submit():
+        approved_list = request.form.getlist('approve')
+        for id in approved_list:
+            school = School.query.filter(School.school_id==id).first()
+            school.is_approved = True
+            db.session.commit()
+        return redirect(url_for('main.controlpanel_home'))
+    return render_template('admin/admin_pending_schools.html', schools=schools, form=form)
+
+
+@bp_main.route('/admin/pending_mentors/', methods=['POST', 'GET'])
+@login_required
+@requires_admin('admin')
+def controlpanel_mentor():
+    form = ApproveForm(request.form)
+    queries = db.session.query(User, Mentor).filter(Mentor.is_approved==False).join(Mentor, User.user_id==Mentor.user_id).all()
+    if request.method == 'POST' and form.validate_on_submit():
+        approved_list = request.form.getlist('approve')
+        for id in approved_list:
+            approve('mentor', id, 'approve')
+        return redirect(url_for('main.controlpanel_home')) ##### Maybe flash a msg as well
+    return render_template('admin/admin_pending_mentors.html', queries=queries, form=form)
+
+
+@bp_main.route('/admin/view_mentors', methods=['POST', 'GET'])
+@login_required
+@requires_admin('admin')
+def controlpanel_view_mentors():
+    search = SearchForm(request.form)
+    queries = db.session.query(User, Mentor).filter(Mentor.is_approved==True).join(Mentor, User.user_id==Mentor.user_id).all()
+    if request.method == 'POST':
+        return search_results(search, 'mentor')
+    return render_template('admin/admin_view_mentors.html', queries=queries, search=search)
 
 
 @bp_main.route('/admin/pending_mentees', methods=['POST','GET'])
@@ -252,7 +215,6 @@ def search_results(search, user_type):
     # set strings to data from form
     search_string = search.search.data.lower()
     select_string = search.select.data
-    results = ''
 
     if search_string == '':
         flash("Please enter a value")
@@ -277,7 +239,7 @@ def search_results(search, user_type):
         if not user:
             flash("'{searched}' is not in the database".format(searched=search_string.capitalize()))
             return redirect('/admin/view_{}s'.format(user_type))
-        return render_template('admin/search_results_all.html'.format(select_string), title='Search Results',
+        return render_template('admin/search_results/all.html'.format(select_string), title='Search Results',
                                personal_info=personal_info, location=location, meetings=meetings, user=user,
                                user_type=user_type, pair=pair)
     else:
@@ -299,72 +261,22 @@ def search_results(search, user_type):
     if not results:
         flash("'{searched}' is not in the database".format(searched=search_string.capitalize()))
         return redirect('/admin/view_mentees')
-    return render_template('admin/search_results_{}.html'.format(select_string), title='Search Results', results=results, user_type=user_type)
+    return render_template('admin/search_results/{}.html'.format(select_string), title='Search Results', results=results, user_type=user_type)
 
 
-@bp_main.route('/admin/view_mentors', methods=['POST', 'GET'])
-@login_required
-@requires_admin('admin')
-def controlpanel_view_mentors():
-    search = SearchForm(request.form)
-    queries = db.session.query(User, Mentor).filter(Mentor.is_approved==True).join(Mentor, User.user_id==Mentor.user_id).all()
-    if request.method == 'POST':
-        return search_results(search, 'mentor')
-    return render_template('admin/admin_view_mentors.html', queries=queries, search=search)
-
-
-@bp_main.route('/admin/pending_mentors/', methods=['POST', 'GET'])
-@login_required
-@requires_admin('admin')
-def controlpanel_mentor(): #### Copy from above
-    form = ApproveForm(request.form)
-    queries = db.session.query(User, Mentor).filter(Mentor.is_approved==False).join(Mentor, User.user_id==Mentor.user_id).all()
-    if request.method == 'POST' and form.validate_on_submit():
-        approved_list = request.form.getlist('approve')
-        for id in approved_list:
-            approve('mentor', id, 'approve')
-        return redirect(url_for('main.controlpanel_home')) ##### Maybe flash a msg as well
-    return render_template('admin/admin_pending_mentors.html', queries=queries, form=form)
-
-
-@bp_main.route('/admin/view_schools')
-@login_required
-@requires_admin('admin')
-def controlpanel_view_schools():
-    schools = School.query.filter(School.is_approved == True).all()
-    schools_dict = dict()
-    for school in schools:
-        school_id = school.school_id
-        num_mentees = Mentee.query.filter(Mentee.school_id==school_id).count()
-        schools_dict[school_id] = num_mentees
-    return render_template('admin/admin_view_schools.html', schools=schools, schools_dict=schools_dict)
-
-
-@bp_main.route('/admin/pending_schools/', methods=['POST', 'GET'])
-@login_required
-@requires_admin('admin')
-def controlpanel_school():
-    form = ApproveForm(request.form)
-    schools = School.query.filter(School.is_approved==False, School.school_id!=0).all()
-    if request.method == 'POST' and form.validate_on_submit(): ######### Validate on submit
-        approved_list = request.form.getlist('approve')
-        for id in approved_list:
-            school = School.query.filter(School.school_id==id).first()
-            school.is_approved = True
-            db.session.commit()
-        return redirect(url_for('main.controlpanel_home'))
-    return render_template('admin/admin_pending_schools.html', schools=schools, form=form)
-
-
-@bp_main.route('/add_school', methods=['POST', 'GET']) ########### Maybe Change name
+@bp_main.route('/school_signup', methods=['POST', 'GET'])
 def school_signup():
-    form = AddSchoolForm(request.form)
+    form = SchoolSignupForm(request.form)
     if request.method == 'POST' and form.validate_on_submit():
-        new_school = School(is_approved=False, school_name=form.name.data, school_email=form.email.data, ofsted_ranking=form.ofsted_ranking.data)
-        db.session.add(new_school)
-        db.session.commit()
-        return redirect(url_for('main.home'))  ##### Maybe flash a msg as well
-    return render_template('admin/admin_add_school.html', form=form)
+        try:
+            new_school = School(is_approved=False, school_name=form.name.data, school_email=form.email.data, ofsted_ranking=form.ofsted_ranking.data)
+            db.session.add(new_school)
+            db.session.flush()
+        except IntegrityError:
+            flash("Your school is already registered.")
+        return redirect(url_for('main.home'))
+
+    return render_template('forms/school_signup.html', form=form)
 
 
 @bp_main.route('/personal_form/<applicant_type>/<school_id>/', methods=['POST', 'GET'])
@@ -374,14 +286,17 @@ def personal_form(applicant_type, school_id):
         return redirect(url_for('main.home'))
     else:
         school = School.query.filter(School.school_id == school_id).first()
-        if school.is_approved is False:
-            flash('Sorry your school has not been approved yet.')
+        if is_unique(School, School.school_id, school_id, model2=None, field2=None, data2=None) is True:
+            flash('Sorry you have entered an invalid registration link, please contact a system admin. CHANGE THIS TO REDIRECT')
             return redirect(url_for('main.home'))
         else:
-            if is_unique(School, School.school_id, school_id, model2=None, field2=None, data2=None) is False:
+            if school.is_approved is False:
+                flash('Sorry your school has not been approved yet.')
+                return redirect(url_for('main.home'))
+            else:
                 form = PersonalForm(request.form)
                 form2 = SignUpForm(request.form)
-                if request.method == 'POST'and form2.validate_on_submit():
+                if request.method == 'POST'and form2.validate_on_submit() and form.validate_on_submit():
                     creation_date = str(datetime.date(datetime.now()))
                     try:
                         new_user = User(email=form2.email.data, user_type=applicant_type, school_id=school_id, bio="",
@@ -391,12 +306,12 @@ def personal_form(applicant_type, school_id):
                         db.session.flush()
                     except IntegrityError:
                         flash("Hm... looks like you've already signed up with this email. You can sign in.")
-                        return redirect(url_for('main.home', title='Home')) ### SIGN IN PAGE WHEN MAKE
+                        return redirect(url_for('main.login', title='Login'))
 
                     if applicant_type == 'mentee':
 
                         new_user.mentee.append(Mentee(school_id=school_id, first_name=form2.first_name.data,
-                                                      last_name=form2.last_name.data, paired=False, is_active=False))
+                                                      last_name=form2.last_name.data, paired=False))
                         new_m = Mentee.query.join(User).filter(Mentee.user_id == new_user.user_id).first()
 
                         new_user.personal_info.append(PersonalInfo(carer_email=form.carer_email.data, carer_name=form.carer_name.data,
@@ -407,7 +322,7 @@ def personal_form(applicant_type, school_id):
 
                         if form.mentor_xperience.data == '>=2' and form.mentor_occupation.data != 'N':
                             new_user.mentor.append(Mentor(user_id=new_user.user_id, school_id=0, first_name=form2.first_name.data,
-                                                last_name=form2.last_name.data, paired=False, is_active=False,is_approved=False))
+                                                last_name=form2.last_name.data, paired=False,is_approved=False))
                             new_m = Mentor.query.join(User).filter(Mentor.user_id == new_user.user_id).first()
                             new_user.personal_info.append(PersonalInfo(carer_email="", carer_name="",status=form.mentor_occupation.data,
                                                                        xperience=form.mentor_xperience.data, share_performance=None))
@@ -419,7 +334,7 @@ def personal_form(applicant_type, school_id):
 
                     new_user.personal_issues.append(PersonalIssues(depression=form.depression.data, self_harm=form.self_harm.data,
                                                                        family=form.family.data, drugs=form.drugs.data, ed=form.ed.data,
-                                                                       user_id=new_user.user_id, share_personal_issues=form.share_personal_issues.data))
+                                                                       user_id=new_user.user_id))
 
                     new_user.hobbies.append(Hobbies(football=form.football.data, drawing=form.drawing.data, user_id=new_user.user_id))
 
@@ -438,9 +353,7 @@ def personal_form(applicant_type, school_id):
 
                     # new_medical = MedicalCond()
                 return render_template('forms/PersonalForm.html', title='Signup', form2=form2, form=form, applicant_type=applicant_type)
-            else:
-                flash('Sorry you have entered an invalid registration link, please contact a system admin. CHANGE THIS TO REDIRECT')
-                return redirect(url_for('main.home'))
+
 
 
 @bp_main.route('/location_form/<applicant_type>/<applicant_id>/', methods=['POST', 'GET'])
@@ -468,7 +381,7 @@ def location_form(applicant_type, applicant_id):
 
         elif is_unique(Location, Location.user_id, applicant_id) is False:
             flash("Hm... looks like you've already signed up. You can sign in.")
-            return redirect(url_for('main.home', title='Home'))  ### SIGN IN PAGE WHEN MAKE
+            return redirect(url_for('main.login', title='Login'))
 
         else:
             if request.method == 'POST' and form.validate_on_submit():
@@ -492,7 +405,6 @@ def pairing(applicant_type, applicant_id, location):
         return redirect(url_for('main.home', title='Home'))
     else:
         if applicant_type == 'mentee':
-            pair_with_type = 'mentor'
             pair_with = db.session.query(Mentor, User).filter(Mentor.paired==False).join(User, User.user_id==Mentor.user_id).\
                 filter(User.is_active == True).join(Location, Mentor.user_id == Location.user_id).filter(Location.city==location).first()
             mentor = pair_with[0]
@@ -504,7 +416,6 @@ def pairing(applicant_type, applicant_id, location):
             mentee = Mentee.query.filter_by(user_id=applicant_id).first()
 
         elif applicant_type == 'mentor':
-            pair_with_type = 'mentee'
             pair_with = db.session.query(Mentee, User).filter(Mentee.paired == False).join(User,User.user_id == Mentee.user_id). \
                 filter(User.is_active == True).join(Location, Mentee.user_id == Location.user_id).filter(
                 Location.city == location).first()
@@ -534,22 +445,23 @@ def pairing(applicant_type, applicant_id, location):
 
 @bp_main.route('/book-meeting/<mentee_id>/<mentee_user_id>/', methods=['POST', 'GET'])
 def book_meeting(mentee_id, mentee_user_id):
-    form = BookMeeting(request.form)
     query = db.session.query(Mentee, Location).filter(Mentee.mentee_id == mentee_id).\
         join(Location, Location.user_id == mentee_user_id).join(Pair, Pair.mentee_id==mentee_id).first()
     mentee = query[0]
     mentee_form = query[1]
     pair = query[2]
+    form = BookMeeting(request.form, mentee_form.avoid_area)
+
     if request.method == 'POST' and form.validate_on_submit:
         date = '{day}/{month}/{year}'.format(day=form.day.data, month=form.month.data, year=str(form.year.data))
 
         # check if the area is a place mentee didnt want to go
-        if form.address.data == mentee_form.avoid_area:
-            flash("Sorry bud, your mentee doesn't feel comfortable going there. In the interest of their well-being, please pick another area!")
-            return render_template('forms/BookingForm.html', title="Book Meeting", form=form, mentee=mentee)
+        # if form.address.data == mentee_form.avoid_area:
+        #     flash("Sorry bud, your mentee doesn't feel comfortable going there. In the interest of their well-being, please pick another area!")
+        #     return render_template('forms/BookingForm.html', title="Book Meeting", form=form, mentee=mentee)
 
         # check if that day is already booked
-        elif is_unique(Meeting, Meeting.date, date, model2=Pair, field2=Pair.id, data2=pair.id) is False:
+        if is_unique(Meeting, Meeting.date, date, model2=Pair, field2=Pair.id, data2=pair.id) is False:
             flash("Hm... looks like you've already booked a meeting on {date}.".format(date=date))
             # when make a view booking page, link to that one
             return render_template('forms/BookingForm.html', title="Book Meeting", form=form, mentee=mentee)
