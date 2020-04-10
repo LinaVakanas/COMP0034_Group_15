@@ -4,58 +4,84 @@
 
 {% block header%}{{ title }}{% endblock %}
 {% block content %}
-    <div class="container vh-70 d-flex mt-6 col justify-content-center">
-        <form action="" method="post" novalidate>
-            {{ form.csrf_token }}
-            <div class="col-6">
-                <img src="{{ url_for('static',filename='media/default_user/profile_pic.png') }}" class="rounded-circle img-fluid" alt="Profile Picture" width="400", height="400">
+    <div class="mt-5">
+        <div class="row ml-0">
+            <div class="col-2">
+                <img src="{{ url_for('static',filename='media/default_user/profile_pic.png') }}" class="rounded-circle img-fluid" alt="Profile Picture" width="400" height="400">
+            </div>
+            <div class="col-10">
                 <h2>{{ mentee.first_name.capitalize() }} {{ mentee.last_name.capitalize() }}</h2>
-
-                    <label>1. Select Date</label>
-                    <div class="form-row">
-                        <div class="col">
-                            {{ render_field(form.day) }}
-                        </div>
-                        <div class="col">
-                            {{ render_field(form.month) }}
-                        </div>
-                        <div class="col">
-                            {{ render_field(form.year) }}
-                        </div>
-                    </div>
-
-                    <label>2. Select Start Time</label>
-                    <div class="form-row">
-                        <div class="col">
-                            {{ render_field(form.hour) }}
-                        </div>
-                        <div class="col">
-                            {{ render_field(form.minute) }}
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>3. Select Duration</label>
-                        {{ render_field(form.duration) }}
-                    </div>
             </div>
+        </div>
 
-            <div class="col-6">
-                    <div class="form-group">
-                        <label>4. Select Type</label>
-                        {{ render_field(form.type) }}
+
+            <form action="" method="post" novalidate>
+                <div class="row ml-2 mt-5">
+                {{ form.csrf_token }}
+                    <div class="col">
+
+                        <u class="mb-3">1. Select Date<br></u>
+                        <div class="form-row" >
+                            <div class="col">
+                                {{ render_field(form.day, class='form-control') }}
+                            </div>
+                            <div class="col">
+                                {{ render_field(form.month, class='form-control') }}
+                            </div>
+                            <div class="col">
+                                {{ render_field(form.year, class='form-control') }}
+                            </div>
+                        </div>
+
+                        <div class="form-group mt-5">
+                            <u class="mb-3">2. Select Start Time<br></u>
+                            <div class="form-row mt-0">
+                                <div class="col">
+                                    {{ render_field(form.hour, class='form-control') }}
+                                </div>
+                                <div class="col">
+                                    {{ render_field(form.minute, class='form-control') }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mt-5">
+                            <u class="mb-3">3. Select Duration</u>
+                            <div class="form-row">
+                                <div class="col">
+                                    {{ render_field(form.duration, class='form-control') }}
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="form-group">
-                        <label>5. Location</label>
-                        {{ render_field(form.address, class="form-control") }}
-                    </div>
-                    <div class="form-group">
-                        {{ render_field(form.postcode, class="form-control") }}
-                    </div>
-            </div>
+                    <div class="col ml-5">
 
-            <input type="submit" value="Submit" class="btn btn-primary">
-        </form>
+                        <div class="form-group">
+                            <u class="mb-3">4. Select Type</u>
+                            <div class="form-row">
+                                <div class="col">
+                                    {{ render_field(form.type, class='form-control') }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mt-5">
+                            <u class="mb-3">5. Location</u>
+                            <div class="form-row">
+                                <div class="col">
+                                    {{ render_field(form.address, class="form-control mb-0") }}
+                                </div>
+                            </div>
+                            <div class="form-row mt-0">
+                                <div class="col">
+                                    {{ render_field(form.postcode, class="form-control") }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <input type="submit" value="Submit" class="btn btn-primary">
+            </form>
     </div>
 {% endblock %}

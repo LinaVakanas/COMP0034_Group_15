@@ -31,6 +31,7 @@ def controlpanel_home():
 
     if request.method == 'POST' and search.validate_on_submit():
         search_type = search.select.data
+        print(search_type)
         user_type = search.select2.data
         search_string = search.search.data
 
@@ -44,7 +45,7 @@ def controlpanel_home():
             results = search_by_type(user_type, search_type, search_string)
 
         return render_template('admin/search_results/{}.html'.format(search_type), search_term=search_string,
-                               results=results, user_type=user_type)
+                               results=results, user_type=user_type, title='Search Results')
 
     return render_template('admin/admin_home.html', search=search,stats_dict=stats_dict)
 
@@ -195,7 +196,6 @@ def pairing(applicant_type, applicant_id, location):
             pair_with = db.session.query(Mentor, User).filter(Mentor.paired==False).join(User, User.user_id==Mentor.user_id).\
                 filter(User.is_active == True).join(Location, Mentor.user_id == Location.user_id).filter(Location.city==location).first()
             mentor = pair_with[0]
-            user = pair_with[1]
             if not mentor:
                 flash("Unfortunately there are no mentors signed up in {} just yet! Sorry for the inconvenience, "
                       "you'll be put on a waiting list and we'll let you know as soon as a mentor is found".format(location))
@@ -207,13 +207,12 @@ def pairing(applicant_type, applicant_id, location):
                 filter(User.is_active == True).join(Location, Mentee.user_id == Location.user_id).filter(
                 Location.city == location).first()
             mentee = pair_with[0]
-            user = pair_with[1]
             if not mentee:
                 flash("Unfortunately there are no mentees signed up in {} yet. Sorry for the inconvenience, "
-                      "you'll be put on a waiting list and we will let you know as soon as a mentee is found.\n"
-                      "For now, you can edit your profile, and get used to the website.".format(location))
+                      "you'll be put on a waiting list and we will let you know as soon as a mentee is found".format(location))
                 return render_template('home.html', title='Home')  ####for now
             mentor = Mentor.query.filter_by(user_id=applicant_id).first()
+
 
         mentor.paired = True
         mentee.paired = True
@@ -222,22 +221,37 @@ def pairing(applicant_type, applicant_id, location):
         db.session.commit()
 
         if applicant_type == 'mentor':
-            return render_template('profiles/mentee_profile.html', mentee=mentee, user=user, title='Mentee Profile')
+            return render_template('profiles/mentee_profile.html', mentee=mentee, title='Mentee Profile')
         elif applicant_type == 'mentee':
-            return render_template('profiles/mentor_profile.html', mentor=mentor, user=user,
-                                   title='Mentor Profile')
+            return render_template('profiles/mentor_profile.html', mentor=mentor, title='Mentor Profile')
 
         return render_template('home.html', title='Home')
 
 
+@bp_main.route('/<applicant_type>/<user_id>/view_paired_profile/')
+@login_required
+def view_paired_profile(applicant_type, user_id):
+
+    if applicant_type == 'mentor':
+        mentee = Mentee.query.join(Pair, Pair.mentee_id == Mentee.mentee_id).join(Mentor, Pair.mentor_id == Mentor.mentor_id).\
+            filter(Mentor.user_id == user_id).first()
+        return render_template('profiles/mentee_profile.html', mentee=mentee, title='Mentee Profile')
+
+    elif applicant_type == 'mentee':
+        mentor = Mentor.query.join(Pair, Pair.mentor_id == Mentor.mentor_id).join(Mentee, Pair.mentee_id == Mentee.mentee_id). \
+            filter(Mentee.user_id == user_id).first()
+        return render_template('profiles/mentor_profile.html', mentor=mentor, title='Mentor Profile')
+
+
 @bp_main.route('/book-meeting/<mentee_id>/<mentee_user_id>/', methods=['POST', 'GET'])
+@login_required
 def book_meeting(mentee_id, mentee_user_id):
-    query = db.session.query(Mentee, Location).filter(Mentee.mentee_id == mentee_id).\
-        join(Location, Location.user_id == mentee_user_id).join(Pair, Pair.mentee_id==mentee_id).first()
+    query = db.session.query(Mentee, Location, Pair).filter(Mentee.mentee_id == mentee_id).\
+        join(Location, Location.user_id == Mentee.user_id).filter(Location.user_id == mentee_user_id).join(Pair, Pair.mentee_id==Mentee.mentee_id).first()
     mentee = query[0]
     mentee_form = query[1]
     pair = query[2]
-    form = BookMeeting(request.form, mentee_form.avoid_area)
+    form = BookMeeting(mentee_form.avoid_area)
 
     if request.method == 'POST' and form.validate_on_submit:
         date = '{day}/{month}/{year}'.format(day=form.day.data, month=form.month.data, year=str(form.year.data))

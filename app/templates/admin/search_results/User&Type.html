@@ -1,48 +1,48 @@
 {% extends 'base.html' %}
 {% block title %}{{ user_type }} - {{ search_type }} Results{% endblock %}
 
-{% block header%}View {{ user_type }} - {{ search_type }} Search Results{% endblock %}
+{% block header %}{{title}}{% endblock %}
+
 {% block content %}
-     {% if results|length %}
-{#         Variable is not empty #}
-        <div class="container d-flex h-100 align-items-center">
-            <div class="mx-auto text-center">
-                <table class="table">
-                    <thead class="thead-dark">
+    <h2 class="font-weight-normal mt-3">
+        {{ user_type }} in {{ search_term }}
+    </h2>
+    <div class="table-responsive-md mx-2">
+        {% if results|length %}
+            <table class="table table-striped mt-3 table-hover">
+                <thead class="thead-dark">
+                <tr>
+                    <th scope="col">User ID</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">School ID</th>
+                    <th scope="col">Active</th>
+                    <th scope="col">Creation Date</th>
+                    <th scope="col">{{ user_type.capitalize() }} ID</th>
+                    <th scope="col">First Name</th>
+                    <th scope="col">Last Name</th>
+                    <th scope="col">Paired</th>
+                </tr>
+                </thead>
+                <tbody>
                     <tr>
-                        <th scope="col">User ID</th>
-                        <th scope="col">Email</th>
-                        <th scope="col">School ID</th>
-                        <th scope="col">Active</th>
-                        <th scope="col">Creation Date</th>
-                        <th scope="col">{{ user_type.capitalize() }} ID</th>
-                        <th scope="col">First Name</th>
-                        <th scope="col">Last Name</th>
-                        <th scope="col">Paired</th>
+                        <td>{{ results[0].user_id }}</td>
+                        <td>{{ results[0].email }}</td>
+                        <td>{{ results[0].school_id }}</td>
+                        <td>{{ results[0].active }}</td>
+                        <td>{{ results[0].creation_date }}</td>
+                        {% if user_type == 'mentee' %}
+                            <td>{{ results[1].mentee_id }}</td>
+                        {% elif user_type == 'mentor' %}
+                            <td>{{ results[1].mentor_id }}</td>
+                        {% endif %}
+                        <td>{{ results[1].first_name }}</td>
+                        <td>{{ results[1].last_name }}</td>
+                        <td>{{ results[1].paired }}</td>
                     </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>{{ results[0].user_id }}</td>
-                            <td>{{ results[0].email }}</td>
-                            <td>{{ results[0].school_id }}</td>
-                            <td>{{ results[0].active }}</td>
-                            <td>{{ results[0].creation_date }}</td>
-                            {% if user_type == 'mentee' %}
-                                <td>{{ results[1].mentee_id }}</td>
-                            {% elif user_type == 'mentor' %}
-                                <td>{{ results[1].mentor_id }}</td>
-                            {% endif %}
-                            <td>{{ results[1].first_name }}</td>
-                            <td>{{ results[1].last_name }}</td>
-                            <td>{{ results[1].paired }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-    {#            Make it flash a msg#}
-            </div>
-        </div>
-    {% else %}
-        <p>Sorry, no {{ user_type }} exist</p>
-    {% endif %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>Sorry, no {{ user_type }} exist</p>
+        {% endif %}
+    </div>
 {% endblock %}

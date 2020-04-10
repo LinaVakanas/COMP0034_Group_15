@@ -1,20 +1,6 @@
-{% extends 'base.html' %}
-{% from "_formhelpers.html" import render_field %}
+{% extends 'profiles/base.html' %}
 {% block title %}{{title}}{% endblock %}
 
+{% block display_pic %}{{ url_for('static',filename='media/default_user/profile_pic.png') }}{% endblock %}
+{% block name%}{{ mentor.first_name.capitalize() }} {{ mentor.last_name.capitalize() }}{% endblock %}
 
-    <div class="container vh-70 d-flex mt-6 col justify-content-center">
-        {% block header%}{{ mentor.first_name.capitalize() }} {{ mentor.last_name.capitalize() }}{% endblock %}
-        <br>
-        {% block content %}
-            <div class="row">
-                <div class="col-1">
-                    <img src="{{ url_for('static',filename='media/default_user/profile_pic.png') }}" class="rounded-circle img-fluid" alt="Profile Picture">
-                </div>
-                <div class="col-10">
-                    <h3 style="font-weight: 500">Bio</h3>
-                    <p> saf;sa</p>
-                </div>
-            </div>
-        {% endblock %}
-    </div>
