@@ -11,14 +11,14 @@ from flask import current_app as app
 
 
 class SearchByForm(FlaskForm):
-    choices = [('School', 'School Name'),
+    choices = [('School', 'School'),
                ('City', 'City')]
-    select = SelectField(choices=choices)
+    select = SelectField('In:', choices=choices)
     choices2 = [('Mentees and Mentors', 'All'),
                 ('Mentee', 'Mentee'),
                 ('Mentor', 'Mentor')]
-    select2 = SelectField(choices=choices2)
-    search = StringField('Or search by:', validators=[DataRequired()])
+    select2 = SelectField('User Type:', choices=choices2)
+    search = StringField('Search For:', validators=[DataRequired()])
 
 
 class SearchForm(FlaskForm):

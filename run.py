@@ -7,4 +7,3 @@ app.secret_key='blahblahblahblah'
 
 if __name__ == '__main__':
     app.run()
-
