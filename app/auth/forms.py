@@ -59,10 +59,10 @@ class PersonalForm(FlaskForm):
     choices4 = [('S', 'University student'),
                 ('W', 'Working'),
                 ('N', 'Neither')]
-    mentor_occupation = SelectField('What is your current status:', choices=choices4)
+    status = SelectField('What is your current status:', choices=choices4, validators=[DataRequired()])
     choices5 = [('<2', 'Less than 2 years'),
                 ('>=2', '2 years or longer')]
-    mentor_xperience = SelectField('How long have you had this occupation for?', choices=choices5)
+    xperience = SelectField('How long have you had this occupation for?', choices=choices5, validators=[DataRequired()])
 
     eng = BooleanField('Engineering', default="unchecked")
     chem = BooleanField('Chemistry', default="unchecked")

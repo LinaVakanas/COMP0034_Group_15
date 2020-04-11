@@ -26,6 +26,7 @@ class BaseTest(TestCase):
         self.mentor = Mentor(user_id=1, school_id=0, first_name='Harry', last_name='Potter', paired=True, is_approved=True)
         self.school1 = School(is_approved=1, school_id=1, school_name='Hogwarts', school_email="hogwarts@howarts.ac.uk",
                          ofsted_ranking="1")
+
         self.user2 = User(user_type='mentee', school_id=1, email='lily@ucl.ac.uk', is_active=True)
         self.user2.set_password('password2')
         self.mentee = Mentee(user_id=2, school_id=1, first_name='Lily', last_name='Weasley', paired=True)
@@ -35,10 +36,36 @@ class BaseTest(TestCase):
                                duration='1', address="Kilburn Road", postcode="XY4 5UU", type="Library",
                                mentee_approval=False)
 
+        # UNPAIRED MENTEE MENTOR
+        self.user3 = User(user_type='mentor', school_id=0, email='mentor@ucl.ac.uk', is_active=True)
+        self.user3.set_password('password3')
+        self.mentor2 = Mentor(user_id=3, school_id=0, first_name='Mentor', last_name='Potter', paired=False,
+                             is_approved=True)
+        self.mentor2_location = Location(user_id=3, address="Hogmeade", city="London",
+                                        postcode="XR4 5AQ", avoid_area="Neasden")
+
+        self.user4 = User(user_type='mentee', school_id=1, email='mentee@ucl.ac.uk', is_active=True)
+        self.user4.set_password('password4')
+        self.mentee2 = Mentee(user_id=4, school_id=1, first_name='Mentee', last_name='Weasley', paired=False)
+        self.mentee2_location = Location(user_id=4, address="Blop", city="London",
+                                        postcode="XR4 5AQ", avoid_area="Neasden")
+
+        self.user7 = User(user_type='mentor', school_id=0, email='harley@quin.uk', is_active=True)
+        self.user7.set_password('password3')
+        self.mentor4 = Mentor(user_id=5, school_id=0, first_name='Harley', last_name='Quinn', paired=False,
+                              is_approved=True)
+        self.mentor4_location = Location(user_id=5, address="Oxford Street", city="London",
+                                         postcode="XR4 5AQ", avoid_area="Kilburn")
+        self.mentor4_personal_info = PersonalInfo(user_id=5, status='S', xperience='>=2', share_personal_issues=True,
+                                              carer_email='', carer_name='', share_med_cond=True)
+
         db.session.add_all([self.school0, self.school1])
         db.session.add_all([self.user1, self.mentor])
         db.session.add_all([self.user2, self.mentee])
         db.session.add(self.mentee_location)
+        db.session.add_all([self.user3, self.mentor2, self.mentor2_location])
+        db.session.add_all([self.user4, self.mentee2, self.mentee2_location])
+        db.session.add_all([self.user7, self.mentor4, self.mentor4_personal_info])
         db.session.flush()
 
         self.pair = Pair(mentor_id=self.mentor.mentor_id, mentee_id=self.mentee.mentee_id)
@@ -70,13 +97,16 @@ class BaseTest(TestCase):
     mentor_data = dict(user_id=5, user_type='mentor', first_name='Ron', last_name='Weasley', school_id=0,
                        password='password4', email='test2@mail.com')
 
-    mentor_personal_issues_data = dict(user_id=5, depression=True, self_harm=True, family=False, drugs=True, ed=True,
+    mentor_personal_issues_data = dict(user_id=5, depression=True, self_harm=True, drugs=True, ed=True,
                                        )
-    mentor_personal_info = dict(status='W', xperience='>=2', user_id=5, share_personal_issues=False, share_med_cond=False,
+    mentor_personal_info = dict(carer_email='', carer_name='', status='W', xperience='>=2', user_id=5, share_personal_issues=True, share_med_cond=True,
                                 )
-    mentor_hobbies = dict(user_id=5, football=False, drawing=False)
+    mentor_hobbies = dict(user_id=5, football=True)
     book_meeting = dict(pair_id=1, day='3', month='5', year=2020, date='3/5/2020', hour='17', minute='00', time='1700',
                         duration='1', address="Kilburn Road", postcode="WY4 5UU", type="Library")
+
+    mentor4_location_data = dict(user_id=7, address="Oxford Street", city="London",
+                                     postcode="XR4 5AQ", avoid_area="Kilburn")
 
 
 class TestMain(BaseTest):
@@ -105,6 +135,20 @@ class TestAuth(BaseTest):
         ), follow_redirects=True)
         count2 = PersonalInfo.query.count()
         print(count2)
+        self.assertEqual(count2 - count, 1)
+        self.assertEqual(response.status_code, 200)
+
+    def test_mentor_location_form_saved(self):
+        BaseTest.SetUp(self)
+        count = Location.query.count()
+
+        response = self.client.post(url_for('auth.location_form', applicant_type=self.user7.user_type, applicant_id=self.user7.user_id),data=dict(
+            address=self.mentor4_location_data.get('address'),
+            city=self.mentor4_location_data.get('city'),
+            postcode=self.mentor4_location_data.get('postcode'),
+            avoid_area=self.mentor4_location_data.get('avoid_area')
+        ), follow_redirects=True)
+        count2 = Location.query.count()
         self.assertEqual(count2 - count, 1)
         self.assertEqual(response.status_code, 200)
 
@@ -190,22 +234,31 @@ class TestAuth(BaseTest):
         print(count2)
         self.assertEqual(count2 - count, 1)
         self.assertEqual(response.status_code, 200)
-        # self.assertIn(b'Signup', response.data)
+        self.assertIn(b'Pending Approval', response.data)
 
     def test_register_mentor_user_success(self):
+        BaseTest.SetUp(self)
         count = User.query.count()
-        response = self.client.post(url_for('auth.mentor_signup',
-                                            applicant='mentor',
+        print(count)
+        response = self.client.post(url_for('auth.personal_form',
+                                            applicant_type=self.mentor_data.get('user_type'),
                                             school_id=self.mentor_data.get('school_id')), data=dict(
             email=self.mentor_data.get('email'),
+            user_type=self.mentor_data.get('user_type'),
+            school_id=self.mentor_data.get('school_id'),
             first_name=self.mentor_data.get('first_name'),
             last_name=self.mentor_data.get('last_name'),
+            password=self.mentor_data.get('password'),
+            status=self.mentor_personal_info.get('status'),
+            xperience=self.mentor_personal_info.get('xperience'),
+            share_personal_issues=self.mentor_personal_info.get('share_personal_issues'),
+            share_med_cond=self.mentor_personal_info.get('share_med_cond')
         ), follow_redirects=True)
         count2 = User.query.count()
         print(count2)
         self.assertEqual(count2 - count, 1)
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b'Personal Info', response.data)
+        self.assertIn(b'Pending Approval', response.data)
 
     def test_book_meeting_success(self):
         BaseTest.SetUp(self)
@@ -240,6 +293,18 @@ class TestAuth(BaseTest):
         ), follow_redirects=True)
         meeting = Meeting.query.first()
         self.assertTrue(meeting.mentee_approval)
+        self.assertEqual(response.status_code, 200)
+
+    def test_pair_mentee_mentor_success(self):
+        BaseTest.SetUp(self)
+        count = Pair.query.count()
+        response = self.client.get(url_for('main.pairing', applicant_type=self.user4.user_type,
+                                            applicant_id=self.user4.user_id, location=self.mentee2_location.city),
+                                   follow_redirects=True)
+        count2 = Pair.query.count()
+        self.assertEqual(count2 - count, 1)
+        mentee = Mentee.query.filter(Mentee.user_id == self.user4.user_id).first()
+        self.assertTrue(mentee.paired)
         self.assertEqual(response.status_code, 200)
 
 

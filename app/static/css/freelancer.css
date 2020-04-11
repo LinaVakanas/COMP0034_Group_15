@@ -142,6 +142,14 @@ small {
   font-size: 80%;
 }
 
+.sub-heading {
+  font-size: 150%;
+  font-weight: lighter;
+  text-decoration: underline;
+  line-height: 1.4;
+
+}
+
 sub,
 sup {
   position: relative;
@@ -6362,6 +6370,14 @@ button.bg-dark:focus {
 
 .border-right-0 {
   border-right: 0 !important;
+}
+
+.border-right-3 {
+  border-right: 3px solid grey ;
+}
+
+.border-left-3 {
+  border-left: 3px solid grey ;
 }
 
 .border-bottom-0 {

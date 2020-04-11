@@ -206,11 +206,11 @@ def pairing(applicant_type, applicant_id, location):
             pair_with = db.session.query(Mentee, User).filter(Mentee.paired == False).join(User,User.user_id == Mentee.user_id). \
                 filter(User.is_active == True).join(Location, Mentee.user_id == Location.user_id).filter(
                 Location.city == location).first()
-            mentee = pair_with[0]
-            if not mentee:
+            if not pair_with:
                 flash("Unfortunately there are no mentees signed up in {} yet. Sorry for the inconvenience, "
                       "you'll be put on a waiting list and we will let you know as soon as a mentee is found".format(location))
                 return render_template('home.html', title='Home')  ####for now
+            mentee = pair_with[0]
             mentor = Mentor.query.filter_by(user_id=applicant_id).first()
 
 
