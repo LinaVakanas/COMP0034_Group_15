@@ -23,7 +23,7 @@ def create_app(config_class=DevConfig):
     mail.init_app(app)
     login_manager.init_app(app)
 
-    from populate_db import populate_db
+    # from populate_db import populate_db
 
     # The following is needed if you want to map classes to an existing database
     from app.models2_backup import User, Mentee, Mentor, Admin, Teacher, School, Report, Message, Chatroom, Pair, PersonalIssues, \
@@ -31,7 +31,7 @@ def create_app(config_class=DevConfig):
     with app.app_context():
         db.drop_all()
         db.create_all()
-        populate_db()
+        # populate_db()
 
 
     # Register Blueprints

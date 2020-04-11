@@ -189,6 +189,9 @@ class TestAuth(BaseTest):
         BaseTest.SetUp(self)
         count = Mentor.query.count()
         print(count)
+        school_id = self.mentor_data.get('school_id')
+        school = School.query.filter(School.school_id == school_id).first()
+        print(school)
         response = self.client.post(url_for('auth.personal_form',
                                             applicant_type=self.mentor_data.get('user_type'),
                                             school_id=self.mentor_data.get('school_id')), data=dict(
