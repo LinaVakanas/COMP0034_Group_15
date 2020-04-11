@@ -89,7 +89,7 @@ def school_signup():
         try:
             new_school = School(is_approved=False, school_name=form.name.data, school_email=form.email.data, ofsted_ranking=form.ofsted_ranking.data)
             db.session.add(new_school)
-            db.session.flush()
+            db.session.commit()
         except IntegrityError:
             flash("Your school is already registered.")
         return redirect(url_for('main.home'))
@@ -108,13 +108,19 @@ def personal_form(applicant_type, school_id):
             flash('Sorry you have entered an invalid registration link, please contact a system admin. CHANGE THIS TO REDIRECT')
             return redirect(url_for('main.home'))
         else:
-            if school.is_approved is False:
+            if school.is_approved is False and applicant_type=='mentee':
                 flash('Sorry your school has not been approved yet.')
                 return redirect(url_for('main.home'))
             else:
                 form = PersonalForm(request.form)
                 form2 = SignUpForm(request.form)
-                if request.method == 'POST'and form2.validate_on_submit() and form.validate_on_submit():
+                if applicant_type == 'mentee':
+                    del form.mentor_xperience
+                    del form.mentor_occupation
+                elif applicant_type == 'mentor':
+                    del form.carer_name
+                    del form.carer_email
+                if request.method == 'POST' and form2.validate_on_submit() and form.validate_on_submit():
                     creation_date = str(datetime.date(datetime.now()))
                     try:
                         new_user = User(email=form2.email.data, user_type=applicant_type, school_id=school_id, bio="",
@@ -127,7 +133,6 @@ def personal_form(applicant_type, school_id):
                         return redirect(url_for('auth.login', title='Login'))
 
                     if applicant_type == 'mentee':
-
                         new_user.mentee.append(Mentee(school_id=school_id, first_name=form2.first_name.data,
                                                       last_name=form2.last_name.data, paired=False))
                         new_m = Mentee.query.join(User).filter(Mentee.user_id == new_user.user_id).first()
@@ -165,7 +170,7 @@ def personal_form(applicant_type, school_id):
                     db.session.commit()
 
                     if applicant_type == 'mentee':
-                        return redirect(url_for('auth.location_form', applicant_type=applicant_type, applicant_id=new_user.user_id))
+                        return redirect(url_for('auth.location_form', applicant_type=applicant_type, applicant_id=new_user.user_id, title='Location Form'))
                     elif applicant_type == 'mentor':
                         return render_template('home_mentor_pending.html', title='Pending Approval', mentor=new_m)
 

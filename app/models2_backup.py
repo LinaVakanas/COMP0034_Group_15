@@ -135,7 +135,7 @@ class PersonalInfo(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
     user = db.relationship("User", backref='personal_info')
     share_personal_issues = db.Column(db.Boolean, nullable=True)
-    share_med_cond = db.Column(db.Boolean, nullable=False)
+    share_med_cond = db.Column(db.Boolean, nullable=True)
 
 
 class PersonalIssues(db.Model):
