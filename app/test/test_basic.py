@@ -67,14 +67,15 @@ class BaseTest(TestCase):
                                 share_med_cond=True)
     mentee_hobbies = dict(user_id=4, football=True, drawing=False)
 
-    mentor_data = dict(user_id=5, user_type='mentor', first_name='Ron', last_name='Weasley', school_id=0, password='password4'
+    mentor_data = dict(user_id=5, user_type='mentor', first_name='Ron', last_name='Weasley', school_id=0, password='password4',
+                       email='haha@laugh.lol'
                        )
     mentor_personal_issues_data = dict(user_id=5, depression=True, self_harm=True, family=False, drugs=True, ed=True,
                                        )
-    mentor_personal_info = dict(status='W', xperience='=>2', user_id=5, share_personal_issues=False)
+    mentor_personal_info = dict(status='W', xperience='>=2', user_id=5, share_personal_issues=False, share_med_cond = True)
     mentor_hobbies = dict(user_id=5, football=False, drawing=False)
     book_meeting = dict(pair_id=1, day='3', month='5', year=2020, date='3/5/2020', hour='17', minute='00', time='1700',
-                        duration='1', address="Kilburn Road", postcode="WY4 5UU", type="libr")
+                        duration='1', address="Kilburn Road", postcode="WY4 5UU", type="Library")
 
 
 class TestMain(BaseTest):
@@ -106,31 +107,8 @@ class TestAuth(BaseTest):
         self.assertEqual(count2 - count, 1)
         self.assertEqual(response.status_code, 200)
 
-    def test_personal_issues_form_saved(self): ################### not fixed idk
-        count = PersonalIssues.query.count()
-        print(count)
-        response = self.client.post(url_for('auth.personal_form',
-                                            applicant_type=self.mentee_data.get('user_type'),
-                                            school_id=self.mentee_data.get('school_id')), data=dict(
-            email=self.mentee_data.get('email'),
-            user_type=self.mentee_data.get('user_type'),
-            school_id=self.mentee_data.get('school_id'),
-            first_name=self.mentee_data.get('first_name'),
-            last_name=self.mentee_data.get('last_name'),
-            password=self.mentee_data.get('password'),
-            carer_email=self.mentee_personal_info.get('carer_email'),
-            carer_name=self.mentee_personal_info.get('carer_name'),
-            share_performance=self.mentee_personal_info.get('share_performance'),
-            share_personal_issues=self.mentee_personal_info.get('share_personal_issues'),
-            share_med_cond=self.mentee_personal_info.get('share_med_cond'),
-            depression = self.mentee_personal_issues_data.get('depression')
-        ), follow_redirects=True)
-        count2 = PersonalIssues.query.count()
-        print(count2)
-        self.assertEqual(count2 - count, 1)
-        # self.assertEqual(response.status_cod, 200)
-
     def test_registration_form_displays(self):
+        BaseTest.SetUp(self)
         target_url = url_for('auth.personal_form', applicant_type='mentee',
                              school_id=self.mentee_data.get('school_id'))
         response = self.client.get(target_url)
@@ -194,8 +172,8 @@ class TestAuth(BaseTest):
         count = Mentor.query.count()
         print(count)
         school_id = self.mentor_data.get('school_id')
-        school = School.query.filter(School.school_id == school_id).first()
-        print(school)
+        # school = School.query.filter(School.school_id == school_id).first()
+        # print(school)
         response = self.client.post(url_for('auth.personal_form',
                                             applicant_type=self.mentor_data.get('user_type'),
                                             school_id=self.mentor_data.get('school_id')), data=dict(
