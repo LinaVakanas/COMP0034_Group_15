@@ -135,6 +135,7 @@ class TestAuth(BaseTest):
 
     def test_register_mentee_success(self):
         BaseTest.SetUp(self)
+        print("hi")
         mentees = Mentee.query.with_entities(Mentee.first_name, Mentee.last_name).all()
         print(mentees)
         count = Mentee.query.count()
