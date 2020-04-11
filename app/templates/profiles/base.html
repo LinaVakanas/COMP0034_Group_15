@@ -84,12 +84,17 @@
         {% endif %}
     {% endwith %}
 
-<main role="main" class="container-fluid mx-0">
-    <h1>
-        {% block header %}{{ title }}{% endblock %}
-    </h1>
-    {% block content %}{% endblock %}
-</main>
+<main role="main" class="container-fluid">
 
-</body>
-</html>
+<div class="row">
+    <div class="col-1 mt-3">
+        <img src="{% block display_pic %}{% endblock %}" class="rounded-circle img-fluid" alt="Profile Picture">
+    </div>
+    <div class="col-10">
+        <h1>{% block name%}{{ name }}{% endblock %}</h1>
+    </div>
+</div>
+    <div class="container vh-70 d-flex mt-6 col justify-content-center">
+        {% block content %}
+        {% endblock %}
+    </div>

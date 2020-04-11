@@ -127,10 +127,10 @@ class BookMeeting(FlaskForm):
     minutes = [('00', '00'), ('15', '15'), ('30', '30')]
     minute = SelectField(choices=minutes)
     durations = [('1', '1 hour'), ('1.5', '1.5 hour'), ('2', '2 hours'), ('2.5', '2.5 hours')]
-    duration = SelectField(choices=durations, validators=[DataRequired()])
+    duration = SelectField('Meeting Duration', choices=durations, validators=[DataRequired()])
 
     area_types = [('Library', 'Library'), ('Museum', 'Museum'), ('School', 'School'), ('Coffee Shop', 'Coffee Shop')]
-    type = SelectField(choices=area_types, validators=[DataRequired()]) # to validate if mentee said not to go there
+    type = SelectField('Type of area for meeting', choices=area_types, validators=[DataRequired()]) # to validate if mentee said not to go there
     address = StringField('Address:', validators=[DataRequired()])
     postcode = StringField('Postcode:', validators=[DataRequired()])
 
