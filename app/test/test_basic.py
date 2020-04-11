@@ -66,8 +66,8 @@ class BaseTest(TestCase):
     mentor_data = dict(user_id=5, user_type='mentor', first_name='Ron', last_name='Weasley', school_id=0, password='password4'
                        )
     mentor_personal_issues_data = dict(user_id=5, depression=True, self_harm=True, family=False, drugs=True, ed=True,
-                                       share_personal_issues=False)
-    mentor_personal_info = dict(status='W', xperience='=>2', user_id=5)
+                                       )
+    mentor_personal_info = dict(status='W', xperience='=>2', user_id=5, share_personal_issues=False)
     mentor_hobbies = dict(user_id=5, football=False, drawing=False)
     book_meeting = dict(pair_id=1, day='3', month='5', year=2020, date='3/5/2020', hour='17', minute='00', time='1700',
                         duration='1', address="Kilburn Road", postcode="WY4 5UU", type="libr")
@@ -197,6 +197,7 @@ class TestAuth(BaseTest):
                                             school_id=self.mentor_data.get('school_id')), data=dict(
             email=self.mentor_data.get('email'),
             user_type=self.mentor_data.get('user_type'),
+            school_id=self.mentor_data.get('school_id'),
             first_name=self.mentor_data.get('first_name'),
             last_name=self.mentor_data.get('last_name'),
             password=self.mentor_data.get('password'),
