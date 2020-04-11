@@ -134,13 +134,17 @@ class BookMeeting(FlaskForm):
     address = StringField('Address:', validators=[DataRequired()])
     postcode = StringField('Postcode:', validators=[DataRequired()])
 
-    def validate_address(self, address, mentee_avoid_area):
-        if address.data == mentee_avoid_area:
+    def __init__(self, avoid_area):
+        super(BookMeeting, self).__init__()
+        self.avoid_area = avoid_area
+
+    def validate_address(self, address):
+        if address.data == self.avoid_area:
             raise ValidationError("Sorry bud, your mentee doesn't feel comfortable going there. "
                                    "In the interest of their well-being, please pick another area!")
 
-    def validate_postcode(self, postcode, mentee_avoid_area):
-        if postcode.data == mentee_avoid_area:
+    def validate_postcode(self, postcode):
+        if postcode.data == self.avoid_area:
             raise ValidationError("Sorry bud, your mentee doesn't feel comfortable going there. "
                                    "In the interest of their well-being, please pick another area!")
 

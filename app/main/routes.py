@@ -251,7 +251,8 @@ def book_meeting(mentee_id, mentee_user_id):
     mentee = query[0]
     mentee_form = query[1]
     pair = query[2]
-    form = BookMeeting(mentee_form.avoid_area)
+    form = BookMeeting(request.form)
+    form.avoid_area = mentee_form.avoid_area
 
     if request.method == 'POST' and form.validate_on_submit:
         date = '{day}/{month}/{year}'.format(day=form.day.data, month=form.month.data, year=str(form.year.data))

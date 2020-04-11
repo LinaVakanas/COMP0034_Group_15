@@ -31,6 +31,10 @@ class BaseTest(TestCase):
         self.mentee = Mentee(user_id=2, school_id=1, first_name='Lily', last_name='Weasley', paired=True)
         self.mentee_location = Location(user_id=2, address="Hogmeade", city="London",
                                         postcode="XR4 5AQ", avoid_area="Neasden")
+        self.meeting = Meeting(pair_id=1, date='5/5/2020', time='1700',
+                               duration='1', address="Kilburn Road", postcode="XY4 5UU", type="Library",
+                               mentee_approval=False)
+
         db.session.add_all([self.school0, self.school1])
         db.session.add_all([self.user1, self.mentor])
         db.session.add_all([self.user2, self.mentee])
@@ -135,7 +139,6 @@ class TestAuth(BaseTest):
 
     def test_register_mentee_success(self):
         BaseTest.SetUp(self)
-        print("hi")
         mentees = Mentee.query.with_entities(Mentee.first_name, Mentee.last_name).all()
         print(mentees)
         count = Mentee.query.count()
@@ -230,16 +233,9 @@ class TestAuth(BaseTest):
 
     def test_book_meeting_success(self):
         BaseTest.SetUp(self)
-        # saving dummy mentee to be paired with mentor
-        db.session.add_all([self.user1, self.mentor])
-        db.session.add_all([self.user2, self.mentee])
-        db.session.add(self.mentee_location)
-        db.session.flush()
-        db.session.add(self.pair)
-        db.session.commit()
 
         count = Meeting.query.count()
-        response = self.client.post(url_for('auth.book_meeting', pair_id=self.pair.id), data=dict(
+        response = self.client.post(url_for('main.book_meeting', mentee_id=self.pair.mentee_id, mentee_user_id=self.mentee.user_id), data=dict(
             day=self.book_meeting.get('day'),
             month=self.book_meeting.get('month'),
             year=self.book_meeting.get('year'),
@@ -249,9 +245,23 @@ class TestAuth(BaseTest):
             type=self.book_meeting.get('type'),
             address=self.book_meeting.get('address'),
             postcode=self.book_meeting.get('postcode'),
-        ))
+        ), follow_redirects=True)
         count2 = Meeting.query.count()
         self.assertEqual(count2 - count, 1)
+        self.assertEqual(response.status_code, 200)
+
+    def test_confirm_meeting_success(self):
+        BaseTest.SetUp(self)
+        print(self.meeting)
+        db.session.add(self.meeting)
+        db.session.commit()
+        meeting = Meeting.query.first()
+
+        response = self.client.post(url_for('main.confirm_meeting', meeting_id=meeting.meeting_id), data=dict(
+            approval=True,
+        ), follow_redirects=True)
+        meeting = Meeting.query.first()
+        self.assertTrue(meeting.mentee_approval)
         self.assertEqual(response.status_code, 200)
 
 

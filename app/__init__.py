@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail
@@ -10,12 +10,22 @@ db = SQLAlchemy()
 mail = Mail()
 login_manager = LoginManager()
 
+def page_not_found(e):
+    return render_template('errors/404.html'), 404
+
+
+def internal_server_error(e):
+    return render_template('errors/500.html'), 500
+
 
 def create_app(config_class=DevConfig):
     """Creates an application instance to run using settings from config.py
     :return: A Flask object"""
 
     app = Flask(__name__)
+
+    app.register_error_handler(404, page_not_found)
+    app.register_error_handler(500, internal_server_error)
 
     app.config.from_object(config_class)
 

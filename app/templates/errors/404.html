@@ -1,0 +1,8 @@
+{% extends 'errors/base.html' %}
+{% block title %}404 Page Not Found{% endblock %}
+
+{% block header %}Page Not Found{% endblock %}
+
+{% block content %}
+    <p>Oops, we couldn't find what you were looking for! You can go back <a href="{{ url_for('main.home') }}"> home</a>  from here.</p>
+    <small>How did you get here anyway?</small>
