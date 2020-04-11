@@ -67,12 +67,13 @@ class BaseTest(TestCase):
                                 share_med_cond=True)
     mentee_hobbies = dict(user_id=4, football=True, drawing=False)
 
-    mentor_data = dict(user_id=5, user_type='mentor', first_name='Ron', last_name='Weasley', school_id=0, password='password4',
-                       email='haha@laugh.lol'
-                       )
+    mentor_data = dict(user_id=5, user_type='mentor', first_name='Ron', last_name='Weasley', school_id=0,
+                       password='password4', email='test2@mail.com')
+
     mentor_personal_issues_data = dict(user_id=5, depression=True, self_harm=True, family=False, drugs=True, ed=True,
                                        )
-    mentor_personal_info = dict(status='W', xperience='>=2', user_id=5, share_personal_issues=False, share_med_cond = True)
+    mentor_personal_info = dict(status='W', xperience='>=2', user_id=5, share_personal_issues=False, share_med_cond=False,
+                                )
     mentor_hobbies = dict(user_id=5, football=False, drawing=False)
     book_meeting = dict(pair_id=1, day='3', month='5', year=2020, date='3/5/2020', hour='17', minute='00', time='1700',
                         duration='1', address="Kilburn Road", postcode="WY4 5UU", type="Library")
@@ -171,9 +172,6 @@ class TestAuth(BaseTest):
         BaseTest.SetUp(self)
         count = Mentor.query.count()
         print(count)
-        school_id = self.mentor_data.get('school_id')
-        # school = School.query.filter(School.school_id == school_id).first()
-        # print(school)
         response = self.client.post(url_for('auth.personal_form',
                                             applicant_type=self.mentor_data.get('user_type'),
                                             school_id=self.mentor_data.get('school_id')), data=dict(
@@ -213,6 +211,7 @@ class TestAuth(BaseTest):
         BaseTest.SetUp(self)
 
         count = Meeting.query.count()
+        print(count)
         response = self.client.post(url_for('main.book_meeting', mentee_id=self.pair.mentee_id, mentee_user_id=self.mentee.user_id), data=dict(
             day=self.book_meeting.get('day'),
             month=self.book_meeting.get('month'),
@@ -225,6 +224,7 @@ class TestAuth(BaseTest):
             postcode=self.book_meeting.get('postcode'),
         ), follow_redirects=True)
         count2 = Meeting.query.count()
+        print(count2)
         self.assertEqual(count2 - count, 1)
         self.assertEqual(response.status_code, 200)
 

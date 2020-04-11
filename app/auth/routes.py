@@ -148,7 +148,8 @@ def personal_form(applicant_type, school_id):
                                                 last_name=form2.last_name.data, paired=False,is_approved=False))
                             new_m = Mentor.query.join(User).filter(Mentor.user_id == new_user.user_id).first()
                             new_user.personal_info.append(PersonalInfo(carer_email="", carer_name="",status=form.mentor_occupation.data,
-                                                                       xperience=form.mentor_xperience.data, share_performance=None))
+                                                                       xperience=form.mentor_xperience.data, share_performance=None, share_personal_issues=form.share_personal_issues.data,
+                                                                       share_med_cond=form.share_med_cond.data))
 
                         else:
                             flash('Sorry, you must have a minimum of two years of experience to sign up as a mentor. '
@@ -156,16 +157,16 @@ def personal_form(applicant_type, school_id):
                             return redirect(url_for('main.home'))
 
                     new_user.personal_issues.append(PersonalIssues(depression=form.depression.data, self_harm=form.self_harm.data,
-                                                                       family=form.family.data, drugs=form.drugs.data, ed=form.ed.data,
-                                                                       user_id=new_user.user_id))
+                                                                       family=form.family.data, drugs=form.drugs.data, ed=form.ed.data
+                                                                       ))
 
-                    new_user.hobbies.append(Hobbies(football=form.football.data, drawing=form.drawing.data, user_id=new_user.user_id))
+                    new_user.hobbies.append(Hobbies(football=form.football.data, drawing=form.drawing.data))
 
                     new_user.occupational_field.append(OccupationalField(eng=form.eng.data, phys=form.phys.data, chem=form.chem.data,
                                                        bio=form.bio.data, med=form.med.data, pharm=form.pharm.data,
                                                        maths=form.maths.data, geo=form.geo.data, hist=form.hist.data,
-                                                       finance=form.finance.data, law=form.law.data, engl=form.engl.data,
-                                                       user_id=new_user.user_id))
+                                                       finance=form.finance.data, law=form.law.data, engl=form.engl.data
+                                                       ))
 
                     db.session.commit()
 

@@ -50,9 +50,29 @@
                                         {{ render_field(form.carer_email, class="form-control") }}
                                     </div>
                                 </div>
-                            {% endif %}
+                                <label for="mentee_field">What field are you interested in for further studies/career?</label>
+                                <div class="row">
+                                    <div class = "col-3">
+                                        {{ render_field(form.eng, value="mentee_field") }}
+                                        {{ render_field(form.chem) }}
+                                        {{ render_field(form.maths) }}
+                                        {{ render_field(form.law)}}
+                                    </div>
+                                    <div class = "col-3">
+                                        {{ render_field(form.phys) }}
+                                        {{ render_field(form.med) }}
+                                        {{ render_field(form.geo) }}
+                                        {{ render_field(form.finance) }}
+                                    </div>
+                                    <div class="col-3">
+                                        {{ render_field(form.bio) }}
+                                        {{ render_field(form.pharm) }}
+                                        {{ render_field(form.hist) }}
+                                        {{ render_field(form.engl) }}
+                                    </div>
+                                </div>
 
-                            {% if applicant_type == 'mentor' %}
+                            {% elif applicant_type == 'mentor' %}
                                 {{ render_field(form.mentor_occupation, class="form-control") }}
                                 {{ render_field(form.mentor_xperience, class="form-control")}}
 
@@ -156,8 +176,10 @@
                                    'which apply to you:</label>
                             {{ render_field(form.med1, value="medical_form") }}
                             {{ render_field(form.share_med_cond) }}
-                            <hr>
-                            {{ render_field(form.share_performance) }}
+                            {% if applicant_type == 'mentee' %}
+                                <hr>
+                                {{ render_field(form.share_performance) }}
+                            {% endif %}
                         </div>
                         <dd><input type="submit" value="Submit" class="btn btn-primary"> </dd>
                     </dl>
