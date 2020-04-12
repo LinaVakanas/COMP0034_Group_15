@@ -106,7 +106,7 @@ def personal_form(applicant_type, school_id):
         school = School.query.filter(School.school_id == school_id).first()
         print(school)
         if is_unique(School, School.school_id, school_id, model2=None, field2=None, data2=None) is True:
-            flash('Sorry you have entered an invalid registration link, please contact a system admin. CHANGE THIS TO REDIRECT')
+            flash('Sorry you have entered an invalid registration link (School ID doesnt exist), please contact a system admin.')
             return redirect(url_for('main.home'))
         else:
             if school.is_approved is False and applicant_type=='mentee':
@@ -140,19 +140,16 @@ def personal_form(applicant_type, school_id):
                         new_m = Mentee.query.join(User).filter(Mentee.user_id == new_user.user_id).first()
 
                         new_user.personal_info.append(PersonalInfo(carer_email=form.carer_email.data, carer_name=form.carer_name.data,
-                                                status="S", xperience=None, share_performance=form.share_performance.data,
+                                                                   status="S", xperience=None, share_performance=form.share_performance.data,
                                                                    share_personal_issues=form.share_personal_issues.data, share_med_cond=form.share_med_cond.data))
 
                     elif applicant_type == 'mentor':
-
                         if form.xperience.data == '>=2' and form.status.data != 'N':
                             new_user.mentor.append(Mentor(user_id=new_user.user_id, school_id=0, first_name=form2.first_name.data,
-                                                last_name=form2.last_name.data, paired=False,is_approved=False))
+                                                          last_name=form2.last_name.data, paired=False,is_approved=False))
                             new_m = Mentor.query.join(User).filter(Mentor.user_id == new_user.user_id).first()
                             new_user.personal_info.append(PersonalInfo(carer_email="", carer_name="",status=form.status.data,
-                                                                       xperience=form.xperience.data,
-                                                                       share_performance=None,
-                                                                       share_personal_issues=form.share_personal_issues.data,
+                                                                       xperience=form.xperience.data, share_performance=None, share_personal_issues=form.share_personal_issues.data,
                                                                        share_med_cond=form.share_med_cond.data))
 
 
@@ -162,14 +159,16 @@ def personal_form(applicant_type, school_id):
                             return redirect(url_for('main.home'))
 
                     new_user.personal_issues.append(PersonalIssues(depression=form.depression.data, self_harm=form.self_harm.data,
-                                                                       family=form.family.data, drugs=form.drugs.data, ed=form.ed.data))
+                                                                   family=form.family.data, drugs=form.drugs.data, ed=form.ed.data
+                                                                   ))
 
                     new_user.hobbies.append(Hobbies(football=form.football.data, drawing=form.drawing.data))
 
                     new_user.occupational_field.append(OccupationalField(eng=form.eng.data, phys=form.phys.data, chem=form.chem.data,
-                                                       bio=form.bio.data, med=form.med.data, pharm=form.pharm.data,
-                                                       maths=form.maths.data, geo=form.geo.data, hist=form.hist.data,
-                                                       finance=form.finance.data, law=form.law.data, engl=form.engl.data))
+                                                                         bio=form.bio.data, med=form.med.data, pharm=form.pharm.data,
+                                                                         maths=form.maths.data, geo=form.geo.data, hist=form.hist.data,
+                                                                         finance=form.finance.data, law=form.law.data, engl=form.engl.data
+                                                                         ))
 
                     db.session.commit()
 

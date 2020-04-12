@@ -43,7 +43,6 @@ def approve(user_type, id, approve_type):
         user_type_id = UserType.mentee_id
     query = db.session.query(UserType, User).filter(user_type_id == id). \
         join(User, User.user_id == UserType.user_id).first()
-
     if user_type == 'mentor':
         if approve_type == 'approve':
             query[0].is_approved = True

@@ -77,7 +77,7 @@ class PersonalForm(FlaskForm):
     law = BooleanField('Law', default="unchecked")
     finance = BooleanField('Finance', default="unchecked")
 
-    med1 = BooleanField('???', default="unchecked" )  # search what medical stuff usually have
+    med1 = BooleanField('???', default="unchecked")  # search what medical stuff usually have
     share_med_cond = BooleanField('Permission to share medical conditions with mentor.', default="unchecked")
     share_performance = BooleanField('Permission to share school performance with mentor', default="unchecked ")
 
