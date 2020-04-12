@@ -30,8 +30,7 @@
                                 {% if user_type == 'Mentee' %}
                                     <td>{{ query[1].mentee_id }}</td>
                                     <td>{{ query[0].school_id }}</td>
-                                {% endif %}
-                                {% if user_type == 'Mentor' %}
+                                {% elif user_type == 'Mentor' %}
                                     <td>{{ query[1].mentor_id }}</td>
                                 {% endif %}
                                 <td>{{ query[1].first_name }}</td>
@@ -41,9 +40,7 @@
                                 {% if user_type == 'Mentee' %}
                                     <td>
                                         {{ render_field(form.approve, value=query[1].mentee_id)}}
-                                    </td>
-                                {% endif %}
-                                {% if user_type == 'Mentor' %}
+                                {% elif user_type == 'Mentor' %}
                                     <td>
                                         {{ render_field(form.approve, value=query[1].mentor_id)}}
                                     </td>

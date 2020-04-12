@@ -10,8 +10,7 @@
         <div class="col-auto mb-4">
             {% if user_type == 'Mentee' %}
                 {{ render_field(search.search, value='Mentee Email') }}
-            {% endif %}
-            {% if user_type == 'Mentor' %}
+            {% elif user_type == 'Mentor' %}
                 {{ render_field(search.search, value='Mentor Email') }}
             {% endif %}
         </div>

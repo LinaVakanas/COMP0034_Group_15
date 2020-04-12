@@ -70,11 +70,11 @@ class BaseTest(TestCase):
 
         self.user7 = User(user_type='mentor', school_id=0, email='harley@quin.uk', is_active=True)
         self.user7.set_password('password3')
-        self.mentor4 = Mentor(user_id=5, school_id=0, first_name='Harley', last_name='Quinn', paired=False,
+        self.mentor4 = Mentor(user_id=7, school_id=0, first_name='Harley', last_name='Quinn', paired=False,
                               is_approved=True)
-        self.mentor4_location = Location(user_id=5, address="Oxford Street", city="London",
+        self.mentor4_location = Location(user_id=7, address="Oxford Street", city="London",
                                          postcode="XR4 5AQ", avoid_area="Kilburn")
-        self.mentor4_personal_info = PersonalInfo(user_id=5, status='S', xperience='>=2', share_personal_issues=True,
+        self.mentor4_personal_info = PersonalInfo(user_id=7, status='S', xperience='>=2', share_personal_issues=True,
                                               carer_email='', carer_name='', share_med_cond=True)
 
 
@@ -162,6 +162,7 @@ class TestAuth(BaseTest):
     def test_mentor_location_form_saved(self):
         BaseTest.SetUp(self)
         count = Location.query.count()
+        print(self.user7.user_id)
 
         response = self.client.post(url_for('auth.location_form', applicant_type=self.user7.user_type, applicant_id=self.user7.user_id),data=dict(
             address=self.mentor4_location_data.get('address'),

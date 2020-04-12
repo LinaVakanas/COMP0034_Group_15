@@ -48,6 +48,13 @@ def populate_db():
     db.session.add(pair)
     book_meeting = Meeting(pair_id=1, date='3/5/2020', time='17:00',
                             duration='1', address="Kilburn Road", postcode="WY4 5UU", type="Library")
+
+    user6 = User(user_type='mentor', school_id=0, email='lauren@gmail.com', is_active=False)
+    user6.set_password('password6')
+    mentor4 = Mentor(user_id=6, school_id=0, first_name='Lauren', last_name='Parker', paired=False, is_approved=True)
+    mentor4_personal_info = PersonalInfo(carer_name='', carer_email='', xperience='>=2', status='S', user_id=6,
+                                         share_med_cond=True)
+
     db.session.add_all([user0,admin])
     db.session.add_all([user1, mentor])
     db.session.add_all([user2, mentee, mentee_personal_info])
@@ -55,6 +62,7 @@ def populate_db():
     db.session.add_all([user4, mentee3])
     db.session.add_all([user5, mentor2, mentor2_location, mentor2_personal_info])
     db.session.add_all([school1, school2, school0, school3])
+    db.session.add_all([user6, mentor4, mentor4_personal_info])
     db.session.add(mentee_location)
     db.session.add(book_meeting)
     db.session.add(mentor2_location)

@@ -218,7 +218,6 @@ def pairing(applicant_type, applicant_id, location):
             mentee = pair_with[0]
             mentor = Mentor.query.filter_by(user_id=applicant_id).first()
 
-
         mentor.paired = True
         mentee.paired = True
         new_pair = Pair(mentor_id=mentor.mentor_id, mentee_id=mentee.mentee_id)
