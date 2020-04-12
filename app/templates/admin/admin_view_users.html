@@ -1,14 +1,19 @@
 {% extends 'base.html' %}
 {% from "_formhelpers.html" import render_field %}
-{% block title %}View Mentees{% endblock %}
+{% block title %}View Users{% endblock %}
 
-{% block header%}View Mentees{% endblock %}
+{% block header%}View Users{% endblock %}
 {% block content %}
 <div>
     <form action="" method="post" novalidate>
         {{ search.csrf_token }}
         <div class="col-auto mb-4">
-            {{ render_field(search.search, value='Mentee Email') }}
+            {% if user_type == 'Mentee' %}
+                {{ render_field(search.search, value='Mentee Email') }}
+            {% endif %}
+            {% if user_type == 'Mentor' %}
+                {{ render_field(search.search, value='Mentor Email') }}
+            {% endif %}
         </div>
         <div class="col-auto mb-3">
             {{ render_field(search.select) }}
@@ -25,8 +30,10 @@
                     <table class="table">
                         <thead class="thead-dark">
                         <tr>
-                            <th scope="col">Mentee ID</th>
-                            <th scope="col">School ID</th>
+                            <th scope="col">{{user_type}} ID</th>
+                            {% if user_type == 'Mentee' %}
+                                <th scope="col">School ID</th>
+                            {% endif %}
                             <th scope="col">First Name</th>
                             <th scope="col">Last Name</th>
                             <th scope="col">User ID</th>
@@ -37,8 +44,13 @@
                         <tbody>
                         {% for query in queries %}
                             <tr>
-                                <td>{{ query[1].mentee_id }}</td>
-                                <td>{{ query[0].school_id }}</td>
+                                {% if user_type == 'Mentee' %}
+                                    <td>{{ query[1].mentee_id }}</td>
+                                    <td>{{ query[0].school_id }}</td>
+                                {% endif %}
+                                {% if user_type == 'Mentor' %}
+                                    <td>{{ query[1].mentor_id }}</td>
+                                {% endif %}
                                 <td>{{ query[1].first_name}}</td>
                                 <td>{{ query[1].last_name }}</td>
                                 <td>{{ query[0].user_id }}</td>
@@ -51,6 +63,6 @@
             </div>
         </div>
     {% else %}
-        <p>Sorry, no mentees exist</p>
+        <p>Sorry, no {{ user_type }}s exist</p>
     {% endif %}
 {% endblock %}

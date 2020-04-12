@@ -68,6 +68,7 @@ def controlpanel_view_schools():
 @requires_admin('admin')
 def controlpanel_school():
     form = ApproveForm(request.form)
+    user_type = 'Mentor'
     schools = School.query.filter(School.is_approved==False, School.school_id!=0).all()
     if request.method == 'POST' and form.validate_on_submit():
         approved_list = request.form.getlist('approve')
@@ -84,13 +85,14 @@ def controlpanel_school():
 @requires_admin('admin')
 def controlpanel_mentor():
     form = ApproveForm(request.form)
+    user_type = 'Mentor'
     queries = db.session.query(User, Mentor).filter(Mentor.is_approved==False).join(Mentor, User.user_id==Mentor.user_id).all()
     if request.method == 'POST' and form.validate_on_submit():
         approved_list = request.form.getlist('approve')
         for id in approved_list:
             approve('mentor', id, 'approve')
         return redirect(url_for('main.controlpanel_home')) ##### Maybe flash a msg as well
-    return render_template('admin/admin_pending_mentors.html', queries=queries, form=form)
+    return render_template('admin/admin_pending_users.html', queries=queries, form=form, user_type=user_type)
 
 
 @bp_main.route('/admin/view_mentors', methods=['POST', 'GET'])
@@ -98,10 +100,11 @@ def controlpanel_mentor():
 @requires_admin('admin')
 def controlpanel_view_mentors():
     search = SearchForm(request.form)
+    user_type = 'Mentor'
     queries = db.session.query(User, Mentor).filter(Mentor.is_approved==True).join(Mentor, User.user_id==Mentor.user_id).all()
     if request.method == 'POST':
         return search_results(search, 'mentor')
-    return render_template('admin/admin_view_mentors.html', queries=queries, search=search)
+    return render_template('admin/admin_view_users.html', queries=queries, search=search, user_type=user_type)
 
 
 @bp_main.route('/admin/pending_mentees', methods=['POST','GET'])
@@ -109,13 +112,14 @@ def controlpanel_view_mentors():
 @requires_admin('admin')
 def controlpanel_mentee():
     form = ApproveForm(request.form)
+    user_type='Mentee'
     queries = db.session.query(User, Mentee).filter(User.is_active==False).join(Mentee, User.user_id==Mentee.user_id).all()
     if request.method == 'POST' and form.validate_on_submit(): ######## Validate on submit
         approved_list = request.form.getlist('approve')
         for id in approved_list:
             approve('mentee', id, None)
         return redirect(url_for('main.controlpanel_home')) ##### Maybe flash a msg as well
-    return render_template('admin/admin_pending_mentees.html', queries=queries, form=form)
+    return render_template('admin/admin_pending_users.html', queries=queries, form=form, user_type=user_type)
 
 
 @bp_main.route('/admin/view_mentees', methods=['POST', 'GET'])
@@ -123,10 +127,11 @@ def controlpanel_mentee():
 @requires_admin('admin')
 def controlpanel_view_mentees():
     search = SearchForm(request.form)
+    user_type = 'Mentee'
     queries = db.session.query(User,Mentee).filter(User.is_active == True).join(Mentee, User.user_id == Mentee.user_id).all()
     if request.method == 'POST':
         return search_results(search, 'mentee')
-    return render_template('admin/admin_view_mentees.html', search=search, queries=queries)
+    return render_template('admin/admin_view_users.html', search=search, queries=queries, user_type=user_type)
 
 
 @bp_main.route('/admin/<user_type>/search-results/')

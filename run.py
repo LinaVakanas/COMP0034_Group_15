@@ -1,7 +1,7 @@
 from flask import Flask
 from app import create_app, db
 
-app = create_app('config.TestConfig')
+app = create_app('config.DevConfig')
 app.app_context().push()
 app.secret_key='blahblahblahblah'
 
