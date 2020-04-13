@@ -47,7 +47,6 @@
                     </li>
 
                 {% else %}
-                    <ul class="nav nav-pills">
                         <li class="nav-item dropdown ml-auto">
                             <a class="nav-link dropdown-toggle" href="#"  id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Signup</a>
@@ -57,7 +56,6 @@
                                 <a class="dropdown-item" href="{{ url_for('auth.school_signup') }}" >School Signup</a>
                             </div>
                         </li>
-                    </ul>
                 {% endif %}
 
             {% else %}
@@ -97,11 +95,6 @@
 {#                    </ul>#}
                 {% endif %}
 
-{#                {% if title == 'Logout' %}#}
-{#                    <li class="nav-item">#}
-{#                        <a class="nav-item nav-link active" href="{{url_for('auth.logout')}}">Logout</a>#}
-{#                    </li>#}
-{#                {% else %}#}
                     <li class="nav-item">
                         <a class="nav-item nav-link" href="{{url_for('auth.logout')}}">Logout</a>
                     </li>
