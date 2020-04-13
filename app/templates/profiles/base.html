@@ -27,17 +27,12 @@
                 {% endif %}
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
                     <a class="dropdown-item" href="{{ url_for('main.view_own_profile', user_id=current_user.user_id, applicant_type=current_user.user_type) }}" >My Profile</a>
-
-{#                    {% if current_user.paired == True %}#}
                         <div class="dropdown-divider"></div>
                         <a class="nav-item nav-link " href="{{url_for('main.view_paired_profile', applicant_type=current_user.user_type, user_id=current_user.user_id)}}">Pair Profile</a>
-{#                    {% endif %}#}
 
                     {% if current_user.user_type == 'mentor' %}
-{#                        {% if current_user.mentor.paired == True %}#}
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item " href="{{ url_for('main.book_meeting', applicant_type='mentor', type_id='', user_id=current_user.user_id) }}" >Book Meeting</a>
-{#                        {% endif %}#}
 
                     {% endif %}
                 </div>
