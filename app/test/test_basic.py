@@ -366,7 +366,7 @@ class TestAuth(BaseTest):
 
         count = Meeting.query.count()
         print(count)
-        response = self.client.post(url_for('main.book_meeting', mentee_id=self.pair.mentee_id, mentee_user_id=self.mentee.user_id), data=dict(
+        response = self.client.post(url_for('main.book_meeting', type_id=self.pair.mentee_id, user_id=self.mentee.user_id, applicant_type='mentee'), data=dict(
             day=self.book_meeting.get('day'),
             month=self.book_meeting.get('month'),
             year=self.book_meeting.get('year'),
