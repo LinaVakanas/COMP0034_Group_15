@@ -100,7 +100,7 @@ def school_signup():
 @bp_auth.route('/personal_form/<applicant_type>/<school_id>/', methods=['POST', 'GET'])
 def personal_form(applicant_type, school_id):
     if current_user.is_authenticated is True:
-        flash('You already have an account.')
+        flash('You cannot do this while logged in.')
         return redirect(url_for('main.home'))
     else:
         school = School.query.filter(School.school_id == school_id).first()
