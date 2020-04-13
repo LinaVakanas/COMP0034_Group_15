@@ -28,7 +28,7 @@ class SearchForm(FlaskForm):
                ('Location', 'Location Info'),
                ('Meeting', 'Meetings')]
     select = SelectField('Filter by:', choices=choices)
-    search = StringField('Search for a specific user', validators=[DataRequired()])
+    search = StringField('Search for a specific user:', validators=[DataRequired()])
 
 
 class SignUpForm(FlaskForm):

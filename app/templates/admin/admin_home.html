@@ -4,30 +4,34 @@
 
 {% block header%}Administrator Control Panel{% endblock %}
 {% block content %}
-    <div class="container-fluid d-flex h-600 align-items-center justify-content-around">
-        <div class="justify-content-around">
-            <form action="" method="post" novalidate>
-                {{ search.csrf_token }}
-                <div class="col-auto mb-4">
-                    {{ render_field(search.search) }}
-                </div>
-                <div class="col-auto mb-3">
-                    <div class="row">
-                        {{ render_field(search.select) }}
+    <div class="container-fluid d-flex align-items-center">
+        <div class="col-4 align-self-center">
+            <div class="row ml-3">
+                <form action="" method="post" novalidate>
+                    {{ search.csrf_token }}
+                    <div class="col-auto mb-3">
+                        <div class="row mb-3">
+                            {{ render_field(search.search) }}
+                        </div>
+
+                        <div class="row">
+                            {{ render_field(search.select) }}
+                        </div>
+                        <div class="row">
+                            {{ render_field(search.select2) }}
+                        </div>
                     </div>
-                    <div class="row">
-                        {{ render_field(search.select2) }}
+                    <div class="row justify-content-center">
+                        <input type="submit" value="Submit" class="btn btn-primary">
                     </div>
-                </div>
-                <div class="row justify-content-center">
-                    <input type="submit" value="Submit" class="btn btn-primary">
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
         <div class="col-4 mx-auto text-center">
             <h1>USER STATISTICS</h1>
             <h2>Total Users: {{ stats_dict['users_total'] }}</h2>
-            <h2>Total Unapproved: {{ stats_dict['unapproved_total'] }}</h2>
+            <h2>Total Approved Users: {{ stats_dict['approved_total'] }}</h2>
+            <h2>Total Unapproved Users: {{ stats_dict['unapproved_total'] }}</h2>
             <table class="table">
                 <thead class="thead-dark">
                 <tr>
@@ -65,7 +69,7 @@
                             <input type="button" value="Approve Schools" class="btn btn-primary">
                         </a></td>
                         <td><a href="{{ url_for('main.controlpanel_view_schools') }}" >
-                            <input type="button" value="View School" class="btn btn-primary">
+                            <input type="button" value="View Schools" class="btn btn-primary">
                         </a></td>
                     </tr>
                     <tr>
@@ -84,28 +88,14 @@
                             <input type="button" value="View Mentors" class="btn btn-primary">
                         </a></td>
                     </tr>
+                    <tr>
+                        <td colspan="2"><a href="{{ url_for('main.home') }}" >
+                            <input type="button" value="Return Home" class="btn btn-primary">
+                        </a></td>
+                    </tr>
                 </table>
             </div>
         </div>
-        <div>
-            <form action="" method="post" novalidate>
-                {{ search.csrf_token }}
-                <div class="col-auto mb-4">
-                    {{ render_field(search.search) }}
-                </div>
-                <div class="col-auto mb-3">
-                    <div class="row">
-                        {{ render_field(search.select) }}
-                    </div>
-                    <div class="row">
-                        {{ render_field(search.select2) }}
-                    </div>
-                </div>
-                <div class="row justify-content-center">
-                    <input type="submit" value="Submit" class="btn btn-primary">
-                </div>
-            </form>
-        </div>
-
+        <div class="col-4"></div>
     </div>
 {% endblock %}

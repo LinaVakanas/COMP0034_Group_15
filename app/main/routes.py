@@ -7,7 +7,7 @@ from app.auth.forms import ApproveForm, BookMeeting, \
     ApproveMeeting, SearchForm, SearchByForm
 from app.models2_backup import User, School, Pair, PersonalInfo, Mentee, Mentor, Location, Meeting
 from app.util.decorators import requires_admin
-from functions import is_unique, approve, get_stats, search_by_type, get_data_from_user
+from functions import is_unique, approve, get_stats, search_by_type, get_data_from_user, get_school_stats
 
 bp_main = Blueprint('main', __name__)
 
@@ -15,6 +15,7 @@ bp_main = Blueprint('main', __name__)
 # def unauthorized():
 #     flash('You must be logged in 123')
 #     return redirect(url_for('main.login'))
+
 
 
 @bp_main.route('/')
@@ -50,17 +51,14 @@ def controlpanel_home():
     return render_template('admin/admin_home.html', search=search,stats_dict=stats_dict)
 
 
-@bp_main.route('/admin/view_schools')
+@bp_main.route('/admin/view_schools', methods=['POST', 'GET'])
 @login_required
 @requires_admin('admin')
 def controlpanel_view_schools():
-    schools = School.query.filter(School.is_approved == True).all()
-    schools_dict = dict()
-    for school in schools:
-        school_id = school.school_id
-        num_mentees = Mentee.query.filter(Mentee.school_id==school_id).count()
-        schools_dict[school_id] = num_mentees
-    return render_template('admin/admin_view_schools.html', schools=schools, schools_dict=schools_dict)
+    schools = School.query.filter(School.is_approved == True, School.school_id != 0).all()
+    schools_dict = get_school_stats(schools)
+    stats_dict = get_stats()
+    return render_template('admin/admin_view_schools.html', schools=schools, schools_dict=schools_dict, stats_dict=stats_dict)
 
 
 @bp_main.route('/admin/pending_schools/', methods=['POST', 'GET'])
@@ -68,7 +66,7 @@ def controlpanel_view_schools():
 @requires_admin('admin')
 def controlpanel_school():
     form = ApproveForm(request.form)
-    user_type = 'Mentor'
+    stats_dict = get_stats()
     schools = School.query.filter(School.is_approved==False, School.school_id!=0).all()
     if request.method == 'POST' and form.validate_on_submit():
         approved_list = request.form.getlist('approve')
@@ -77,7 +75,7 @@ def controlpanel_school():
             school.is_approved = True
             db.session.commit()
         return redirect(url_for('main.controlpanel_home'))
-    return render_template('admin/admin_pending_schools.html', schools=schools, form=form)
+    return render_template('admin/admin_pending_schools.html', schools=schools, form=form, stats_dict=stats_dict)
 
 
 @bp_main.route('/admin/pending_mentors/', methods=['POST', 'GET'])
@@ -86,13 +84,14 @@ def controlpanel_school():
 def controlpanel_mentor():
     form = ApproveForm(request.form)
     user_type = 'Mentor'
+    stats_dict = get_stats()
     queries = db.session.query(User, Mentor).filter(Mentor.is_approved==False).join(Mentor, User.user_id==Mentor.user_id).all()
     if request.method == 'POST' and form.validate_on_submit():
         approved_list = request.form.getlist('approve')
         for id in approved_list:
             approve('mentor', id, 'approve')
         return redirect(url_for('main.controlpanel_home')) ##### Maybe flash a msg as well
-    return render_template('admin/admin_pending_users.html', queries=queries, form=form, user_type=user_type)
+    return render_template('admin/admin_pending_users.html', queries=queries, form=form, user_type=user_type, stats_dict=stats_dict)
 
 
 @bp_main.route('/admin/view_mentors', methods=['POST', 'GET'])
@@ -101,10 +100,11 @@ def controlpanel_mentor():
 def controlpanel_view_mentors():
     search = SearchForm(request.form)
     user_type = 'Mentor'
+    stats_dict = get_stats()
     queries = db.session.query(User, Mentor).filter(Mentor.is_approved==True).join(Mentor, User.user_id==Mentor.user_id).all()
     if request.method == 'POST':
         return search_results(search, 'mentor')
-    return render_template('admin/admin_view_users.html', queries=queries, search=search, user_type=user_type)
+    return render_template('admin/admin_view_users.html', queries=queries, search=search, user_type=user_type, stats_dict=stats_dict)
 
 
 @bp_main.route('/admin/pending_mentees', methods=['POST','GET'])
@@ -113,13 +113,14 @@ def controlpanel_view_mentors():
 def controlpanel_mentee():
     form = ApproveForm(request.form)
     user_type='Mentee'
+    stats_dict = get_stats()
     queries = db.session.query(User, Mentee).filter(User.is_active==False).join(Mentee, User.user_id==Mentee.user_id).all()
     if request.method == 'POST' and form.validate_on_submit(): ######## Validate on submit
         approved_list = request.form.getlist('approve')
         for id in approved_list:
             approve('mentee', id, None)
         return redirect(url_for('main.controlpanel_home')) ##### Maybe flash a msg as well
-    return render_template('admin/admin_pending_users.html', queries=queries, form=form, user_type=user_type)
+    return render_template('admin/admin_pending_users.html', queries=queries, form=form, user_type=user_type, stats_dict=stats_dict)
 
 
 @bp_main.route('/admin/view_mentees', methods=['POST', 'GET'])
@@ -128,10 +129,11 @@ def controlpanel_mentee():
 def controlpanel_view_mentees():
     search = SearchForm(request.form)
     user_type = 'Mentee'
+    stats_dict = get_stats()
     queries = db.session.query(User,Mentee).filter(User.is_active == True).join(Mentee, User.user_id == Mentee.user_id).all()
     if request.method == 'POST':
         return search_results(search, 'mentee')
-    return render_template('admin/admin_view_users.html', search=search, queries=queries, user_type=user_type)
+    return render_template('admin/admin_view_users.html', search=search, queries=queries, user_type=user_type, stats_dict=stats_dict)
 
 
 @bp_main.route('/admin/<user_type>/search-results/')

@@ -54,7 +54,7 @@ def login():
             if user.is_active is False:
                 flash('Sorry, your account has not been approved yet.')
                 return redirect(url_for('main.home'))
-            login_user(user, remember=form.remember_me.data, duration=timedelta(minutes=1))
+            login_user(user, remember=form.remember_me.data, duration=timedelta(seconds=10))
 
             if user.user_type == 'mentee' or user.user_type == 'mentor':
                 if user.user_type == 'mentee':

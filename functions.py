@@ -58,34 +58,43 @@ def get_stats():
     search = SearchByForm(request.form)
 
     # SCHOOLS
-    approved_schools_total = School.query.filter(School.is_approved == True).count()
-    unapproved_schools_total = School.query.filter(School.is_approved == False).count()
-    schools_total = School.query.count()
+    approved_schools_total = School.query.filter(School.is_approved == True, School.school_id != 0).count()
+    unapproved_schools_total = School.query.filter(School.is_approved == False, School.school_id != 0).count()
+    schools_total = approved_schools_total + unapproved_schools_total
 
     # MENTEES
     approved_mentees_total = Mentee.query.join(User, User.user_id == Mentee.user_id).filter(
         User.is_active == True).count()
     unapproved_mentees_total = Mentee.query.join(User, User.user_id == Mentee.user_id).filter(
         User.is_active == False).count()
-    mentees_total = Mentee.query.count()
+    mentees_total = approved_mentees_total + unapproved_mentees_total
 
     # MENTORS
     approved_mentors_total = Mentor.query.join(User, User.user_id == Mentor.user_id).filter(
-        User.is_active == True).count()
+        Mentor.is_approved == True).count()
     unapproved_mentors_total = Mentor.query.join(User, User.user_id == Mentor.user_id).filter(
-        User.is_active == False).count()
-    mentors_total = Mentor.query.count()
+        Mentor.is_approved == False).count()
+    mentors_total = approved_mentors_total + unapproved_mentors_total
 
     # TOTAL
-    unapproved_total = unapproved_mentees_total + unapproved_mentors_total + unapproved_schools_total
-    totals = mentors_total + mentees_total + schools_total
+    unapproved_total = unapproved_mentees_total + unapproved_mentors_total
+    approved_total = approved_mentees_total + approved_mentors_total
+    totals = mentors_total + mentees_total
 
     stats_dict = {'users_total': str(totals), 'mentors_total': str(mentors_total), 'mentees_total': str(mentees_total),
-                  'schools_total': str(schools_total), 'unapproved_total':unapproved_total,
+                  'schools_total': str(schools_total), 'approved_total':str(approved_total),'unapproved_total':str(unapproved_total),
                   'approved_schools_total': str(approved_schools_total), 'unapproved_schools_total': str(unapproved_schools_total),
                   'approved_mentees_total': str(approved_mentees_total), 'unapproved_mentees_total': str(unapproved_mentees_total),
                   'approved_mentors_total': str(approved_mentors_total), 'unapproved_mentors_total': str(unapproved_mentors_total)}
     return stats_dict
+
+def get_school_stats(schools):
+    schools_dict = dict()
+    for school in schools:
+        school_id = school.school_id
+        num_mentees = Mentee.query.filter(Mentee.school_id == school_id).count()
+        schools_dict[school_id] = num_mentees
+    return schools_dict
 
 def search_by_type(user_type, search_type, search_string):
 

@@ -6,8 +6,21 @@
 {% block content %}
      {% if queries|length %}
 {#         Variable is not empty #}
-        <div class="container d-flex h-100 align-items-center">
+        <div class="container-fluid d-flex align-items-center">
             <div class="mx-auto text-center">
+                {% if user_type == 'Mentee' %}
+                    <h1>MENTEE STATISTICS</h1>
+                    <h2>Total Mentees: {{ stats_dict['mentees_total'] }}</h2>
+                    <h2>Total Approved Mentees: {{ stats_dict['approved_mentees_total'] }}</h2>
+                    <h2>Total Unapproved Mentees: {{ stats_dict['unapproved_mentees_total'] }}</h2>
+
+                {% elif user_type == 'Mentor' %}
+                    <h1>MENTOR STATISTICS</h1>
+                    <h2>Total Mentors: {{ stats_dict['mentors_total'] }}</h2>
+                    <h2>Total Approved Mentors: {{ stats_dict['approved_mentors_total'] }}</h2>
+                    <h2>Total Unapproved Mentors: {{ stats_dict['unapproved_mentors_total'] }}</h2>
+                {% endif %}
+
                 <form action="" method="post" novalidate>
                     {{ form.hidden_tag() }}
                     <table class="table">
@@ -49,7 +62,22 @@
                         {% endfor %}
                         </tbody>
                     </table>
-                    <input type="submit" value="Submit" class="btn btn-primary">
+                    <div class="row justify-content-center">
+                        <table>
+                            <tr>
+                                <td>
+                                    <input type="submit" value="Submit" class="btn btn-primary">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <a href="{{ url_for('main.controlpanel_home') }}" >
+                                        <input type="button" value="Control Panel Home" class="btn btn-primary">
+                                    </a>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
     {#            Make it flash a msg#}
                 </form>
             </div>

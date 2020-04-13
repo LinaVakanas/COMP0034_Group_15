@@ -37,6 +37,10 @@ To Do Before Move On:
 * Redo testing
 * Fix HTML
 * Selenium web testing thingy 
+
+At the end:
+Fix the next parameter to be persistent on redirects to login (e.g failed sign in)
+Fix the login so it actually logs out after 1 min
 ----------------------------------------------------------
 To Discuss:
 * What happens after mentor books meeting, for mentee confirmation:

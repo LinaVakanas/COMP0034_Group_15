@@ -8,6 +8,10 @@
 {#         Variable is not empty #}
         <div class="container d-flex h-100 align-items-center">
             <div class="mx-auto text-center">
+                <h1>SCHOOL STATISTICS</h1>
+                <h2>Total Schools: {{ stats_dict['schools_total'] }}</h2>
+                <h2>Total Approved Schools: {{ stats_dict['approved_schools_total'] }}</h2>
+                <h2>Total Unapproved Schools: {{ stats_dict['unapproved_schools_total'] }}</h2>
                 <form action="" method="post" novalidate>
                     <table class="table">
                         <thead class="thead-dark">
@@ -16,8 +20,8 @@
                             <th scope="col">School Name</th>
                             <th scope="col">School Email</th>
                             <th scope="col">Ofsted Ranking</th>
-                            <th scope="col">Total Number of mentees</th>
-                            <th scope="col">School Referral (NOT DONE)</th>
+                            <th scope="col">Total Number of Mentees</th>
+                            <th scope="col">School Referral</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -29,13 +33,20 @@
                                 <td>{{ school.ofsted_ranking }}</td>
                                 <td>{{ schools_dict[school.school_id] }}</td>
                                 <td>
-                                    <input type="button" onclick="" value="Copy Referral Link">
+{#                                    <input type="button" value="Copy Referral Link">#}
+{#                                    <button class="btn" data-clipboard-text="http://127.0.0.1:5000/personal_form/mentee/{{school.school_id}}/">#}
+{#                                        Copy Referral#}
+{#                                    </button>#}
+                                    <input type="button" class="btn-primary" data-clipboard-text="http://127.0.0.1:5000/personal_form/mentee/{{school.school_id}}/"
+                                    value="Copy Referral Link">
                                 </td>
                             </tr>
                         {% endfor %}
                         </tbody>
                     </table>
-                    <input type="submit" value="Submit" class="btn btn-primary">
+                    <a href="{{ url_for('main.controlpanel_home') }}" >
+                        <input type="button" value="Control Panel Home" class="btn btn-primary">
+                    </a>
     {#            Make it flash a msg#}
                 </form>
             </div>
@@ -43,4 +54,11 @@
     {% else %}
         <p>Sorry, no pending schools found</p>
     {% endif %}
+{#    <script src="../../static/js/copy_referrals.js"></script>#}
+    <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+    <script>
+        (function(){
+            new ClipboardJS('.btn-primary');
+        })();
+    </script>
 {% endblock %}
