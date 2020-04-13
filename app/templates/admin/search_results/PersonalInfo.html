@@ -5,9 +5,9 @@
 
 {% block content %}
     <h2 class="font-weight-normal mt-3">
-        {{ user_type }} in {{ search_term }}
+        {{ results[1].first_name }} {{ results[1].last_name }}'s personal info:
     </h2>
-    <div class="table-responsive-md mx-2">
+    <div class="table-responsive-md mx-md-auto mx-lg-5">
         {% if results|length %}
             <table class="table table-striped mt-3 table-hover">
                 <thead class="thead-dark">
@@ -20,7 +20,6 @@
                         <th scope="col">Carer Email</th>
                         <th scope="col">Share Personal Issues</th>
                         <th scope="col">Share Performance</th>
-                        <th scope="col">Share Medical Conditions</th>
                     {% elif user_type == 'mentor' %}
                         <th scope="col">Status</th>
                         <th scope="col">Experience</th>
@@ -41,7 +40,6 @@
                             <td>{{ results[2].carer_email }}</td>
                             <td>{{ results[2].share_personal_issues }}</td>
                             <td>{{ results[2].share_performance}}</td>
-                            <td>{{ results[2].share_medical_cond }}</td>
                         {% elif user_type == 'mentor' %}
                             <td>{{ results[2].status }}</td>
                             <td>{{ results[2].xperience }}</td>

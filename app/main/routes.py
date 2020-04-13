@@ -32,7 +32,6 @@ def controlpanel_home():
 
     if request.method == 'POST' and search.validate_on_submit():
         search_type = search.select.data
-        print(search_type)
         user_type = search.select2.data
         search_string = search.search.data
 
@@ -273,14 +272,12 @@ def book_meeting(applicant_type, user_id, type_id=''):
     if applicant_type == 'mentor':
         mentee = Mentee.query.join(Pair, Pair.mentee_id == Mentee.mentee_id).join(Mentor,Pair.mentor_id == Mentor.mentor_id). \
             filter(Mentor.user_id == user_id).first()
-        print(mentee)
         if not mentee:
             flash("Sorry, you haven't been paired with a mentee yet. We'll let you know as soon as we pair you.")
             return redirect(url_for('main.home'))
 
         query = db.session.query(Mentee, Location, Pair).filter(Mentee.mentee_id == mentee.mentee_id). \
             join(Location, Location.user_id == Mentee.user_id).filter(Location.user_id == mentee.user_id).join(Pair, Pair.mentee_id == Mentee.mentee_id).first()
-        print(query)
 
     elif applicant_type == 'mentee':
         query = db.session.query(Mentee, Location, Pair).filter(Mentee.mentee_id == type_id).\

@@ -139,7 +139,7 @@ def get_data_from_user(UserType, DataType, user_field, data):
         results = db.session.query(User, UserType, Meeting). \
             filter(user_field.contains(data)). \
             join(UserType, User.user_id == UserType.user_id).join(Pair, paired_id == type_id). \
-            join(Meeting, Meeting.pair_id == Pair.id).first()
+            join(Meeting, Meeting.pair_id == Pair.id).all()
 
     elif DataType == Pair:
         results = db.session.query(User, UserType, Pair, PairedType). \

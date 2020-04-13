@@ -5,48 +5,52 @@
 {% block header%}View Schools{% endblock %}
 {% block content %}
      {% if schools|length %}
-{#         Variable is not empty #}
-        <div class="container d-flex h-100 align-items-center">
-            <div class="mx-auto text-center">
-                <h1>SCHOOL STATISTICS</h1>
-                <h2>Total Schools: {{ stats_dict['schools_total'] }}</h2>
-                <h2>Total Approved Schools: {{ stats_dict['approved_schools_total'] }}</h2>
-                <h2>Total Unapproved Schools: {{ stats_dict['unapproved_schools_total'] }}</h2>
+        <div class="row mt-3">
+            <div class="col-auto justify-content-center">
+
+                <h2>SCHOOL STATISTICS</h2>
+                <h3 class="font-weight-normal">Total Schools: {{ stats_dict['schools_total'] }}</h3>
+                <h3 class="font-weight-normal">Total Approved Schools: {{ stats_dict['approved_schools_total'] }}</h3>
+                <h3 class="font-weight-normal">Total Unapproved Schools: {{ stats_dict['unapproved_schools_total'] }}</h3>
                 <form action="" method="post" novalidate>
-                    <table class="table">
-                        <thead class="thead-dark">
-                        <tr>
-                            <th scope="col">School ID</th>
-                            <th scope="col">School Name</th>
-                            <th scope="col">School Email</th>
-                            <th scope="col">Ofsted Ranking</th>
-                            <th scope="col">Total Number of Mentees</th>
-                            <th scope="col">School Referral</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for school in schools %}
+                    <div class="table-responsive-md">
+                        <table class="table table-striped table-hover">
+                            <thead class="thead-dark">
                             <tr>
-                                <td>{{ school.school_id }}</td>
-                                <td>{{ school.school_name }}</td>
-                                <td>{{ school.school_email}}</td>
-                                <td>{{ school.ofsted_ranking }}</td>
-                                <td>{{ schools_dict[school.school_id] }}</td>
-                                <td>
-{#                                    <input type="button" value="Copy Referral Link">#}
-{#                                    <button class="btn" data-clipboard-text="http://127.0.0.1:5000/personal_form/mentee/{{school.school_id}}/">#}
-{#                                        Copy Referral#}
-{#                                    </button>#}
-                                    <input type="button" class="btn btn-outline-success" data-clipboard-text="http://127.0.0.1:5000/personal_form/mentee/{{school.school_id}}/"
-                                    value="Copy Referral Link">
-                                </td>
+                                <th scope="col">School ID</th>
+                                <th scope="col">School Name</th>
+                                <th scope="col">School Email</th>
+                                <th scope="col">Ofsted Ranking</th>
+                                <th scope="col">Total Number of Mentees</th>
+                                <th scope="col">School Referral</th>
                             </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                    <a href="{{ url_for('main.controlpanel_home') }}" >
-                        <input type="button" value="Control Panel Home" class="btn btn-primary">
-                    </a>
+                            </thead>
+                            <tbody>
+                            {% for school in schools %}
+                                <tr>
+                                    <td>{{ school.school_id }}</td>
+                                    <td>{{ school.school_name }}</td>
+                                    <td>{{ school.school_email}}</td>
+                                    <td>{{ school.ofsted_ranking }}</td>
+                                    <td>{{ schools_dict[school.school_id] }}</td>
+                                    <td>
+    {#                                    <input type="button" value="Copy Referral Link">#}
+    {#                                    <button class="btn" data-clipboard-text="http://127.0.0.1:5000/personal_form/mentee/{{school.school_id}}/">#}
+    {#                                        Copy Referral#}
+    {#                                    </button>#}
+                                        <input type="button" class="btn btn-outline-success" data-clipboard-text="http://127.0.0.1:5000/personal_form/mentee/{{school.school_id}}/"
+                                        value="Copy Referral Link">
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="row mt-sm-3 justify-content-center">
+                        <a href="{{ url_for('main.controlpanel_home') }}" >
+                            <input type="button" value="Control Panel Home" class="btn btn-primary">
+                        </a>
+                    </div>
     {#            Make it flash a msg#}
                 </form>
             </div>

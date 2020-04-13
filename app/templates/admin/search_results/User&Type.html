@@ -5,9 +5,9 @@
 
 {% block content %}
     <h2 class="font-weight-normal mt-3">
-        {{ user_type }} in {{ search_term }}
+        {{ results[1].first_name }} {{ results[1].last_name }}
     </h2>
-    <div class="table-responsive-md mx-2">
+    <div class="table-responsive-md mx-md-auto mx-lg-5">
         {% if results|length %}
             <table class="table table-striped mt-3 table-hover">
                 <thead class="thead-dark">

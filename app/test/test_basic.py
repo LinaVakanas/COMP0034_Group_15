@@ -178,14 +178,12 @@ class TestAuth(BaseTest):
             share_med_cond=self.mentee_personal_info.get('share_med_cond')
         ), follow_redirects=True)
         count2 = PersonalInfo.query.count()
-        print(count2)
         self.assertEqual(count2 - count, 1)
         self.assertEqual(response.status_code, 200)
 
     def test_mentor_location_form_saved(self):
         BaseTest.SetUp(self)
         count = Location.query.count()
-        print(self.user7.user_id)
 
         response = self.client.post(url_for('auth.location_form', applicant_type=self.user7.user_type, applicant_id=self.user7.user_id),data=dict(
             address=self.mentor4_location_data.get('address'),
@@ -208,9 +206,7 @@ class TestAuth(BaseTest):
     def test_register_mentee_success(self):
         BaseTest.SetUp(self)
         mentees = Mentee.query.with_entities(Mentee.first_name, Mentee.last_name).all()
-        print(mentees)
         count = Mentee.query.count()
-        print(count)
         response = self.client.post(url_for('auth.personal_form',
                                             applicant_type=self.mentee_data.get('user_type'),
                                             school_id=self.mentee_data.get('school_id')), data=dict(
@@ -227,7 +223,6 @@ class TestAuth(BaseTest):
             share_med_cond=self.mentee_personal_info.get('share_med_cond')
         ), follow_redirects=True)
         count2 = Mentee.query.count()
-        print(count2)
         self.assertEqual(count2 - count, 1)
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'Signup', response.data)
@@ -235,7 +230,6 @@ class TestAuth(BaseTest):
     def test_register_mentee_user_success(self):
         BaseTest.SetUp(self)
         count = User.query.count()
-        print(count)
         response = self.client.post(url_for('auth.personal_form',
                                             applicant_type=self.mentee_data.get('user_type'),
                                             school_id=self.mentee_data.get('school_id')), data=dict(
@@ -252,7 +246,6 @@ class TestAuth(BaseTest):
             share_med_cond=self.mentee_personal_info.get('share_med_cond')
         ), follow_redirects=True)
         count2 = User.query.count()
-        print(count2)
         self.assertEqual(count2 - count, 1)
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'Signup', response.data)
@@ -260,9 +253,7 @@ class TestAuth(BaseTest):
     def test_register_mentee_failed_invalid_school_ID(self):
         BaseTest.SetUp(self)
         mentees = Mentee.query.with_entities(Mentee.first_name, Mentee.last_name).all()
-        print(mentees)
         count = Mentee.query.count()
-        print(count)
         response = self.client.post(url_for('auth.personal_form',
                                             applicant_type=self.mentee_data.get('user_type'),
                                             school_id=2), data=dict(
@@ -279,7 +270,6 @@ class TestAuth(BaseTest):
             share_med_cond=self.mentee_personal_info.get('share_med_cond')
         ), follow_redirects=True)
         count2 = Mentee.query.count()
-        print(count2)
         self.assertEqual(count2 - count, 0)
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'Sorry you have entered an invalid', response.data)
@@ -287,7 +277,6 @@ class TestAuth(BaseTest):
     def test_register_mentor_success(self): #########################################################
         BaseTest.SetUp(self)
         count = Mentor.query.count()
-        print(count)
         response = self.client.post(url_for('auth.personal_form',
                                             applicant_type=self.mentor_data.get('user_type'),
                                             school_id=self.mentor_data.get('school_id')), data=dict(
@@ -303,7 +292,6 @@ class TestAuth(BaseTest):
             share_med_cond=self.mentor_personal_info.get('share_med_cond')
         ), follow_redirects=True)
         count2 = Mentor.query.count()
-        print(count2)
         self.assertEqual(count2 - count, 1)
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'Pending Approval', response.data)
@@ -326,7 +314,6 @@ class TestAuth(BaseTest):
             share_med_cond=self.mentor_personal_info.get('share_med_cond')
         ), follow_redirects=True)
         count2 = User.query.count()
-        print(count2)
         self.assertEqual(count2 - count, 1)
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'Pending Approval', response.data)
@@ -336,12 +323,10 @@ class TestAuth(BaseTest):
         self.login(email=self.user0.email, password='admin123')
         # unapproved_mentees = Mentee.query.join(User, User.user_id == Mentee.user_id).filter(User.is_active == False).with_entities(Mentee.first_name, Mentee.last_name).all()
         count = Mentee.query.join(User, User.user_id==Mentee.user_id).filter(User.is_active==False).count()
-        print(count)
         response = self.client.post(url_for('main.controlpanel_mentee'), data=dict(
             approve=self.mentee3.mentee_id
         ), follow_redirects=True)
         count2 = Mentee.query.join(User, User.user_id==Mentee.user_id).filter(User.is_active==False).count()
-        print(count2)
         self.assertEqual(count2 - count, -1)
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'Administrator Control Panel', response.data)
@@ -351,12 +336,10 @@ class TestAuth(BaseTest):
         self.login(email=self.user0.email, password='admin123')
         # unapproved_mentors = mentor.query.join(User, User.user_id == mentor.user_id).filter(User.is_active == False).with_entities(mentor.first_name, mentor.last_name).all()
         count = Mentor.query.join(User, User.user_id==Mentor.user_id).filter(Mentor.is_approved==False).count()
-        print(count)
         response = self.client.post(url_for('main.controlpanel_mentor'), data=dict(
             approve=self.mentor3.mentor_id
         ), follow_redirects=True)
         count2 = Mentor.query.join(User, User.user_id==Mentor.user_id).filter(Mentor.is_approved==False).count()
-        print(count2)
         self.assertEqual(count2 - count, -1)
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'Administrator Control Panel', response.data)
@@ -365,7 +348,6 @@ class TestAuth(BaseTest):
         BaseTest.SetUp(self)
 
         count = Meeting.query.count()
-        print(count)
         response = self.client.post(url_for('main.book_meeting', type_id=self.pair.mentee_id, user_id=self.mentee.user_id, applicant_type='mentee'), data=dict(
             day=self.book_meeting.get('day'),
             month=self.book_meeting.get('month'),
@@ -378,13 +360,11 @@ class TestAuth(BaseTest):
             postcode=self.book_meeting.get('postcode'),
         ), follow_redirects=True)
         count2 = Meeting.query.count()
-        print(count2)
         self.assertEqual(count2 - count, 1)
         self.assertEqual(response.status_code, 200)
 
     def test_confirm_meeting_success(self):
         BaseTest.SetUp(self)
-        print(self.meeting)
         db.session.add(self.meeting)
         db.session.commit()
         meeting = Meeting.query.first()

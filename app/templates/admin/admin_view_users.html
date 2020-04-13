@@ -5,38 +5,34 @@
 {% block header%}View Users{% endblock %}
 {% block content %}
     {% if queries|length %}
-        {#         Variable is not empty #}
-        <div class="container-fluid d-flex align-items-center">
-            <div class="col-4 align-self-center">
-                <div class="row ml-3">
-                    <form action="" method="post" novalidate>
-                        {{ search.csrf_token }}
-                        <div class="col-auto mb-3">
-                            <div class="row mb-3">
-                                {% if user_type == 'Mentee' %}
-                                    {{ render_field(search.search, value='Mentee  Email') }}
-                                {% elif user_type == 'Mentor' %}
-                                    {{ render_field(search.search, value='Mentor Email') }}
-                                {% endif %}
-                            </div>
-                            <div class="row">
-                                {{ render_field(search.select) }}
-                            </div>
-                        </div>
-                        <div class="row justify-content-center">
-                            <input type="submit" value="Submit" class="btn btn-primary">
-                        </div>
-                    </form>
-                </div>
-            </div>
-            <div class="col-4 mx-auto text-center">
-{#                {% if user_type == 'Mentee' %}#}
-                    <h1>{{user_type}} STATISTICS</h1>
-                    <h2>Total {{user_type}}s: {{ stats_dict['{{type}}_total'] }}</h2>
-                    <h2>Total Approved {{user_type}}s: {{ stats_dict['approved_{{type}}_total'] }}</h2>
-                    <h2>Total Unapproved {{user_type}}s: {{ stats_dict['unapproved_{{type}}_total'] }}</h2>
 
-                <table class="table">
+    <div class="row mr-0 ml-0 ">
+        <div class="col-md-3 row-sm ml-sm-0 pl-0  align-self-center">
+            <form action="" method="post" novalidate>
+                    {{ search.csrf_token }}
+                <div class="form-row ml-md-3 ml-sm-0" >
+                    <div class="col-lg-auto col-sm-6">
+                        {{ render_field(search.search, class='form-control') }}
+                    </div>
+                    <div class="col-lg-auto col-sm-3">
+                        {{ render_field(search.select, class='form-control') }}
+                    </div>
+                    <div class="col-lg-auto col-sm-3 mt-sm-3">
+                        <p></p>
+                        <input type="submit" value="Submit" class="btn btn-primary">
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-5 col-sm-auto mt-4 sm-mx-auto ml-md-4 justify-content-center">
+{#            <div class="row text-center"#}
+            <h2>{{user_type.upper()}} STATISTICS</h2>
+                    <h3 class="font-weight-normal">Total {{user_type}}s: {{ stats_dict['{}_total'.format(type)] }}</h3>
+                    <h3 class="font-weight-normal">Total Approved {{user_type}}s: {{ stats_dict['approved_{}_total'.format(type)] }}</h3>
+                    <h3 class="font-weight-normal">Total Unapproved {{user_type}}s: {{ stats_dict['unapproved_{}_total'.format(type)] }}</h3>
+
+                <table class="mt-4 table table-striped table-hover">
                     <thead class="thead-dark">
                     <tr>
                         <th scope="col">{{user_type}} ID</th>
@@ -68,11 +64,13 @@
                     {% endfor %}
                     </tbody>
                 </table>
-                <a href="{{ url_for('main.controlpanel_home') }}" >
-                    <input type="button" value="Control Panel Home" class="btn btn-primary">
-                </a>
+                <div class="row justify-content-center">
+                    <a href="{{ url_for('main.controlpanel_home') }}" >
+                        <input type="button" value="Control Panel Home" class="btn btn-primary">
+                    </a>
+                </div>
             </div>
-            <div class="col-4"></div>
+            <div class="col-3"></div>
         </div>
     {% else %}
         <p>Sorry, no {{ user_type }}s exist</p>

@@ -4,41 +4,41 @@
 
 {% block header%}Administrator Control Panel{% endblock %}
 {% block content %}
-    <div class="container-fluid d-flex align-items-center">
-        <div class="col-4 align-self-center">
-            <div class="row ml-3">
-                <form action="" method="post" novalidate>
+    <div class="row mr-0 ml-0 ">
+        <div class="col-md-4 col-sm-5 ml-md-0 pl-0  align-self-center">
+            <form action="" method="post" novalidate>
                     {{ search.csrf_token }}
-                    <div class="col-auto mb-3">
-                        <div class="row mb-3">
-                            {{ render_field(search.search) }}
-                        </div>
-
-                        <div class="row">
-                            {{ render_field(search.select) }}
-                        </div>
-                        <div class="row">
-                            {{ render_field(search.select2) }}
-                        </div>
+                <div class="form-row ml-lg-3 ml-md-0" >
+                    <div class="col-lg-auto col-sm-7">
+                        {{ render_field(search.search, class='form-control', value='City or School') }}
                     </div>
-                    <div class="row justify-content-center">
-                        <input type="submit" value="Submit" class="btn btn-primary">
+                    <div class="col-lg-auto col-sm-5">
+                        {{ render_field(search.select, class='form-control') }}
                     </div>
-                </form>
-            </div>
+                </div>
+                <div class="row ml-md-3 ml-sm-6 justify-content-center">
+                    {{ render_field(search.select2, class='form-control') }}
+                </div>
+                <div class="row ml-md-3 ml-sm-0 justify-content-center">
+                    <input type="submit" value="Submit" class="btn btn-primary">
+                </div>
+            </form>
         </div>
-        <div class="col-4 mx-auto text-center">
-            <h1>USER STATISTICS</h1>
-            <h2>Total Users: {{ stats_dict['users_total'] }}</h2>
-            <h2>Total Approved Users: {{ stats_dict['approved_total'] }}</h2>
-            <h2>Total Unapproved Users: {{ stats_dict['unapproved_total'] }}</h2>
-            <table class="table">
+
+        <div class="col-4 mt-5 col-sm-7 ml-sm-0 justify-content-center">
+{#            <div class="row text-center"#}
+            <h2>USER STATISTICS</h2>
+{#            <h3>Total Users: {{ stats_dict['users_total'] }}</h3>#}
+{#            <h3>Total Approved Users: {{ stats_dict['approved_total'] }}</h3>#}
+{#            <h3>Total Unapproved Users: {{ stats_dict['unapproved_total'] }}</h3>#}
+            <table class="table mr-md-1 table-responsive-md ">
                 <thead class="thead-dark">
                 <tr>
                     <th></th>
                     <th scope="col">School</th>
                     <th scope="col">Mentee</th>
                     <th scope="col">Mentor</th>
+                    <th scope="col">Users</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -47,55 +47,60 @@
                     <td>{{stats_dict['approved_schools_total']}}</td>
                     <td>{{ stats_dict['approved_mentees_total'] }}</td>
                     <td>{{stats_dict['approved_mentors_total']}}</td>
+                    <td>{{ stats_dict['users_total'] }}</td>
                 </tr>
                 <tr>
                     <th scope="row">Unapproved Total</th>
                     <td>{{stats_dict['unapproved_schools_total']}}</td>
                     <td>{{ stats_dict['unapproved_mentees_total'] }}</td>
                     <td>{{stats_dict['unapproved_mentors_total']}}</td>
+                    <td>{{ stats_dict['approved_total'] }}</td>
                 </tr>
                 <tr>
                     <th scope="row">Total</th>
                     <td>{{stats_dict['schools_total']}}</td>
                     <td>{{ stats_dict['mentees_total'] }}</td>
                     <td>{{stats_dict['mentors_total']}}</td>
+                    <td>{{stats_dict['unapproved_total']}}</td>
                 </tr>
                 </tbody>
             </table>
-            <div class="row justify-content-center">
-                <table class="buttons">
-                    <tr>
-                        <td><a href="{{ url_for('main.controlpanel_school') }}" >
-                            <input type="button" value="Approve Schools" class="btn btn-primary">
-                        </a></td>
-                        <td><a href="{{ url_for('main.controlpanel_view_schools') }}" >
-                            <input type="button" value="View Schools" class="btn btn-primary">
-                        </a></td>
-                    </tr>
-                    <tr>
-                        <td><a href="{{url_for('main.controlpanel_mentee')}}" >
-                            <input type="button" value="Approve Mentees" class="btn btn-primary">
-                        </a></td>
-                        <td><a href="{{ url_for('main.controlpanel_view_mentees') }}" >
-                            <input type="button" value="View Mentees" class="btn btn-primary">
-                        </a></td>
-                    </tr>
-                    <tr>
-                        <td><a href="{{url_for('main.controlpanel_mentor')}}" >
-                            <input type="button" value="Approve Mentors" class="btn btn-primary">
-                        </a></td>
-                        <td><a href="{{ url_for('main.controlpanel_view_mentors') }}" >
-                            <input type="button" value="View Mentors" class="btn btn-primary">
-                        </a></td>
-                    </tr>
-                    <tr>
-                        <td colspan="2"><a href="{{ url_for('main.home') }}" >
-                            <input type="button" value="Return Home" class="btn btn-primary">
-                        </a></td>
-                    </tr>
-                </table>
+{#            <div class=" d-flex flex-fill">#}
+                <div class="row mt-3 justify-content-center">
+                    <table class="buttons">
+                        <tr>
+                            <td><a href="{{ url_for('main.controlpanel_school') }}" >
+                                <input type="button" value="Approve Schools" class="btn btn-primary">
+                            </a></td>
+                            <td><a href="{{ url_for('main.controlpanel_view_schools') }}" >
+                                <input type="button" value="View Schools" class="btn btn-primary">
+                            </a></td>
+                        </tr>
+                        <tr>
+                            <td><a href="{{url_for('main.controlpanel_mentee')}}" >
+                                <input type="button" value="Approve Mentees" class="btn btn-primary">
+                            </a></td>
+                            <td><a href="{{ url_for('main.controlpanel_view_mentees') }}" >
+                                <input type="button" value="View Mentees" class="btn btn-primary">
+                            </a></td>
+                        </tr>
+                        <tr>
+                            <td><a href="{{url_for('main.controlpanel_mentor')}}" >
+                                <input type="button" value="Approve Mentors" class="btn btn-primary">
+                            </a></td>
+                            <td><a href="{{ url_for('main.controlpanel_view_mentors') }}" >
+                                <input type="button" value="View Mentors" class="btn btn-primary">
+                            </a></td>
+                        </tr>
+                    </table>
+                </div>
+                <div class=" row justify-content-center">
+                    <input type="button" value="Return Home" class="btn btn-primary">
+                </div>
+
             </div>
-        </div>
-        <div class="col-4"></div>
+{#        </div>#}
+        <div class="col"></div>
     </div>
+
 {% endblock %}

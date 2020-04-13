@@ -5,7 +5,7 @@
 
 {% block content %}
     <h2 class="font-weight-normal mt-3">
-        {{ user_type }} in {{ search_term }}
+        {{ user_type }} in {{ result[0].school_name }}
     </h2>
     <div class="table-responsive-md mx-2">
         {% if results|length %}

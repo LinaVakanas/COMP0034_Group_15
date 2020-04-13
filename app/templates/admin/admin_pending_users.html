@@ -6,24 +6,26 @@
 {% block content %}
      {% if queries|length %}
 {#         Variable is not empty #}
-        <div class="container-fluid d-flex align-items-center">
-            <div class="mx-auto text-center">
-                {% if user_type == 'Mentee' %}
-                    <h1>MENTEE STATISTICS</h1>
-                    <h2>Total Mentees: {{ stats_dict['mentees_total'] }}</h2>
-                    <h2>Total Approved Mentees: {{ stats_dict['approved_mentees_total'] }}</h2>
-                    <h2>Total Unapproved Mentees: {{ stats_dict['unapproved_mentees_total'] }}</h2>
+        <div class="container-fluid d-flex col">
+            <div class=" align-items-center">
+                <div class="mt-3 mx-auto text-center">
+                    {% if user_type == 'Mentee' %}
+                        <h2>MENTEE STATISTICS</h2>
+                        <h3 class="font-weight-normal">Total Mentees: {{ stats_dict['mentees_total'] }}</h3>
+                        <h3 class="font-weight-normal">Total Approved Mentees: {{ stats_dict['approved_mentees_total'] }}</h3>
+                        <h3 class="font-weight-normal">Total Unapproved Mentees: {{ stats_dict['unapproved_mentees_total'] }}</h3>
 
-                {% elif user_type == 'Mentor' %}
-                    <h1>MENTOR STATISTICS</h1>
-                    <h2>Total Mentors: {{ stats_dict['mentors_total'] }}</h2>
-                    <h2>Total Approved Mentors: {{ stats_dict['approved_mentors_total'] }}</h2>
-                    <h2>Total Unapproved Mentors: {{ stats_dict['unapproved_mentors_total'] }}</h2>
-                {% endif %}
+                    {% elif user_type == 'Mentor' %}
+                        <h2>MENTOR STATISTICS</h2>
+                        <h3>Total Mentors: {{ stats_dict['mentors_total'] }}</h3>
+                        <h3>Total Approved Mentors: {{ stats_dict['approved_mentors_total'] }}</h3>
+                        <h3>Total Unapproved Mentors: {{ stats_dict['unapproved_mentors_total'] }}</h3>
+                    {% endif %}
+                </div>
 
                 <form action="" method="post" novalidate>
                     {{ form.hidden_tag() }}
-                    <table class="table">
+                    <table class="table mt-3 table-striped table-hover">
                         <thead class="thead-dark">
                         <tr>
                             <th scope="col">{{user_type}} ID</th>
@@ -62,21 +64,15 @@
                         {% endfor %}
                         </tbody>
                     </table>
+
                     <div class="row justify-content-center">
-                        <table>
-                            <tr>
-                                <td>
-                                    <input type="submit" value="Submit" class="btn btn-primary">
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <a href="{{ url_for('main.controlpanel_home') }}" >
-                                        <input type="button" value="Control Panel Home" class="btn btn-primary">
-                                    </a>
-                                </td>
-                            </tr>
-                        </table>
+                        <input type="submit" value="Submit" class="btn btn-primary">
+                    </div>
+
+                    <div class="row mt-2 justify-content-center">
+                        <a href="{{ url_for('main.controlpanel_home') }}" >
+                            <input type="button" value="Control Panel Home" class="btn btn-primary">
+                        </a>
                     </div>
     {#            Make it flash a msg#}
                 </form>

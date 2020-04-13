@@ -18,7 +18,7 @@ class SearchByForm(FlaskForm):
                 ('Mentee', 'Mentee'),
                 ('Mentor', 'Mentor')]
     select2 = SelectField('User Type:', choices=choices2)
-    search = StringField('Search For:', validators=[DataRequired()])
+    search = StringField('Search:', validators=[DataRequired()])
 
 
 class SearchForm(FlaskForm):

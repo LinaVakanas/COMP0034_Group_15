@@ -2,12 +2,6 @@ from wtforms.validators import ValidationError
 from datetime import datetime
 
 
-def is_equal_to(min, max):
-
-    def _correct_date(form, field):
-        pass
-
-
 def correct_date(day, month):
     today = datetime.date(datetime.now())
 
@@ -22,7 +16,6 @@ def correct_date(day, month):
     return _correct_date
 
 
-
 class Unique(object):
     def __init__(self, model, field, message=""):
         self.model = model
@@ -33,9 +26,3 @@ class Unique(object):
         is_unique = self.model.query.filter_by(self.field == field.data).first()
         if is_unique:
             raise ValidationError(self.message)
-
-
-class Lina(object):
-    pass
-
-

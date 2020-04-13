@@ -219,7 +219,6 @@ def location_form(applicant_type, applicant_id):
                 new_location = Location(user_id=applicant_id, address=form.address.data, city=form.city.data,
                                         postcode=form.postcode.data,
                                         avoid_area=form.avoid_area.data)
-                print(new_location.city)
                 if applicant_type == 'mentor':
                     approve(applicant_type, mentor.mentor_id, 'active')
                 db.session.add(new_location)

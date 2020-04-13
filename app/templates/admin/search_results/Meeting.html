@@ -5,9 +5,9 @@
 
 {% block content %}
     <h2 class="font-weight-normal mt-3">
-        {{ user_type }} in {{ search_term }}
+        {{ results[0][1].first_name }} {{ results[0][1].last_name }}'s meeitings
     </h2>
-    <div class="table-responsive-md mx-2">
+    <div class="table-responsive-md mx-md-auto mx-lg-5">
         {% if results|length %}
             <table class="table table-striped mt-3 table-hover">
                 <thead class="thead-dark">
@@ -27,21 +27,23 @@
                 </thead>
                 <tbody>
                     <tr>
+                    {% for meeting in results %}
                         {% if user_type == 'mentee' %}
-                        <td>{{ meetings[1].mentee_id }}</td>
-                    {% elif user_type == 'mentor' %}
-                        <td>{{ meetings[1].mentor_id }}</td>
-                    {% endif %}
-                        <td>{{ mentees[2].meeting_id }}</td>
-                        <td>{{ mentees[2].pair_id }}</td>
-                        <td>{{ mentees[2].date}}</td>
-                        <td>{{ mentees[2].time }}</td>
-                        <td>{{ mentees[2].duration }}</td>
-                        <td>{{ mentees[2].address }}</td>
-                        <td>{{ mentees[2].postcode }}</td>
-                        <td>{{ mentees[2].type }}</td>
-                        <td>{{ mentees[2].mentee_approval }}</td>
-                        <td>{{ mentees[2].school_approval }}</td>
+                            <td>{{ meeting[1].mentee_id }}</td>
+                        {% elif user_type == 'mentor' %}
+                            <td>{{ meeting[1].mentor_id }}</td>
+                        {% endif %}
+                        <td>{{ meeting[2].pair_id }}</td>
+                        <td>{{ meeting[2].meeting_id }}</td>
+                        <td>{{ meeting[2].date}}</td>
+                        <td>{{ meeting[2].time }}</td>
+                        <td>{{ meeting[2].duration }}</td>
+                        <td>{{ meeting[2].address }}</td>
+                        <td>{{ meeting[2].postcode }}</td>
+                        <td>{{ meeting[2].type }}</td>
+                        <td>{{ meeting[2].mentee_approval }}</td>
+                        <td>{{ meeting[2].school_approval }}</td>
+                    {% endfor %}
                     </tr>
                 </tbody>
             </table>
