@@ -41,6 +41,11 @@ def user_loader(user_id):
 
 login_manager.login_view = 'auth.login'
 
+@bp_auth.route('/testing/')
+def testing():
+    mahdi = Mentor(first_name= "Mahdi", last_name= "Shah")
+    return render_template('home_mentor_pending.html', mentor=mahdi)
+
 @bp_auth.route('/login/', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated is False:

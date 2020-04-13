@@ -1,15 +1,19 @@
 {% extends 'base.html' %}
 {% block title %}Pending Approval{% endblock %}
 
-{% block header%}Home Page{% endblock %}
+{% block header%}Pending Approval{% endblock %}
 {% block content %}
     <div class="container vh-70 d-flex mt-6 col justify-content-center">
         <h1>
             Hi there {{mentor.first_name}}!
         </h1>
     </div>
-    <div class="row">
-        <p>Thank you for your application. We are now reviewing your details, please allow up to 5 working days.<br>
-        While waiting for your application to be processed, please feel free to browse and familiarise yourself with the site.</p>
+    <div class="row mt-3 justify-content-center">
+        <div class="col-sm-4 col-lg-2">
+            <img class="img-fluid" src="{{ url_for('static',filename='media//thinking.png') }}">
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <p>Thank you for your application. We are now reviewing your details, please allow up to 5 working days.</p>
     </div>
 {% endblock %}
