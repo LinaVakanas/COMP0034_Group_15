@@ -14,7 +14,7 @@
                         <div class="col-auto mb-3">
                             <div class="row mb-3">
                                 {% if user_type == 'Mentee' %}
-                                    {{ render_field(search.search, value='Mentee Email') }}
+                                    {{ render_field(search.search, value='Mentee  Email') }}
                                 {% elif user_type == 'Mentor' %}
                                     {{ render_field(search.search, value='Mentor Email') }}
                                 {% endif %}
@@ -30,18 +30,11 @@
                 </div>
             </div>
             <div class="col-4 mx-auto text-center">
-                {% if user_type == 'Mentee' %}
-                    <h1>MENTEE STATISTICS</h1>
-                    <h2>Total Mentees: {{ stats_dict['mentees_total'] }}</h2>
-                    <h2>Total Approved Mentees: {{ stats_dict['approved_mentees_total'] }}</h2>
-                    <h2>Total Unapproved Mentees: {{ stats_dict['unapproved_mentees_total'] }}</h2>
-
-                {% elif user_type == 'Mentor' %}
-                    <h1>MENTOR STATISTICS</h1>
-                    <h2>Total Mentors: {{ stats_dict['mentors_total'] }}</h2>
-                    <h2>Total Approved Mentors: {{ stats_dict['approved_mentors_total'] }}</h2>
-                    <h2>Total Unapproved Mentors: {{ stats_dict['unapproved_mentors_total'] }}</h2>
-                {% endif %}
+{#                {% if user_type == 'Mentee' %}#}
+                    <h1>{{user_type}} STATISTICS</h1>
+                    <h2>Total {{user_type}}s: {{ stats_dict['{{type}}_total'] }}</h2>
+                    <h2>Total Approved {{user_type}}s: {{ stats_dict['approved_{{type}}_total'] }}</h2>
+                    <h2>Total Unapproved {{user_type}}s: {{ stats_dict['unapproved_{{type}}_total'] }}</h2>
 
                 <table class="table">
                     <thead class="thead-dark">

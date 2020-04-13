@@ -48,7 +48,7 @@ def controlpanel_home():
         return render_template('admin/search_results/{}.html'.format(search_type), search_term=search_string,
                                results=results, user_type=user_type, title='Search Results')
 
-    return render_template('admin/admin_home.html', search=search,stats_dict=stats_dict)
+    return render_template('admin/admin_home.html', search=search,stats_dict=stats_dict, title='Control Panel')
 
 
 @bp_main.route('/admin/view_schools', methods=['POST', 'GET'])
@@ -104,7 +104,7 @@ def controlpanel_view_mentors():
     queries = db.session.query(User, Mentor).filter(Mentor.is_approved==True).join(Mentor, User.user_id==Mentor.user_id).all()
     if request.method == 'POST':
         return search_results(search, 'mentor')
-    return render_template('admin/admin_view_users.html', queries=queries, search=search, user_type=user_type, stats_dict=stats_dict)
+    return render_template('admin/admin_view_users.html', queries=queries, search=search, user_type=user_type, stats_dict=stats_dict, type='mentors')
 
 
 @bp_main.route('/admin/pending_mentees', methods=['POST','GET'])
@@ -133,7 +133,7 @@ def controlpanel_view_mentees():
     queries = db.session.query(User,Mentee).filter(User.is_active == True).join(Mentee, User.user_id == Mentee.user_id).all()
     if request.method == 'POST':
         return search_results(search, 'mentee')
-    return render_template('admin/admin_view_users.html', search=search, queries=queries, user_type=user_type, stats_dict=stats_dict)
+    return render_template('admin/admin_view_users.html', search=search, queries=queries, user_type=user_type, stats_dict=stats_dict, type='mentees')
 
 
 @bp_main.route('/admin/<user_type>/search-results/')
@@ -241,19 +241,51 @@ def view_paired_profile(applicant_type, user_id):
     if applicant_type == 'mentor':
         mentee = Mentee.query.join(Pair, Pair.mentee_id == Mentee.mentee_id).join(Mentor, Pair.mentor_id == Mentor.mentor_id).\
             filter(Mentor.user_id == user_id).first()
-        return render_template('profiles/mentee_profile.html', mentee=mentee, title='Mentee Profile')
+        if not mentee:
+            flash("Sorry, you haven't been paired with a mentee yet. We'll let you know as soon as we pair you.")
+            return redirect(url_for('main.home'))
+        else:
+            return render_template('profiles/mentee_profile.html', mentee=mentee, title='Mentee Profile')
 
     elif applicant_type == 'mentee':
         mentor = Mentor.query.join(Pair, Pair.mentor_id == Mentor.mentor_id).join(Mentee, Pair.mentee_id == Mentee.mentee_id). \
             filter(Mentee.user_id == user_id).first()
+        if not mentor:
+            flash("Sorry, you haven't been paired with a mentee yet. We'll let you know as soon as we pair you.")
+            return redirect(url_for('main.home'))
+
         return render_template('profiles/mentor_profile.html', mentor=mentor, title='Mentor Profile')
 
 
-@bp_main.route('/book-meeting/<mentee_id>/<mentee_user_id>/', methods=['POST', 'GET'])
+@bp_main.route('/<applicant_type>/<user_id>/profile/')
 @login_required
-def book_meeting(mentee_id, mentee_user_id):
-    query = db.session.query(Mentee, Location, Pair).filter(Mentee.mentee_id == mentee_id).\
-        join(Location, Location.user_id == Mentee.user_id).filter(Location.user_id == mentee_user_id).join(Pair, Pair.mentee_id==Mentee.mentee_id).first()
+def view_own_profile(applicant_type, user_id):
+    if applicant_type == 'mentee':
+        user = Mentee.query.filter(Mentee.user_id == user_id).first()
+    elif applicant_type == 'mentor':
+        user = Mentor.query.filter(Mentor.user_id == user_id).first()
+    return render_template('profiles/own_profile.html', user=user, title='My Profile')
+
+
+@bp_main.route('/book-meeting/<applicant_type>/<user_id>/<type_id>/', methods=['POST', 'GET'])
+@login_required
+def book_meeting(applicant_type, user_id, type_id=''):
+    if applicant_type == 'mentor':
+        mentee = Mentee.query.join(Pair, Pair.mentee_id == Mentee.mentee_id).join(Mentor,Pair.mentor_id == Mentor.mentor_id). \
+            filter(Mentor.user_id == user_id).first()
+        print(mentee)
+        if not mentee:
+            flash("Sorry, you haven't been paired with a mentee yet. We'll let you know as soon as we pair you.")
+            return redirect(url_for('main.home'))
+
+        query = db.session.query(Mentee, Location, Pair).filter(Mentee.mentee_id == mentee.mentee_id). \
+            join(Location, Location.user_id == Mentee.user_id).filter(Location.user_id == mentee.user_id).join(Pair, Pair.mentee_id == Mentee.mentee_id).first()
+        print(query)
+
+    elif applicant_type == 'mentee':
+        query = db.session.query(Mentee, Location, Pair).filter(Mentee.mentee_id == type_id).\
+        join(Location, Location.user_id == Mentee.user_id).filter(Location.user_id == user_id).join(Pair, Pair.mentee_id==Mentee.mentee_id).first()
+
     mentee = query[0]
     mentee_form = query[1]
     pair = query[2]
