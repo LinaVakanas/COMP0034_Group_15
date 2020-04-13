@@ -32,7 +32,7 @@ def create_app(config_class=DevConfig):
     db.init_app(app)
     mail.init_app(app)
     login_manager.init_app(app)
-
+    #
     from populate_db import populate_db
 
     # The following is needed if you want to map classes to an existing database

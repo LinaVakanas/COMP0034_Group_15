@@ -5,85 +5,79 @@
 {% block header%}Pending Mentees{% endblock %}
 {% block content %}
      {% if queries|length %}
-{#         Variable is not empty #}
-{#        <div class="container-fluid d-flex col">#}
-{#            <div class=" align-items-center">#}
+        <div class="row mt-3">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
 
-                <div class="col-5 col-sm-auto mt-4 sm-mx-auto ml-md-4 justify-content-center">
-                    {% if user_type == 'Mentee' %}
-                        <h2>MENTEE STATISTICS</h2>
-                        <h3 class="font-weight-normal">Total Mentees: {{ stats_dict['mentees_total'] }}</h3>
-                        <h3 class="font-weight-normal">Total Approved Mentees: {{ stats_dict['approved_mentees_total'] }}</h3>
-                        <h3 class="font-weight-normal">Total Unapproved Mentees: {{ stats_dict['unapproved_mentees_total'] }}</h3>
+                <div class="justify-content-center">
+                {% if user_type == 'Mentee' %}
+                    <h2>MENTEE STATISTICS</h2>
+                    <h3 class="font-weight-normal">Total Mentees: {{ stats_dict['mentees_total'] }}</h3>
+                    <h3 class="font-weight-normal">Total Approved Mentees: {{ stats_dict['approved_mentees_total'] }}</h3>
+                    <h3 class="font-weight-normal">Total Unapproved Mentees: {{ stats_dict['unapproved_mentees_total'] }}</h3>
 
-                    {% elif user_type == 'Mentor' %}
-                        <h2>MENTOR STATISTICS</h2>
-                        <h3 class="font-weight-normal">Total Mentors: {{ stats_dict['mentors_total'] }}</h3>
-                        <h3 class="font-weight-normal">Total Approved Mentors: {{ stats_dict['approved_mentors_total'] }}</h3>
-                        <h3 class="font-weight-normal">Total Unapproved Mentors: {{ stats_dict['unapproved_mentors_total'] }}</h3>
-                    {% endif %}
-                </div>
+                {% elif user_type == 'Mentor' %}
+                    <h2>MENTOR STATISTICS</h2>
+                    <h3 class="font-weight-normal">Total Mentors: {{ stats_dict['mentors_total'] }}</h3>
+                    <h3 class="font-weight-normal">Total Approved Mentors: {{ stats_dict['approved_mentors_total'] }}</h3>
+                    <h3 class="font-weight-normal">Total Unapproved Mentors: {{ stats_dict['unapproved_mentors_total'] }}</h3>
+                {% endif %}
 
-            <div class="row">
-                <div class="col-md-2"></div>
-                <div class="col-md-8">
-                    <form action="" method="post" novalidate>
-                        {{ form.hidden_tag() }}
-                        <table class="mt-4 table table-striped table-hover">
-                            <thead class="thead-dark">
+                <form action="" method="post" novalidate>
+                    {{ form.hidden_tag() }}
+                    <table class="mt-4 table table-striped table-hover">
+                        <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">{{user_type}} ID</th>
+                            {% if user_type == 'Mentee' %}
+                                <th scope="col">School ID</th>
+                            {% endif %}
+                            <th scope="col">First Name</th>
+                            <th scope="col">Last Name</th>
+                            <th scope="col">User ID</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Approve</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for query in queries %}
                             <tr>
-                                <th scope="col">{{user_type}} ID</th>
                                 {% if user_type == 'Mentee' %}
-                                    <th scope="col">School ID</th>
+                                    <td>{{ query[1].mentee_id }}</td>
+                                    <td>{{ query[0].school_id }}</td>
+                                {% elif user_type == 'Mentor' %}
+                                    <td>{{ query[1].mentor_id }}</td>
                                 {% endif %}
-                                <th scope="col">First Name</th>
-                                <th scope="col">Last Name</th>
-                                <th scope="col">User ID</th>
-                                <th scope="col">Email</th>
-                                <th scope="col">Approve</th>
+                                <td>{{ query[1].first_name }}</td>
+                                <td>{{ query[1].last_name }}</td>
+                                <td>{{ query[0].user_id }}</td>
+                                <td>{{ query[0].email }}</td>
+                                {% if user_type == 'Mentee' %}
+                                    <td>
+                                        {{ render_field(form.approve, value=query[1].mentee_id)}}
+                                {% elif user_type == 'Mentor' %}
+                                    <td>
+                                        {{ render_field(form.approve, value=query[1].mentor_id)}}
+                                    </td>
+                                {% endif %}
                             </tr>
-                            </thead>
-                            <tbody>
-                            {% for query in queries %}
-                                <tr>
-                                    {% if user_type == 'Mentee' %}
-                                        <td>{{ query[1].mentee_id }}</td>
-                                        <td>{{ query[0].school_id }}</td>
-                                    {% elif user_type == 'Mentor' %}
-                                        <td>{{ query[1].mentor_id }}</td>
-                                    {% endif %}
-                                    <td>{{ query[1].first_name }}</td>
-                                    <td>{{ query[1].last_name }}</td>
-                                    <td>{{ query[0].user_id }}</td>
-                                    <td>{{ query[0].email }}</td>
-                                    {% if user_type == 'Mentee' %}
-                                        <td>
-                                            {{ render_field(form.approve, value=query[1].mentee_id)}}
-                                    {% elif user_type == 'Mentor' %}
-                                        <td>
-                                            {{ render_field(form.approve, value=query[1].mentor_id)}}
-                                        </td>
-                                    {% endif %}
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
+                        {% endfor %}
+                        </tbody>
+                    </table>
 
-                        <div class="row justify-content-center">
-                            <input type="submit" value="Submit" class="btn btn-primary">
-                        </div>
+                    <div class="row justify-content-center">
+                        <input type="submit" value="Submit" class="btn btn-primary">
+                    </div>
 
-                        <div class="row mt-2 justify-content-center">
-                            <a href="{{ url_for('main.controlpanel_home') }}" >
-                                <input type="button" value="Control Panel Home" class="btn btn-primary">
-                            </a>
-                        </div>
-        {#            Make it flash a msg#}
-                    </form>
-                </div>
-                <div class="col-md-2"></div>
+                    <div class="row mt-2 justify-content-center">
+                        <a href="{{ url_for('main.controlpanel_home') }}" >
+                            <input type="button" value="Control Panel Home" class="btn btn-primary">
+                        </a>
+                    </div>
+                </form>
             </div>
-{#        </div>#}
+            <div class="col-md-2"></div>
+        </div>
     {% else %}
         <p>Sorry, no pending {{user_type}}s found</p>
     {% endif %}

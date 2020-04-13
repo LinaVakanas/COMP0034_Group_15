@@ -5,17 +5,17 @@
 {% block header%}Pending Schools{% endblock %}
 {% block content %}
      {% if schools|length %}
-{#         Variable is not empty #}
-         <div class="col-5 col-sm-auto mt-4 sm-mx-auto ml-md-4 justify-content-center ">
-            <h2>SCHOOL STATISTICS</h2>
-            <h3 class="font-weight-normal">Total Schools: {{ stats_dict['schools_total'] }}</h3>
-            <h3 class="font-weight-normal">Total Approved Schools: {{ stats_dict['approved_schools_total'] }}</h3>
-            <h3 class="font-weight-normal">Total Unapproved Schools: {{ stats_dict['unapproved_schools_total'] }}</h3>
-        </div>
-
-         <div class="row">
+         <div class="row mt-3">
             <div class="col-md-2"></div>
             <div class="col-md-8">
+
+                <div class="justify-content-center ">
+                    <h2>SCHOOL STATISTICS</h2>
+                    <h3 class="font-weight-normal">Total Schools: {{ stats_dict['schools_total'] }}</h3>
+                    <h3 class="font-weight-normal">Total Approved Schools: {{ stats_dict['approved_schools_total'] }}</h3>
+                    <h3 class="font-weight-normal">Total Unapproved Schools: {{ stats_dict['unapproved_schools_total'] }}</h3>
+                </div>
+
                 <form action="" method="post" novalidate>
                     {{ form.hidden_tag() }}
                     <table class="mt-4 table table-striped table-hover">
