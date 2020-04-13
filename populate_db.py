@@ -24,7 +24,7 @@ def populate_db():
                                postcode="XR4 5AQ", avoid_area="Neasden")
     user3 = User(user_type='mentee', school_id=1, email='wat@hotmail.com', is_active=False)
     mentee_personal_info = PersonalInfo(carer_email='mum@parents.com', carer_name='Mum Mom', share_performance=True,
-                                        user_id=2, share_personal_issues=True, share_med_cond=False)
+                                        user_id=2, share_personal_issues=True)
 
     user3 = User(user_type='mentee', school_id=1, email='wat@hotmail.com', is_active=False)
     user3.set_password('password3')
@@ -42,7 +42,7 @@ def populate_db():
     mentor2 = Mentor(user_id=5, school_id=0, first_name='Larry', last_name='Jake', paired=False, is_approved=False)
     mentor2_location = Location(user_id=5, address="Heber road", city="London",
                                postcode="NW3 5AQ", avoid_area="Neasden")
-    mentor2_personal_info = PersonalInfo(carer_name='', carer_email='', xperience='>=2', status='S', user_id=5, share_med_cond=True)
+    mentor2_personal_info = PersonalInfo(carer_name='', carer_email='', xperience='>=2', status='S', user_id=5)
 
     pair = Pair(mentor_id=1, mentee_id=1, creation_date="4/2/2020")
     db.session.add(pair)
@@ -52,8 +52,7 @@ def populate_db():
     user6 = User(user_type='mentor', school_id=0, email='lauren@gmail.com', is_active=False)
     user6.set_password('password6')
     mentor4 = Mentor(user_id=6, school_id=0, first_name='Lauren', last_name='Parker', paired=False, is_approved=True)
-    mentor4_personal_info = PersonalInfo(carer_name='', carer_email='', xperience='>=2', status='S', user_id=6,
-                                         share_med_cond=True)
+    mentor4_personal_info = PersonalInfo(carer_name='', carer_email='', xperience='>=2', status='S', user_id=6)
 
     db.session.add_all([user0,admin])
     db.session.add_all([user1, mentor])

@@ -120,6 +120,7 @@ c.execute('''
           carer_email TEXT NOT NULL,
           carer_name TEXT NOT NULL,
           share_performance BOOLEAN,
+          share_personal_issues BOOLEAN,
           status VARCHAR(1),
           xperience VARCHAR(3),
           user_id INTEGER NOT NULL,
@@ -134,16 +135,6 @@ c.execute('''
           family BOOLEAN,
           drugs BOOLEAN,
           ed BOOLEAN,
-          share_personal_issues BOOLEAN,
-          user_id INTEGER NOT NULL,
-          FOREIGN KEY (user_id) REFERENCES user(user_id))
-          ''')
-
-c.execute('''
-          CREATE TABLE medical_cond
-          (form_id INTEGER PRIMARY KEY,
-          cond1 BOOLEAN,
-          share_med_cond BOOLEAN,
           user_id INTEGER NOT NULL,
           FOREIGN KEY (user_id) REFERENCES user(user_id))
           ''')

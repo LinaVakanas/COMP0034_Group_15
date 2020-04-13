@@ -135,7 +135,6 @@ class PersonalInfo(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
     user = db.relationship("User", backref='personal_info')
     share_personal_issues = db.Column(db.Boolean, nullable=True)
-    share_med_cond = db.Column(db.Boolean, nullable=True)
 
 
 class PersonalIssues(db.Model):
@@ -157,14 +156,6 @@ class Hobbies(db.Model):
     user = db.relationship("User", backref='hobbies')
     football = db.Column(db.Boolean)
     drawing = db.Column(db.Boolean)
-
-
-class MedicalCond(db.Model):
-    __tablename__ = 'medical_condition'
-    form_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    cond1 = db.Column(db.Boolean)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
-    user = db.relationship("User", backref='medical_cond')
 
 
 class OccupationalField(db.Model):

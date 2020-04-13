@@ -141,7 +141,7 @@ def personal_form(applicant_type, school_id):
 
                         new_user.personal_info.append(PersonalInfo(carer_email=form.carer_email.data, carer_name=form.carer_name.data,
                                                                    status="S", xperience=None, share_performance=form.share_performance.data,
-                                                                   share_personal_issues=form.share_personal_issues.data, share_med_cond=form.share_med_cond.data))
+                                                                   share_personal_issues=form.share_personal_issues.data))
 
                     elif applicant_type == 'mentor':
                         if form.xperience.data == '>=2' and form.status.data != 'N':
@@ -149,8 +149,7 @@ def personal_form(applicant_type, school_id):
                                                           last_name=form2.last_name.data, paired=False,is_approved=False))
                             new_m = Mentor.query.join(User).filter(Mentor.user_id == new_user.user_id).first()
                             new_user.personal_info.append(PersonalInfo(carer_email="", carer_name="",status=form.status.data,
-                                                                       xperience=form.xperience.data, share_performance=None, share_personal_issues=form.share_personal_issues.data,
-                                                                       share_med_cond=form.share_med_cond.data))
+                                                                       xperience=form.xperience.data, share_performance=None, share_personal_issues=form.share_personal_issues.data))
 
 
                         else:
@@ -177,7 +176,6 @@ def personal_form(applicant_type, school_id):
                     elif applicant_type == 'mentor':
                         return render_template('home_mentor_pending.html', title='Pending Approval', mentor=new_m)
 
-                    # new_medical = MedicalCond()
                 return render_template('forms/PersonalForm.html', title='Signup', form2=form2, form=form, applicant_type=applicant_type)
 
 
