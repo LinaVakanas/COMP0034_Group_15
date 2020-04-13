@@ -55,11 +55,11 @@ class PersonalForm(FlaskForm):
     drugs = BooleanField(label='Drugs', default="unchecked")
     ed = BooleanField(label='Eating Disorder', default="unchecked")
 
-    share_personal_issues = BooleanField('Permission to share your problems with mentor', default="unchecked")
+    share_personal_issues = BooleanField('',default="unchecked")
     choices4 = [('S', 'University student'),
                 ('W', 'Working'),
                 ('N', 'Neither')]
-    status = SelectField('What is your current status:', choices=choices4, validators=[DataRequired()])
+    status = SelectField('What is your current occupational status:', choices=choices4, validators=[DataRequired()])
     choices5 = [('<2', 'Less than 2 years'),
                 ('>=2', '2 years or longer')]
     xperience = SelectField('How long have you had this occupation for?', choices=choices5, validators=[DataRequired()])
@@ -155,4 +155,4 @@ class ApproveMeeting(FlaskForm):
 class LoginForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
-    remember_me = BooleanField('Keep me logged in')
+    remember_me = BooleanField()

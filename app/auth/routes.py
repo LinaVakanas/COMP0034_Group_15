@@ -104,13 +104,15 @@ def personal_form(applicant_type, school_id):
         return redirect(url_for('main.home'))
     else:
         school = School.query.filter(School.school_id == school_id).first()
-        print(school)
         if is_unique(School, School.school_id, school_id, model2=None, field2=None, data2=None) is True:
             flash('Sorry you have entered an invalid registration link (School ID doesnt exist), please contact a system admin.')
             return redirect(url_for('main.home'))
         else:
-            if school.is_approved is False and applicant_type=='mentee':
+            if school.is_approved is False:
                 flash('Sorry your school has not been approved yet.')
+                return redirect(url_for('main.home'))
+            elif applicant_type =='mentor' and school.school_id != 0:
+                flash('Sorry you have entered an invalid registration link. Please use the signup button.')
                 return redirect(url_for('main.home'))
             else:
                 form = PersonalForm(request.form)
