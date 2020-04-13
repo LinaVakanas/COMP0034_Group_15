@@ -13,11 +13,15 @@ def populate_db():
                      ofsted_ranking="2")
     school3 = School(is_approved=0, school_id=3, school_name='Greycoats', school_email="greycoats@hotmail.com",
                      ofsted_ranking="3")
+
     user1 = User(user_type='mentor', school_id=0, email='harrypj@ucl.ac.uk', is_active=True)
     user1.set_password('password1')
     mentor = Mentor(user_id=1, school_id=0, first_name='Harry', last_name='Potter', paired=True, is_approved=True)
-    user2 = User(user_type='mentee', school_id=1, email='lily@ucl.ac.uk', is_active=True)
+    mentor_location = Location(user_id=1, address="Heber road", city="London",
+                                postcode="NW3 5AQ", avoid_area="Neasden")
+    mentor_personal_info = PersonalInfo(carer_name='', carer_email='', xperience='>=2', status='S', user_id=1)
 
+    user2 = User(user_type='mentee', school_id=1, email='lily@ucl.ac.uk', is_active=True)
     user2.set_password('password2')
     mentee = Mentee(user_id=2, school_id=1, first_name='Lily', last_name='Weasley', paired=True)
     mentee_location = Location(user_id=2, address="Hogsmeade", city="London",
@@ -55,7 +59,7 @@ def populate_db():
     mentor4_personal_info = PersonalInfo(carer_name='', carer_email='', xperience='>=2', status='S', user_id=6)
 
     db.session.add_all([user0,admin])
-    db.session.add_all([user1, mentor])
+    db.session.add_all([user1, mentor, mentor_personal_info, mentor_location])
     db.session.add_all([user2, mentee, mentee_personal_info])
     db.session.add_all([user3, mentee2, mentee2_location])
     db.session.add_all([user4, mentee3])

@@ -7,7 +7,7 @@
     {% if queries|length %}
 
     <div class="row mr-0 ml-0 ">
-        <div class="col-md-3 row-sm ml-sm-0 pl-0  align-self-center">
+        <div class="col-md-4 row-sm ml-sm-0 pl-0  align-self-center">
             <form action="" method="post" novalidate>
                     {{ search.csrf_token }}
                 <div class="form-row ml-md-3 ml-sm-0" >
@@ -25,7 +25,7 @@
             </form>
         </div>
 
-        <div class="col-5 col-sm-auto mt-4 sm-mx-auto ml-md-4 justify-content-center">
+        <div class="col-4 col-sm-auto mt-4 sm-mx-auto ml-md-4 justify-content-center">
 {#            <div class="row text-center"#}
             <h2>{{user_type.upper()}} STATISTICS</h2>
                     <h3 class="font-weight-normal">Total {{user_type}}s: {{ stats_dict['{}_total'.format(type)] }}</h3>
@@ -70,7 +70,7 @@
                     </a>
                 </div>
             </div>
-            <div class="col-3"></div>
+            <div class="col-4"></div>
         </div>
     {% else %}
         <p>Sorry, no {{ user_type }}s exist</p>

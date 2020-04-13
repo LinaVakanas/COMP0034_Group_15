@@ -6,17 +6,19 @@
 {% block content %}
      {% if schools|length %}
 {#         Variable is not empty #}
-         <div class="container d-flex h-100 col">
-            <div class=" align-items-center">
-                <div class="mt-3 mx-auto text-center">
-                    <h2>SCHOOL STATISTICS</h2>
-                    <h3 class="font-weight-normal">Total Schools: {{ stats_dict['schools_total'] }}</h3>
-                    <h3 class="font-weight-normal">Total Approved Schools: {{ stats_dict['approved_schools_total'] }}</h3>
-                    <h3 class="font-weight-normal">Total Unapproved Schools: {{ stats_dict['unapproved_schools_total'] }}</h3>
-                </div>
+         <div class="col-5 col-sm-auto mt-4 sm-mx-auto ml-md-4 justify-content-center ">
+            <h2>SCHOOL STATISTICS</h2>
+            <h3 class="font-weight-normal">Total Schools: {{ stats_dict['schools_total'] }}</h3>
+            <h3 class="font-weight-normal">Total Approved Schools: {{ stats_dict['approved_schools_total'] }}</h3>
+            <h3 class="font-weight-normal">Total Unapproved Schools: {{ stats_dict['unapproved_schools_total'] }}</h3>
+        </div>
+
+         <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
                 <form action="" method="post" novalidate>
                     {{ form.hidden_tag() }}
-                    <table class="table mt-3 table-striped table-hover">
+                    <table class="mt-4 table table-striped table-hover">
                         <thead class="thead-dark">
                         <tr>
                             <th scope="col">School ID</th>
@@ -54,6 +56,7 @@
     {#            Make it flash a msg#}
                 </form>
             </div>
+            <div class="col-md-2"></div>
          </div>
     {% else %}
         <p>Sorry, no pending schools found</p>
