@@ -105,6 +105,19 @@ class BaseTest(TestCase):
             follow_redirects=True
         )
 
+    def login(self, email, password):
+        return self.client.post(
+            '/login/',
+            data=dict(email=email, password=password),
+            follow_redirects=True
+        )
+
+    def logout(self):
+        return self.client.get(
+            '/logout/',
+            follow_redirects=True
+        )
+
     # test mentee and mentor details:
     mentee_data = dict(user_id=4, user_type='mentee', first_name='Hermione', last_name='Granger', school_id=1,
                        password='password3', email='test@mail.com')
@@ -131,8 +144,18 @@ class BaseTest(TestCase):
 
 
 class TestMain(BaseTest):
-    pass
+    def test_index_page_valid(self):
+        response = self.client.get('/')
+        self.assertEqual(response.status_code, 200)
 
+    def test_index_page_content(self):
+        response = self.client.get('/')
+        self.assertIn(b'Home', response.data)
+
+    def test_user_login_success(self):
+        BaseTest.SetUp(self)
+        response = self.login(email=self.user2.email, password='password2')
+        self.assertIn(b'Logged in successfully', response.data)
 
 class TestAuth(BaseTest):
 
@@ -310,7 +333,7 @@ class TestAuth(BaseTest):
 
     def test_admin_approve_mentee_success(self):
         BaseTest.SetUp(self)
-        AnonymousUserMixin.user_type = 'admin'
+        self.login(email=self.user0.email, password='admin123')
         # unapproved_mentees = Mentee.query.join(User, User.user_id == Mentee.user_id).filter(User.is_active == False).with_entities(Mentee.first_name, Mentee.last_name).all()
         count = Mentee.query.join(User, User.user_id==Mentee.user_id).filter(User.is_active==False).count()
         print(count)
@@ -325,7 +348,7 @@ class TestAuth(BaseTest):
 
     def test_admin_approve_mentor_success(self):
         BaseTest.SetUp(self)
-        AnonymousUserMixin.user_type = 'admin'
+        self.login(email=self.user0.email, password='admin123')
         # unapproved_mentors = mentor.query.join(User, User.user_id == mentor.user_id).filter(User.is_active == False).with_entities(mentor.first_name, mentor.last_name).all()
         count = Mentor.query.join(User, User.user_id==Mentor.user_id).filter(Mentor.is_approved==False).count()
         print(count)
