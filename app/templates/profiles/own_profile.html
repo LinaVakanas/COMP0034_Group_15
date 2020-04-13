@@ -1,0 +1,6 @@
+{% extends 'profiles/base.html' %}
+{% block title %}{{title}}{% endblock %}
+
+{% block display_pic %}{{ url_for('static',filename='media/default_user/profile_pic.png') }}{% endblock %}
+{% block name%}{{ user.first_name.capitalize() }} {{ user.last_name.capitalize() }}{% endblock %}
+

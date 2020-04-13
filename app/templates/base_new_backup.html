@@ -59,6 +59,7 @@
                         </li>
                     </ul>
                 {% endif %}
+            {% endif %}
 
             {% else %}
                 {% if current_user.user_type == 'admin' %}
@@ -74,37 +75,26 @@
                 {% endif %}
 
                 {% if current_user.user_type == 'mentor' or current_user.user_type == 'mentee' %}
-                    <ul class="nav nav-pills">
-                        <li class="nav-item dropdown ml-auto">
-                            {% if title == 'Mentor Profile' or title == 'Mentee Profile' or title == 'My Profile' or title == 'Book Meeting' %}
-                                <a class="nav-link dropdown-toggle active" href="#"  id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    My Account</a>
-                            {% else %}
-                                <a class="nav-link dropdown-toggle" href="#"  id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    My Account</a>
-                            {% endif %}
-                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="{{ url_for('main.view_own_profile', user_id=current_user.user_id, applicant_type=current_user.user_type) }}" >My Profile</a>
-                                <div class="dropdown-divider"></div>
-                                <a class="nav-item nav-link" href="{{url_for('main.view_paired_profile', applicant_type=current_user.user_type, user_id=current_user.user_id)}}">Pair Profile</a>
-
-                                {% if current_user.user_type == 'mentor' %}
-                                    <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" href="{{ url_for('main.book_meeting', applicant_type=current_user.user_type, user_id=current_user.user_id, type_id='none') }}" >Book Meeting</a>
-                                {% endif %}
-                            </div>
+                    {% if title == 'View Pair Profile' %}
+                        <li class="nav-item">
+                            <a class="nav-item nav-link active" href="{{url_for('main.view_paired_profile', applicant_type=current_user.user_type, user_id=current_user.user_id)}}">Pair Profile</a>
                         </li>
-                    </ul>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-item nav-link" href="{{url_for('main.view_paired_profile', applicant_type=current_user.user_type, user_id=current_user.user_id)}}">Pair Profile</a>
+                        </li>
+                    {% endif %}
                 {% endif %}
 
-{#                {% if title == 'Logout' %}#}
-{#                    <li class="nav-item">#}
-{#                        <a class="nav-item nav-link active" href="{{url_for('auth.logout')}}">Logout</a>#}
-{#                    </li>#}
-{#                {% else %}#}
+                {% if title == 'Logout' %}
+                    <li class="nav-item">
+                        <a class="nav-item nav-link active" href="{{url_for('auth.logout')}}">Logout</a>
+                    </li>
+                {% else %}
                     <li class="nav-item">
                         <a class="nav-item nav-link" href="{{url_for('auth.logout')}}">Logout</a>
                     </li>
+                {% endif %}
             {% endif %}
         </ul>
     </div>

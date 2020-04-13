@@ -94,7 +94,7 @@ def school_signup():
             flash("Your school is already registered.")
         return redirect(url_for('main.home'))
 
-    return render_template('forms/school_signup.html', form=form)
+    return render_template('forms/school_signup.html', form=form, title='School Signup')
 
 
 @bp_auth.route('/personal_form/<applicant_type>/<school_id>/', methods=['POST', 'GET'])

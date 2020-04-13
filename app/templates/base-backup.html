@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ title }}{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/freelancer.css')}}">
+</head>
+{#nav-pills nav-justified#}
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light ">
+    {% if title == 'RAIN BLOG' %}
+        <a class="nav-item nav-link active" href="{{url_for('main.home')}}">WEBSITE NAME</a>
+        <a class="nav-item nav-link" href="{{url_for('main.home')}}">Home</a>
+        {% if current_user.is_anonymous %}
+            <a class="nav-item nav-link" href="{{url_for('auth.login')}}">Login</a>
+
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('auth.school_signup') }}">Signup School<span class="sr-only">(current)</span></a>
+
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ '/personal_form/mentor/0/' }}">Signup Mentor</a>
+                    </li>
+                </ul>
+            </div>
+        {% else %}
+            {% if current_user.user_type == 'admin' %}
+                <a class="nav-item nav-link" href="{{url_for('main.controlpanel_home')}}">Control Panel</a>
+            {% elif current_user.user_type == 'mentor' or current_user.user_type == 'mentee' %}
+                <a class="nav-item nav-link" href="{{url_for('main.view_paired_profile', applicant_type=current_user.user_type, user_id=current_user.user_id)}}">Pair Profile</a>
+            {% endif %}
+            <a class="nav-item nav-link" href="{{url_for('auth.logout')}}">Logout</a>
+        {% endif %}
+
+    {% elif title == 'Home' %}
+        <a class="nav-item nav-link" href="{{url_for('main.home')}}">RAIN BLOG</a>
+        <a class="nav-item nav-link active" href="{{url_for('main.home')}}">Home</a>
+        {% if current_user.is_anonymous %}
+            <a class="nav-item nav-link" href="{{url_for('auth.login')}}">Login</a>
+
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('auth.school_signup') }}">Signup School<span class="sr-only"></span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ '/personal_form/mentor/0/' }}">Signup Mentor</a>
+                    </li>
+                </ul>
+            </div>
+        {% else %}
+            {% if current_user.user_type == 'admin' %}
+                <a class="nav-item nav-link active" href="{{url_for('main.controlpanel_home')}}">Control Panel</a>
+            {% elif current_user.user_type == 'mentor' or current_user.user_type == 'mentee' %}
+                <a class="nav-item nav-link" href="{{url_for('main.view_paired_profile', applicant_type=current_user.user_type, user_id=current_user.user_id)}}">Pair Profile</a>
+            {% endif %}
+            <a class="nav-item nav-link" href="{{url_for('auth.logout')}}">Logout</a>
+        {% endif %}
+{#        <a class="nav-item nav-link" href="{{url_for('main.personal_form')}}">Signup</a>#}
+
+    {% elif title == 'Signup' %}
+        <a class="nav-item nav-link" href="{{url_for('main.home')}}">RAIN BLOG</a>
+        <a class="nav-item nav-link" href="{{url_for('main.home')}}">Home</a>
+        {% if current_user.is_anonymous %}
+            <a class="nav-item nav-link" href="{{url_for('auth.login')}}">Login</a>
+        {% else %}
+            {% if current_user.user_type == 'admin' %}
+                <a class="nav-item nav-link" href="{{url_for('main.controlpanel_home')}}">Control Panel</a>
+            {% endif %}
+            <a class="nav-item nav-link" href="{{url_for('auth.logout')}}">Logout</a>
+        {% endif %}
+{#        <a class="nav-item nav-link active" href="{{url_for('main.personal_form')}}">Signup</a>#}
+
+    {% elif title == 'Login' %}
+        <a class="nav-item nav-link" href="{{url_for('main.home')}}">RAIN BLOG</a>
+        <a class="nav-item nav-link" href="{{url_for('main.home')}}">Home</a>
+        <a class="nav-item nav-link active" href="{{url_for('auth.login')}}">Login</a>
+{#        <a class="nav-item nav-link active" href="{{url_for('main.personal_form')}}">Signup</a>#}
+
+    {% else %}
+        <a class="nav-item nav-link" href="{{url_for('main.home')}}">WEBSITE NAME</a>
+        <a class="nav-item nav-link" href="{{url_for('main.home')}}">Home</a>
+        {% if current_user.is_anonymous %}
+            <a class="nav-item nav-link" href="{{url_for('auth.login')}}">Login</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('auth.school_signup') }}">Signup School<span class="sr-only"></span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ '/personal_form/mentor/0/' }}">Signup Mentor</a>
+                    </li>
+                </ul>
+            </div>
+
+        {% else %}
+            {% if current_user.user_type == 'admin' %}
+                <a class="nav-item nav-link" href="{{url_for('main.controlpanel_home')}}">Control Panel</a>
+            {% elif current_user.user_type == 'mentor' or current_user.user_type == 'mentee' %}
+                <a class="nav-item nav-link" href="{{url_for('main.view_paired_profile', applicant_type=current_user.user_type, user_id=current_user.user_id)}}">Pair Profile</a>
+            {% endif %}
+            <a class="nav-item nav-link" href="{{url_for('auth.logout')}}">Logout</a>
+        {% endif %}
+    {% endif %}
+</nav>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="alert alert-info">
+                <ul class="list-unstyled">
+                    {% for message in messages %}
+                    <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+    {% endwith %}
+
+<main role="main" class="container-fluid mx-0">
+    <h1>
+        {% block header %}{% endblock %}
+    </h1>
+    {% block content %}{% endblock %}
+</main>
+
+</body>
+</html>
