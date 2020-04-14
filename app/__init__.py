@@ -41,7 +41,7 @@ def create_app(config_class=DevConfig):
     with app.app_context():
         db.drop_all()
         db.create_all()
-        # populate_db()
+        populate_db()
 
 
     # Register Blueprints

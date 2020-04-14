@@ -4,11 +4,12 @@
 {% block header %}{{title}}{% endblock %}
 
 {% block content %}
-    <div class="table-responsive-md mx-2 mt-4">
-        <h2>
-            {{ user_type }} in {{ result[0].school_name }}
-        </h2>
-        {% if results|length %}
+    {% if results|length %}
+        <div class="table-responsive-md mx-2 mt-4">
+            <h2>
+                {{ user_type }} in {{ results[0][0].school_name }}
+            </h2>
+
             <table class="table table-striped mt-3 table-hover">
                 <thead class="thead-dark">
                 <tr>
@@ -39,9 +40,9 @@
                 {% endfor %}
                 </tbody>
             </table>
-        {% else %}
-            <p>Sorry, we have no {{ user_type.lower() }} in {{ search_term }}</p>
-        {% endif %}
+    {% else %}
+        <h3 class="font-weight-normal">We have no registered school named '{{ search_term }}'.</h3>
+    {% endif %}
     </div>
 
 
