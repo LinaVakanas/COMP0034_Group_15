@@ -11,12 +11,12 @@ from functions import is_unique, approve, get_stats, search_by_type, get_data_fr
 
 bp_main = Blueprint('main', __name__)
 
-# @login_manager.unauthorized_handler ------------- if we want to customise but idk how to fix next
+# @login_manager.unauthorized_handler
 # def unauthorized():
 #     flash('You must be logged in 123')
-#     return redirect(url_for('main.login'))
+#     return redirect(url_for('main.login', next=next))
 
-
+#
 
 @bp_main.route('/')
 def home():

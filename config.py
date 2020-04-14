@@ -1,7 +1,5 @@
 """Flask config class"""
 from os.path import dirname, abspath, join
-from flask import Flask
-from flask_mail import Mail
 
 
 class Config(object):

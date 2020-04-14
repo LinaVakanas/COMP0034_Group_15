@@ -1,13 +1,12 @@
-from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, Form, SelectField, BooleanField, SelectMultipleField, RadioField
-from wtforms.validators import DataRequired, EqualTo, Email, AnyOf, ValidationError
 import json
-
-from app import db
-from app.models2_backup import User
-from app.util.validators import correct_date
 from datetime import datetime
+
 from flask import current_app as app
+from flask_wtf import FlaskForm
+from wtforms import StringField, PasswordField, SelectField, BooleanField, RadioField
+from wtforms.validators import DataRequired, Email, ValidationError
+
+from app.util.validators import correct_date
 
 
 class SearchByForm(FlaskForm):
