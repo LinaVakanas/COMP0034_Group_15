@@ -47,7 +47,7 @@ def controlpanel_home():
         return render_template('admin/search_results/{}.html'.format(search_type), search_term=search_string,
                                results=results, user_type=user_type, title='Search Results')
 
-    return render_template('admin/admin_home.html', search=search,stats_dict=stats_dict, title='Control Panel')
+    return render_template('admin/admin_home.html', search=search,stats_dict=stats_dict, title='Administrator Control Panel')
 
 
 @bp_main.route('/admin/view_schools', methods=['POST', 'GET'])
@@ -57,7 +57,7 @@ def controlpanel_view_schools():
     schools = School.query.filter(School.is_approved == True, School.school_id != 0).all()
     schools_dict = get_school_stats(schools)
     stats_dict = get_stats()
-    return render_template('admin/admin_view_schools.html', schools=schools, schools_dict=schools_dict, stats_dict=stats_dict)
+    return render_template('admin/admin_view_schools.html', schools=schools, schools_dict=schools_dict, stats_dict=stats_dict, title="Schools")
 
 
 @bp_main.route('/admin/pending_schools/', methods=['POST', 'GET'])
@@ -74,7 +74,7 @@ def controlpanel_school():
             school.is_approved = True
             db.session.commit()
         return redirect(url_for('main.controlpanel_home'))
-    return render_template('admin/admin_pending_schools.html', schools=schools, form=form, stats_dict=stats_dict)
+    return render_template('admin/admin_pending_schools.html', schools=schools, form=form, stats_dict=stats_dict, title="Pending Schools")
 
 
 @bp_main.route('/admin/pending_mentors/', methods=['POST', 'GET'])
@@ -90,7 +90,7 @@ def controlpanel_mentor():
         for id in approved_list:
             approve('mentor', id, 'approve')
         return redirect(url_for('main.controlpanel_home')) ##### Maybe flash a msg as well
-    return render_template('admin/admin_pending_users.html', queries=queries, form=form, user_type=user_type, stats_dict=stats_dict)
+    return render_template('admin/admin_pending_users.html', queries=queries, form=form, user_type=user_type, stats_dict=stats_dict, title="Pending Mentors")
 
 
 @bp_main.route('/admin/view_mentors', methods=['POST', 'GET'])
@@ -103,7 +103,7 @@ def controlpanel_view_mentors():
     queries = db.session.query(User, Mentor).filter(Mentor.is_approved==True).join(Mentor, User.user_id==Mentor.user_id).all()
     if request.method == 'POST':
         return search_results(search, 'mentor')
-    return render_template('admin/admin_view_users.html', queries=queries, search=search, user_type=user_type, stats_dict=stats_dict, type='mentors')
+    return render_template('admin/admin_view_users.html', queries=queries, search=search, user_type=user_type, stats_dict=stats_dict, type='mentors', title="Mentors")
 
 
 @bp_main.route('/admin/pending_mentees', methods=['POST','GET'])
@@ -119,7 +119,7 @@ def controlpanel_mentee():
         for id in approved_list:
             approve('mentee', id, None)
         return redirect(url_for('main.controlpanel_home')) ##### Maybe flash a msg as well
-    return render_template('admin/admin_pending_users.html', queries=queries, form=form, user_type=user_type, stats_dict=stats_dict)
+    return render_template('admin/admin_pending_users.html', queries=queries, form=form, user_type=user_type, stats_dict=stats_dict, title="Pending Mentees")
 
 
 @bp_main.route('/admin/view_mentees', methods=['POST', 'GET'])
@@ -132,7 +132,7 @@ def controlpanel_view_mentees():
     queries = db.session.query(User,Mentee).filter(User.is_active == True).join(Mentee, User.user_id == Mentee.user_id).all()
     if request.method == 'POST':
         return search_results(search, 'mentee')
-    return render_template('admin/admin_view_users.html', search=search, queries=queries, user_type=user_type, stats_dict=stats_dict, type='mentees')
+    return render_template('admin/admin_view_users.html', search=search, queries=queries, user_type=user_type, stats_dict=stats_dict, type='mentees', title="Mentees")
 
 
 @bp_main.route('/admin/<user_type>/search-results/')
@@ -157,7 +157,7 @@ def search_results(search, user_type):
         return redirect('/admin/view_{}s'.format(user_type))
 
     # get selected information
-    if select_string == '':
+    if select_string == 'AllInfo':
         personal_info = get_data_from_user(UserType, PersonalInfo, User.email, search_string)
         location = get_data_from_user(UserType, Location, User.email, search_string)
         meetings = get_data_from_user(UserType, Meeting, User.email, search_string)

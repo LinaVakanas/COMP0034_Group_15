@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 {% from "_formhelpers.html" import render_field %}
-{% block title %}View Schools{% endblock %}
+{% block title %}{{ title }}{% endblock %}
 
-{% block header%}View Schools{% endblock %}
+{% block header%}{{ title }}{% endblock %}
 {% block content %}
      {% if schools|length %}
 

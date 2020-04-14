@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
-{% block title %}{{ user_type }} - {{ search_type }} Results{% endblock %}
+{% block title %}{{ user_type.capitalize() }} - {{ search_type }} Results{% endblock %}
 
-{% block header%}View {{ user_type }} - {{ search_type }} Search Results{% endblock %}
+{% block header%}View {{ user_type.capitalize() }} - {{ search_type }} Search Results{% endblock %}
 
 {% block content %}
     <div class="row">
         <div id="location" class="col">
-            <div class="table-responsive-md mx-sm-auto mx-lg-5">
+            <div class="table-responsive-md mx-sm-auto mx-lg-5 mt-4">
             {% if user|length %}
             <h2>User and {{ user_type.capitalize() }} Info</h2>
                 <table class="table table-striped mt-3 table-hover">
@@ -28,7 +28,7 @@
                             <td>{{ user[0].user_id }}</td>
                             <td>{{ user[0].email }}</td>
                             <td>{{ user[0].school_id }}</td>
-                            <td>{{ user[0].active }}</td>
+                            <td>{{ user[0].is_active }}</td>
                             <td>{{ user[0].creation_date }}</td>
                             {% if user_type == 'mentee' %}
                                 <td>{{ user[1].mentee_id }}</td>
@@ -165,7 +165,7 @@
                         <tbody>
                             <tr>
                                 <td>{{ pair[0].user_id }}</td>
-                                <td>{{ pair[2].pair_id }}</td>
+                                <td>{{ pair[2].id }}</td>
                                 {% if user_type == 'mentee' %}
                                     <td>{{ pair[1].mentee_id }}</td>
                                     <td>{{ pair[3].mentor_id}}</td>

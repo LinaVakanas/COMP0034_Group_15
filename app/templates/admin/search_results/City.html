@@ -4,10 +4,10 @@
 {% block header %}{{title}}{% endblock %}
 
 {% block content %}
-    <h2 class="font-weight-normal mt-3">
-        {{ user_type }} in {{ search_term }}
-    </h2>
-    <div class="table-responsive-md mx-2">
+    <div class="table-responsive-md mx-2 mt-4">
+        <h2>
+            {{ user_type }} in {{ search_term }}
+        </h2>
         {% if results|length %}
             <table class="table table-striped mt-3 table-hover">
                 <thead class="thead-dark">

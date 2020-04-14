@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 {% from "_formhelpers.html" import render_field %}
-{% block title %}Administrator Control Panel{% endblock %}
+{% block title %}{{title}}{% endblock %}
 
-{% block header%}Administrator Control Panel{% endblock %}
+{% block header%}{{title}}{% endblock %}
 {% block content %}
     <div class="row mr-0 ml-0 ">
         <div class="col-md-4 col-sm-5 ml-md-0 pl-0  align-self-center">
@@ -10,16 +10,16 @@
                     {{ search.csrf_token }}
                 <div class="form-row ml-lg-3 ml-md-0" >
                     <div class="col-lg-auto col-sm-7">
-                        {{ render_field(search.search, class='form-control', value='City or School') }}
+                        {{ render_field(search.search, class='form-control', placeholder='City or School') }}
                     </div>
                     <div class="col-lg-auto col-sm-5">
                         {{ render_field(search.select, class='form-control') }}
                     </div>
                 </div>
-                <div class="row ml-md-3 ml-sm-6 justify-content-center">
+                <div class="row ml-md-3 ml-sm-6">
                     {{ render_field(search.select2, class='form-control') }}
                 </div>
-                <div class="row ml-md-3 ml-sm-0 justify-content-center">
+                <div class="row ml-md-3 ml-sm-0">
                     <input type="submit" value="Submit" class="btn btn-primary">
                 </div>
             </form>

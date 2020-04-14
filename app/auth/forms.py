@@ -22,11 +22,12 @@ class SearchByForm(FlaskForm):
 
 
 class SearchForm(FlaskForm):
-    choices = [('', ''),
+    choices = [('AllInfo', 'All Info'),
                ('User&Type','User & Type'),
                ('PersonalInfo', 'Personal Info'),
                ('Location', 'Location Info'),
-               ('Meeting', 'Meetings')]
+               ('Meeting', 'Meetings'),
+               ('Pair', 'Pair Info')]
     select = SelectField('Filter by:', choices=choices)
     search = StringField('Search for a specific user:', validators=[DataRequired()])
 
