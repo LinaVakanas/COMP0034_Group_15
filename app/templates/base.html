@@ -1,11 +1,15 @@
+{# Code for the navigation bar based off of CodeLab: https://www.tutorialrepublic.com/codelab.php?topic=bootstrap&file=dropdowns-within-nav
+and BootStrap official website: https://getbootstrap.com/docs/4.0/components/navbar/ #}
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{{ title }}{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/freelancer.css')}}">
 </head>
-{#nav-pills nav-justified#}
+
 <body>
 <nav class="navbar navbar-expand-xl nav-pills nav-fill navbar-light bg-light ">
     <div class="flex-fill">
@@ -72,27 +76,25 @@
                 {% endif %}
 
                 {% if current_user.user_type == 'mentor' or current_user.user_type == 'mentee' %}
-{#                    <ul class="nav nav-pills">#}
-                        <li class="nav-item dropdown ml-auto">
-                            {% if title == 'Mentor Profile' or title == 'Mentee Profile' or title == 'My Profile' or title == 'Book Meeting' %}
-                                <a class="nav-link dropdown-toggle active" href="#"  id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    My Account</a>
-                            {% else %}
-                                <a class="nav-link dropdown-toggle" href="#"  id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    My Account</a>
-                            {% endif %}
-                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="{{ url_for('main.view_own_profile', user_id=current_user.user_id, applicant_type=current_user.user_type) }}" >My Profile</a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="{{url_for('main.view_paired_profile', applicant_type=current_user.user_type, user_id=current_user.user_id)}}">Pair Profile</a>
+                    <li class="nav-item dropdown ml-auto">
+                        {% if title == 'Mentor Profile' or title == 'Mentee Profile' or title == 'My Profile' or title == 'Book Meeting' %}
+                            <a class="nav-link dropdown-toggle active" href="#"  id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                My Account</a>
+                        {% else %}
+                            <a class="nav-link dropdown-toggle" href="#"  id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                My Account</a>
+                        {% endif %}
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="{{ url_for('main.view_own_profile', user_id=current_user.user_id, applicant_type=current_user.user_type) }}" >My Profile</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="{{url_for('main.view_paired_profile', applicant_type=current_user.user_type, user_id=current_user.user_id)}}">Pair Profile</a>
 
-                                {% if current_user.user_type == 'mentor' %}
-                                    <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" href="{{ url_for('main.book_meeting', applicant_type=current_user.user_type, user_id=current_user.user_id, type_id='none') }}" >Book Meeting</a>
-                                {% endif %}
-                            </div>
-                        </li>
-{#                    </ul>#}
+                            {% if current_user.user_type == 'mentor' %}
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="{{ url_for('main.book_meeting', applicant_type=current_user.user_type, user_id=current_user.user_id, type_id='none') }}" >Book Meeting</a>
+                            {% endif %}
+                        </div>
+                    </li>
                 {% endif %}
 
                     <li class="nav-item">

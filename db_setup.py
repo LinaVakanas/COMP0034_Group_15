@@ -85,7 +85,7 @@ c.execute('''
 
 c.execute('''
           CREATE TABLE pair
-          (pair_id INTEGER PRIMARY KEY,
+          (id INTEGER PRIMARY KEY,
           creation_date TEXT NOT NULL,
           mentor_id INTEGER NOT NULL,
           mentee_id INTEGER NOT NULL,
@@ -203,3 +203,18 @@ c.execute('''
           user_id INTEGER NOT NULL,
           FOREIGN KEY (user_id) REFERENCES user(user_id))
           ''')
+
+sql = "INSERT INTO school (is_approved, school_id, school_name, school_email, ofsted_ranking) VALUES(?, ?, ?, ?,?)"
+values = (1, 0, '', '', 0)
+c.execute(sql, values)
+
+sql = "INSERT INTO user (user_id, email, user_type, school_id, password, is_active) VALUES (?, ?, ?, ?, ?, ?)"
+values = (0, 'admin@admin.com', 'admin', 0, 'admin123', 1)
+c.execute(sql, values)
+
+sql = "INSERT INTO admin (admin_id, user_id) VALUES (1, 0)"
+c.execute(sql)
+
+conn.commit()
+
+conn.close()

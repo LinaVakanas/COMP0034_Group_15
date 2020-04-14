@@ -23,7 +23,7 @@ class BaseTest(TestCase):
         db.create_all()
 
         # create dummy data for tests
-        self.school0 = School(is_approved=0, school_id=0, school_name="", school_email="", ofsted_ranking="")
+        self.school0 = School(is_approved=True, school_id=0, school_name="", school_email="", ofsted_ranking="")
         self.user0 = User(user_id=0, user_type='admin', school_id=0, email="admin@admin.com", bio=None, is_active=True,
                      profile_pic=None, creation_date=None)
         self.user0.set_password('admin123')
