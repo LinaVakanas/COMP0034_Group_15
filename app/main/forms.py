@@ -57,5 +57,5 @@ class BookMeeting(FlaskForm):
 
 
 class ApproveMeeting(FlaskForm):
-    choices = [(1, 'I can make it'), (0, "I can't make it")]
+    choices = [("1", 'I can make it'), ("0", "I can't make it")]
     approval = RadioField(choices=choices, validators=[DataRequired()])

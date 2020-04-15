@@ -5,56 +5,56 @@
 {% block header%}{{ title }}{% endblock %}
 <br>
 {% block content %}
-{% if meeting%}
-{#         Variable is not empty #}
-    <div class="table-responsive-md mx-auto text-center">
-        <table class="table">
-            <thead class="thead-dark">
-            <tr>
-                <th scope="col">Date</th>
-                <th scope="col">Time</th>
-                <th scope="col">Duration</th>
-                <th scope="col">Type</th>
-                <th scope="col">Address</th>
-                <th scope="col">Postcode</th>
-            </tr>
-            </thead>
-            <tbody>
+    {% if meeting %}
+    {#         Variable is not empty #}
+        <div class="table-responsive-md mx-auto text-center">
+            <table class="table">
+                <thead class="thead-dark">
                 <tr>
-                    <td>{{meeting.date}}</td>
-                    <td>{{ meeting.time }}</td>
-                    <td>{{ meeting.duration }} hour</td>
-                    <td>{{ meeting.type }}</td>
-                    <td>{{ meeting.address }}</td>
-                    <td>{{ meeting.postcode }}</td>
+                    <th scope="col">Date</th>
+                    <th scope="col">Time</th>
+                    <th scope="col">Duration</th>
+                    <th scope="col">Type</th>
+                    <th scope="col">Address</th>
+                    <th scope="col">Postcode</th>
                 </tr>
-            </tbody>
-        </table>
-    </div>
-    <div class="container vh-70 d-flex mt-6 col">
-            <form action="" method="post" class="form-inline" novalidate>
-            {{ form.csrf_token }}
-                <div class="form-row">
-                    <div class="col custom-control-inline">
-                    <fieldset class="form-group">
-                        {{render_field(form.approval)}}
-                    </fieldset>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{meeting.date}}</td>
+                        <td>{{ meeting.time }}</td>
+                        <td>{{ meeting.duration }} hour</td>
+                        <td>{{ meeting.type }}</td>
+                        <td>{{ meeting.address }}</td>
+                        <td>{{ meeting.postcode }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="container vh-70 d-flex mt-6 col">
+                <form action="" method="post" class="form-inline" novalidate>
+                {{ form.csrf_token }}
+                    <div class="form-row">
+                        <div class="col custom-control-inline">
+                        <fieldset class="form-group">
+                            {{render_field(form.approval)}}
+                        </fieldset>
+                        </div>
                     </div>
-                </div>
-                <div class="form-row">
-                    <div class="col">
-                        <input type="submit" value="Submit" class="btn btn-primary">
+                    <div class="form-row">
+                        <div class="col">
+                            <input type="submit" value="Submit" class="btn btn-primary">
+                        </div>
                     </div>
-                </div>
-            </form>
-    </div>
+                </form>
+        </div>
 
-{% else %}
-    <div class="container vh-70 d-flex mt-6 col justify-content-center">
-        <p>Oops, looks like you have no pending meetings. We'll let you know as soon as you do!</p>
-        <small>How did you even get here anyway?</small>
-    </div>
-{% endif %}
+    {% else %}
+        <div class="container vh-70 d-flex mt-6 col justify-content-center">
+            <p>Oops, looks like you have no pending meetings. We'll let you know as soon as you do!</p>
+            <small>How did you even get here anyway?</small>
+        </div>
+    {% endif %}
 {% endblock %}
 
 {#    <h2>Nice! Your meeting has been booked.</h2>#}
