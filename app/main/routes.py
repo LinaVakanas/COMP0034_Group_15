@@ -268,7 +268,7 @@ def view_own_profile(applicant_type, user_id):
 @bp_main.route('/book-meeting/<applicant_type>/<user_id>/<type_id>/', methods=['POST', 'GET'])
 @login_required
 def book_meeting(applicant_type, user_id, type_id=''):
-    if user_id != current_user.user_id:
+    if int(user_id) != int(current_user.user_id):
         print(user_id)
         print(current_user.user_id)
         flash('Invalid link, please try again.')
