@@ -20,14 +20,4 @@
     Morbi in mollis est, vitae hendrerit magna. Nulla rutrum laoreet elit vitae suscipit.
 </p>
 
-{% if current_user.is_anonymous %}
-    <a href="{{ url_for('auth.school_signup') }}">
-        <input type="button" value="Signup School" class="btn btn-primary">
-    </a>
-
-    <a href="{{ '/personal_form/mentor/0/' }}">
-        <input type="button" value="Signup Mentor" class="btn btn-primary">
-    </a>
-{% endif %}
-
 {% endblock %}
