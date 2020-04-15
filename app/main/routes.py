@@ -217,9 +217,13 @@ def pairing(applicant_type, user_id):
         return redirect(url_for('main.home', title='Home'))
     else:
         if applicant_type == 'mentee':
-            mentor = Mentor.query.join(User, Mentor.user_id == User.user_id).\
-                filter(Mentor.paired == False, User.is_active == True).\
-                join(Location, Mentor.user_id == Location.user_id).filter(Location.city == location).first()
+            pair_with = db.session.query(Mentor, User).filter(Mentor.paired is False).\
+                join(User, User.user_id == Mentor.user_id). \
+                filter(User.is_active is True).join(Location, Mentor.user_id == Location.user_id).\
+                filter(Location.city == location).first()
+            Mentor.query.join(User, User.user_id == Mentor.user_id).filter(Mentor.paired)
+            mentor = pair_with[0]
+
             if not mentor:
                 flash("Unfortunately there are no mentors signed up in {} just yet! Sorry for the inconvenience, "
                       "you'll be put on a waiting list and we'll let you know as soon as a mentor is found".
@@ -228,14 +232,16 @@ def pairing(applicant_type, user_id):
             mentee = Mentee.query.filter_by(user_id=user_id).first()
 
         elif applicant_type == 'mentor':
-            mentee = Mentee.query.join(User, Mentee.user_id == User.user_id). \
-                filter(Mentee.paired == False, User.is_active == True). \
-                join(Location, Mentee.user_id == Location.user_id).filter(Location.city == location).first()
-            if not mentee:
+            pair_with = db.session.query(Mentee, User).filter(Mentee.paired is False).\
+                join(User, User.user_id == Mentee.user_id). \
+                filter(User.is_active is True).join(Location, Mentee.user_id == Location.user_id).filter(
+                Location.city == location).first()
+            if not pair_with:
                 flash("Unfortunately there are no mentees signed up in {} yet. Sorry for the inconvenience, "
                       "you'll be put on a waiting list and we will let you know as soon as a mentee is found".
                       format(location))
                 return render_template('home.html', title='Home')
+            mentee = pair_with[0]
             mentor = Mentor.query.filter_by(user_id=user_id).first()
 
         creation_date = str(datetime.date(datetime.now()))
@@ -338,7 +344,7 @@ def book_meeting(applicant_type, user_id):
             flash("Hm... looks like you've already booked a meeting on {date}.".format(date=date))
             return redirect(url_for('main.book_meeting', applicant_type='mentor', user_id=user_id))
         return render_template('meeting/meeting_confirmation.html', title="Meeting Confirmation", approval="1",
-                               user="mentor") ########################## Approval
+                               user="mentor")
 
     return render_template("forms/BookingForm.html", title="Book Meeting", form=form, mentee=mentee)
 
@@ -348,7 +354,8 @@ def book_meeting(applicant_type, user_id):
 def confirm_meeting(meeting_id):
     form = ApproveMeeting(request.form)
     meeting = Meeting.query.filter_by(meeting_id=meeting_id).first()
-    if request.method == 'POST' and form.validate_on_submit():
+
+    if request.method == 'POST':
         approval = form.approval.data
         meeting.mentee_approval = approval
         db.session.commit()
