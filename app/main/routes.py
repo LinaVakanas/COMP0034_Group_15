@@ -338,7 +338,7 @@ def book_meeting(applicant_type, user_id):
             flash("Hm... looks like you've already booked a meeting on {date}.".format(date=date))
             return redirect(url_for('main.book_meeting', applicant_type='mentor', user_id=user_id))
         return render_template('meeting/meeting_confirmation.html', title="Meeting Confirmation", approval="1",
-                               user="mentor")
+                               user="mentor") ########################## Approval
 
     return render_template("forms/BookingForm.html", title="Book Meeting", form=form, mentee=mentee)
 
