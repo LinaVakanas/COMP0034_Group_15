@@ -9,7 +9,7 @@ from app import db
 from app.auth.forms import ApproveForm, BookMeeting, \
     ApproveMeeting, SearchForm, SearchByForm
 from app.models2_backup import User, School, Pair, PersonalInfo, Mentee, Mentor, Location, Meeting
-from app.util.decorators import requires_admin
+from app.util.decorators import requires_admin, requires_correct_id
 from functions import is_unique, approve, get_stats, search_by_type, get_data_from_user, get_school_stats, validate_date
 
 bp_main = Blueprint('main', __name__)
@@ -188,10 +188,11 @@ def search_results(search, user_type):
     return render_template('admin/search_results/{}.html'.format(select_string), title='Search Results', results=results, user_type=user_type)
 
 
-@bp_main.route('/pairing/<applicant_type>/<applicant_id>/')
+@bp_main.route('/pairing/<applicant_type>/<user_id>/')
 @login_required
-def pairing(applicant_type, applicant_id):
-    user = User.query.filter(User.user_id == applicant_id).first()
+@requires_correct_id
+def pairing(applicant_type, user_id):
+    user = User.query.filter(User.user_id == user_id).first()
     location_form = Location.query.filter(Location.user_id == user.user_id).first()
     location = location_form.city
     if user.is_active is False:
@@ -206,7 +207,7 @@ def pairing(applicant_type, applicant_id):
                 flash("Unfortunately there are no mentors signed up in {} just yet! Sorry for the inconvenience, "
                       "you'll be put on a waiting list and we'll let you know as soon as a mentor is found".format(location))
                 return redirect(url_for('main.home', title='Home'))
-            mentee = Mentee.query.filter_by(user_id=applicant_id).first()
+            mentee = Mentee.query.filter_by(user_id=user_id).first()
 
         elif applicant_type == 'mentor':
             pair_with = db.session.query(Mentee, User).filter(Mentee.paired == False).join(User,User.user_id == Mentee.user_id). \
@@ -217,7 +218,7 @@ def pairing(applicant_type, applicant_id):
                       "you'll be put on a waiting list and we will let you know as soon as a mentee is found".format(location))
                 return render_template('home.html', title='Home')  ####for now
             mentee = pair_with[0]
-            mentor = Mentor.query.filter_by(user_id=applicant_id).first()
+            mentor = Mentor.query.filter_by(user_id=user_id).first()
 
         creation_date = str(datetime.date(datetime.now()))
         mentor.paired = True
@@ -236,6 +237,7 @@ def pairing(applicant_type, applicant_id):
 
 @bp_main.route('/<applicant_type>/<user_id>/view_paired_profile/')
 @login_required
+@requires_correct_id
 def view_paired_profile(applicant_type, user_id):
 
     if applicant_type == 'mentor':
@@ -257,6 +259,7 @@ def view_paired_profile(applicant_type, user_id):
 
 @bp_main.route('/<applicant_type>/<user_id>/profile/')
 @login_required
+@requires_correct_id
 def view_own_profile(applicant_type, user_id):
     if applicant_type == 'mentee':
         user = Mentee.query.filter(Mentee.user_id == user_id).first()
@@ -267,12 +270,11 @@ def view_own_profile(applicant_type, user_id):
 
 @bp_main.route('/book-meeting/<applicant_type>/<user_id>/<type_id>/', methods=['POST', 'GET'])
 @login_required
+@requires_correct_id
 def book_meeting(applicant_type, user_id, type_id=''):
-    if int(user_id) != int(current_user.user_id):
-        print(user_id)
-        print(current_user.user_id)
-        flash('Invalid link, please try again.')
-        return redirect(url_for('main.home', title='Home'))
+    # if int(user_id) != int(current_user.user_id):
+    #     flash('Invalid link, please try again.')
+    #     return redirect(url_for('main.home', title='Home'))
     if applicant_type == 'mentor':
         mentee = Mentee.query.join(Pair, Pair.mentee_id == Mentee.mentee_id).join(Mentor,Pair.mentor_id == Mentor.mentor_id). \
             filter(Mentor.user_id == user_id).first()
