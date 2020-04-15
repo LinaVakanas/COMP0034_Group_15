@@ -77,7 +77,7 @@ and BootStrap official website: https://getbootstrap.com/docs/4.0/components/nav
 
                 {% if current_user.user_type == 'mentor' or current_user.user_type == 'mentee' %}
                     <li class="nav-item dropdown ml-auto">
-                        {% if title == 'Mentor Profile' or title == 'Mentee Profile' or title == 'My Profile' or title == 'Book Meeting' %}
+                        {% if title == 'Mentor Profile' or title == 'Mentee Profile' or title == 'My Profile' or title == 'Book Meeting' or tittle == 'Not yet paired :('%}
                             <a class="nav-link dropdown-toggle active" href="#"  id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 My Account</a>
                         {% else %}

@@ -12,7 +12,7 @@ c = conn.cursor()
 c.execute('''
           CREATE TABLE user
           (user_id INTEGER PRIMARY KEY,
-          email TEXT NOT NULL,
+          email TEXT UNIQUE NOT NULL,
           user_type TEXT NOT NULL,
           school_id INTEGER NOT NULL,
           password TEXT NOT NULL,
@@ -171,7 +171,7 @@ c.execute('''
 
 c.execute('''
           CREATE TABLE location
-          (occupation_id INTEGER PRIMARY KEY,
+          (form_id INTEGER PRIMARY KEY,
           address TEXT NOT NULL,
           city TEXT NOT NULL,
           postcode TEXT NOT NULL,
@@ -208,13 +208,7 @@ sql = "INSERT INTO school (is_approved, school_id, school_name, school_email, of
 values = (1, 0, '', '', 0)
 c.execute(sql, values)
 
-sql = "INSERT INTO user (user_id, email, user_type, school_id, password, is_active) VALUES (?, ?, ?, ?, ?, ?)"
-values = (0, 'admin@admin.com', 'admin', 0, 'admin123', 1)
-c.execute(sql, values)
-
-sql = "INSERT INTO admin (admin_id, user_id) VALUES (1, 0)"
-c.execute(sql)
-
 conn.commit()
-
 conn.close()
+
+

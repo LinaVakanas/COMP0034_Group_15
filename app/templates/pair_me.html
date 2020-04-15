@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}{{title}}{% endblock %}
+
+{% block header%}{{ title }}{% endblock %}
+{% block content %}
+<h3 class="text-justify mt-2">
+    Sorry, you haven't been paired yet. You can click the button below, and if an available {{ pair_with }} is within
+    your city, you will be matched.</h3>
+<div class="row justify-content-center">
+    <a href="{{ url_for('main.pairing', applicant_type=current_user.user_type, applicant_id=current_user.user_id) }}">
+        <input type="button" value="Pair Me!" class="btn btn-primary">
+    </a>
+</div>
+{% endblock %}

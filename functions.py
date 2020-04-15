@@ -1,37 +1,21 @@
+import datetime
+from datetime import datetime
+
 from flask import request
-
-# class Unique(object):
-#     def __init__(self, model, field, message="", data):
-#         self.model = model
-#         self.field = field
-#         self.message = message
-
-
-# Checks if already exists in database
 from app import db
 from app.auth.forms import SearchByForm
-from app.models2_backup import Mentor, User, Mentee, School, Location, Pair, Meeting
+from app.models2_backup import Mentor, User, Mentee, School, Location, Pair, Meeting, Admin
 
 
 def is_unique(model, field, data, model2=None, field2=None, data2=None):
     if model2 and field2 and data2:
         check = model.query.join(model2).filter(field == data).filter(field2 == data2).first()
     else:
-        check = model.query.filter(field == data).first()
+        check = model.query.filter(field == data).one_or_none()
     if check:
         return False
     else:
         return True
-
-#
-# def create_user(applicant, email, user_type, school_id, password, creation_date):
-#     if applicant == 'mentee':
-#         new_user = User(email, user_type, school_id, password, creation_date, bio="", active=False)
-#         return new_user
-#     elif applicant == 'mentor':
-#         new_user = User(email=form2.email.data, school_id=0, user_type=applicant_type, creation_date=creation_date,
-#                         bio="", password=password, active=False)
-
 
 
 def approve(user_type, id, approve_type):
@@ -52,6 +36,19 @@ def approve(user_type, id, approve_type):
         query[1].is_active = True
 
     db.session.commit()
+
+
+def validate_date(day, month, year):
+    today = datetime.now().date()
+    date = datetime(int(year), int(month), int(day)).date()
+    if date < today:
+        message = "Sorry, you can't go back in time bud! Please pick a later day or month."
+        return message
+    if date == today:
+        message = "Sorry, you have to book at least one day in advance. Please pick a later day."
+        return message
+    else:
+        return True
 
 
 def get_stats():
@@ -159,3 +156,15 @@ def get_data_from_user(UserType, DataType, user_field, data):
             join(UserType, User.user_id == UserType.user_id). \
             join(DataType, DataType.user_id == User.user_id).first()
     return results
+
+
+def create_admin():
+    check = is_unique(User, User.user_id, 0)
+    if check is True:
+        user0 = User(user_id=0, email='admin@admin.com', user_type='admin', school_id=0, bio="",
+                     is_active=True, creation_date='')
+        admin = Admin(user_id=0)
+        user0.set_password('admin123')
+        db.session.add_all([user0, admin])
+        db.session.commit()
+

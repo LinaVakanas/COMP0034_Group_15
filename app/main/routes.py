@@ -1,21 +1,18 @@
+from datetime import datetime
+
 from flask import render_template, Blueprint, url_for, flash, redirect, request
 
 from flask_login import login_required
+from sqlalchemy.exc import IntegrityError
 
 from app import db
 from app.auth.forms import ApproveForm, BookMeeting, \
     ApproveMeeting, SearchForm, SearchByForm
 from app.models2_backup import User, School, Pair, PersonalInfo, Mentee, Mentor, Location, Meeting
 from app.util.decorators import requires_admin
-from functions import is_unique, approve, get_stats, search_by_type, get_data_from_user, get_school_stats
+from functions import is_unique, approve, get_stats, search_by_type, get_data_from_user, get_school_stats, validate_date
 
 bp_main = Blueprint('main', __name__)
-
-# @login_manager.unauthorized_handler ------------- if we want to customise but idk how to fix next
-# def unauthorized():
-#     flash('You must be logged in 123')
-#     return redirect(url_for('main.login'))
-
 
 
 @bp_main.route('/')
@@ -191,12 +188,14 @@ def search_results(search, user_type):
     return render_template('admin/search_results/{}.html'.format(select_string), title='Search Results', results=results, user_type=user_type)
 
 
-@bp_main.route('/pairing/<applicant_type>/<applicant_id>/<location>/')
-def pairing(applicant_type, applicant_id, location):
+@bp_main.route('/pairing/<applicant_type>/<applicant_id>//')
+def pairing(applicant_type, applicant_id):
     user = User.query.filter(User.user_id == applicant_id).first()
+    location_form = Location.query.filter(Location.user_id == user.user_id).first()
+    location = location_form.city
     if user.is_active is False:
         flash("You need to be approved by an admin before you can be paired.")
-        return redirect(url_for('auth.home', title='Home'))
+        return redirect(url_for('main.home', title='Home'))
     else:
         if applicant_type == 'mentee':
             pair_with = db.session.query(Mentor, User).filter(Mentor.paired==False).join(User, User.user_id==Mentor.user_id).\
@@ -219,9 +218,10 @@ def pairing(applicant_type, applicant_id, location):
             mentee = pair_with[0]
             mentor = Mentor.query.filter_by(user_id=applicant_id).first()
 
+        creation_date = str(datetime.date(datetime.now()))
         mentor.paired = True
         mentee.paired = True
-        new_pair = Pair(mentor_id=mentor.mentor_id, mentee_id=mentee.mentee_id)
+        new_pair = Pair(mentor_id=mentor.mentor_id, mentee_id=mentee.mentee_id, creation_date=creation_date)
         db.session.add(new_pair)
         db.session.commit()
 
@@ -241,8 +241,7 @@ def view_paired_profile(applicant_type, user_id):
         mentee = Mentee.query.join(Pair, Pair.mentee_id == Mentee.mentee_id).join(Mentor, Pair.mentor_id == Mentor.mentor_id).\
             filter(Mentor.user_id == user_id).first()
         if not mentee:
-            flash("Sorry, you haven't been paired with a mentee yet. We'll let you know as soon as we pair you.")
-            return redirect(url_for('main.home'))
+            return render_template('pair_me.html', title='Not yet paired :(', pair_with='mentee')
         else:
             return render_template('profiles/mentee_profile.html', mentee=mentee, title='Mentee Profile')
 
@@ -250,8 +249,7 @@ def view_paired_profile(applicant_type, user_id):
         mentor = Mentor.query.join(Pair, Pair.mentor_id == Mentor.mentor_id).join(Mentee, Pair.mentee_id == Mentee.mentee_id). \
             filter(Mentee.user_id == user_id).first()
         if not mentor:
-            flash("Sorry, you haven't been paired with a mentee yet. We'll let you know as soon as we pair you.")
-            return redirect(url_for('main.home'))
+            return render_template('pair_me.html', title='Not yet paired :(', pair_with='mentor')
 
         return render_template('profiles/mentor_profile.html', mentor=mentor, title='Mentor Profile')
 
@@ -287,24 +285,35 @@ def book_meeting(applicant_type, user_id, type_id=''):
     mentee_form = query[1]
     pair = query[2]
     form = BookMeeting(request.form)
-    form.avoid_area = mentee_form.avoid_area
+    avoid_area = mentee_form.avoid_area
 
     if request.method == 'POST' and form.validate_on_submit:
+        date_validation = validate_date(day=form.day.data, month=form.month.data, year=form.year.data)
+        if date_validation is not True:
+            flash(date_validation)
+            return redirect(url_for('main.book_meeting', applicant_type='mentor', user_id=user_id, type_id='None'))
+        if form.address.data == avoid_area:
+            flash("Sorry bud, your mentee doesn't feel comfortable going there. "
+                                   "In the interest of their well-being, please pick another area!")
+            return redirect(url_for('main.book_meeting', applicant_type='mentor', user_id=user_id, type_id='None'))
+        elif form.postcode.data == avoid_area:
+            flash("Sorry bud, your mentee doesn't feel comfortable going there. "
+                                   "In the interest of their well-being, please pick another area!")
+            return redirect(url_for('main.book_meeting', applicant_type='mentor', user_id=user_id, type_id='None'))
+
         date = '{day}/{month}/{year}'.format(day=form.day.data, month=form.month.data, year=str(form.year.data))
-
-        # check if that day is already booked
-        if is_unique(Meeting, Meeting.date, date, model2=Pair, field2=Pair.id, data2=pair.id) is False:
-            flash("Hm... looks like you've already booked a meeting on {date}.".format(date=date))
-            # when make a view booking page, link to that one
-            return render_template('forms/BookingForm.html', title="Book Meeting", form=form, mentee=mentee)
-
-        else:
-            time = '{hour}:{minute}'.format(hour=form.hour.data, minute=form.minute.data)
+        time = '{hour}:{minute}'.format(hour=form.hour.data, minute=form.minute.data)
+        try:
             new_meeting = Meeting(pair_id=pair.id, date=date, time=time, duration=form.duration.data,
                                   address=form.address.data, postcode=form.postcode.data, type=form.type.data)
             db.session.add(new_meeting)
             db.session.commit()
-            return render_template('meeting/meeting_confirmation.html', title="Meeting Confirmation", approval="1", user="mentor")
+
+        except IntegrityError:
+            flash("Hm... looks like you've already booked a meeting on {date}.".format(date=date))
+            return redirect(url_for('main.book_meeting', applicant_type='mentor', user_id=user_id, type_id='None'))
+        return render_template('meeting/meeting_confirmation.html', title="Meeting Confirmation", approval="1",
+                               user="mentor")
 
     return render_template("forms/BookingForm.html", title="Book Meeting", form=form, mentee=mentee)
 

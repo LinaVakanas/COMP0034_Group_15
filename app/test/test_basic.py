@@ -141,11 +141,11 @@ class BaseTest(TestCase):
 
 
 class TestMain(BaseTest):
-    def test_index_page_valid(self):
+    def test_home_page_valid(self):
         response = self.client.get('/')
         self.assertEqual(response.status_code, 200)
 
-    def test_index_page_content(self):
+    def test_home_page_content(self):
         response = self.client.get('/')
         self.assertIn(b'Home', response.data)
 
@@ -266,6 +266,27 @@ class TestAuth(BaseTest):
         self.assertEqual(count2 - count, 0)
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'Sorry you have entered an invalid', response.data)
+
+    def test_register_mentor_failed_invalid_email(self):
+        BaseTest.SetUp(self)
+        print(User.query.filter(User.email == 'mentor@ucl.ac.uk').first())
+        count = Mentor.query.count()
+        response = self.client.post(url_for('auth.personal_form', applicant_type=self.mentor_data.get('user_type'),
+                                            school_id=0), data=dict(
+            email='mentor@ucl.ac.uk',
+            user_type='mentor',
+            school_id=0,
+            first_name=self.mentor_data.get('first_name'),
+            last_name=self.mentor_data.get('last_name'),
+            password=self.mentor_data.get('password'),
+            carer_email=self.mentor_personal_info.get('carer_email'),
+            carer_name=self.mentor_personal_info.get('carer_name'),
+            share_personal_issues=self.mentor_personal_info.get('share_personal_issues')
+        ), follow_redirects=True)
+        count2 = Mentor.query.count()
+        self.assertEqual(count2 - count, 0)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b"Login", response.data)
 
     def test_register_mentor_success(self): #########################################################
         BaseTest.SetUp(self)

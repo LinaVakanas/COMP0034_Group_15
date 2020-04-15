@@ -207,7 +207,7 @@ class Meeting(db.Model):
     pair_id = db.Column(db.Integer, db.ForeignKey('pair.id'))
     # time-related
     date = db.Column(db.String(10), unique=True)
-    time = db.Column(db.String(5), unique=True)
+    time = db.Column(db.String(5))
     duration = db.Column(db.String(3), nullable=False)
     # location-related
     address = db.Column(db.String, nullable=True)

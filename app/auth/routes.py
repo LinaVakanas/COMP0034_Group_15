@@ -210,7 +210,7 @@ def location_form(applicant_type, applicant_id):
                   " if you think this is a mistake.")
             return redirect(url_for('main.home', title='Home'))
 
-        elif is_unique(Location, Location.user_id, applicant_id) is False:
+        elif is_unique(model=Location, field=Location.user_id, data=applicant_id, model2=None, data2=None, field2=None) is False:
             flash("Hm... looks like you've already signed up. You can sign in.")
             return redirect(url_for('auth.login', title='Login'))
 
@@ -223,7 +223,13 @@ def location_form(applicant_type, applicant_id):
                     approve(applicant_type, mentor.mentor_id, 'active')
                 db.session.add(new_location)
                 db.session.commit()
-                return redirect(url_for('main.pairing', applicant_type=applicant_type, applicant_id=applicant_id,
+
+                if applicant_type == 'mentor':
+                    return redirect(url_for('main.pairing', applicant_type=applicant_type, applicant_id=applicant_id,
                                         location=new_location.city))
+                elif applicant_type == 'mentee':
+                    flash("You have successfully completed the signing up process! Please for our admins to verify this "
+                          "and approve. You will receive an email when this is done.")
+                    return redirect(url_for('main.home', title='Home'))
             else:
                 return render_template('forms/LocationForm.html', title='Signup', form=form, applicant_type=applicant_type)

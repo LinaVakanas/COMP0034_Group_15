@@ -3,8 +3,6 @@ from wtforms import StringField, PasswordField, Form, SelectField, BooleanField,
 from wtforms.validators import DataRequired, EqualTo, Email, AnyOf, ValidationError
 import json
 
-from app import db
-from app.models2_backup import User
 from app.util.validators import correct_date
 from datetime import datetime
 from flask import current_app as app
@@ -112,7 +110,7 @@ class ApproveForm(FlaskForm):
 
 class BookMeeting(FlaskForm):
     days = []
-    for i in range(31):
+    for i in range(1,32,1):
         days.append(('{}'.format(i), '{}'.format(i)))
     day = SelectField(choices=days, validators=[DataRequired()])
     months = [('1', 'Jan'), ('2', 'Feb'), ('3', 'Mar'), ('4', 'Apr'), ('5', 'May'), ('6', 'Jun'),
@@ -120,7 +118,7 @@ class BookMeeting(FlaskForm):
     month = SelectField(choices=months, validators=[DataRequired()])
     today = datetime.date(datetime.now())
     years = [(today.year, today.year), (today.year + 1, today.year + 1)]
-    year = SelectField(choices=years, validators=[DataRequired(), correct_date(day, month)])
+    year = SelectField(choices=years, validators=[DataRequired()])
     hours = [('15', '15'), ('16', '16'), ('17', '17')]
     hour = SelectField(choices=hours)
     minutes = [('00', '00'), ('15', '15'), ('30', '30')]
@@ -132,20 +130,6 @@ class BookMeeting(FlaskForm):
     type = SelectField('Type of area for meeting', choices=area_types, validators=[DataRequired()]) # to validate if mentee said not to go there
     address = StringField('Address:', validators=[DataRequired()])
     postcode = StringField('Postcode:', validators=[DataRequired()])
-
-    def __init__(self, avoid_area):
-        super(BookMeeting, self).__init__()
-        self.avoid_area = avoid_area
-
-    def validate_address(self, address):
-        if address.data == self.avoid_area:
-            raise ValidationError("Sorry bud, your mentee doesn't feel comfortable going there. "
-                                   "In the interest of their well-being, please pick another area!")
-
-    def validate_postcode(self, postcode):
-        if postcode.data == self.avoid_area:
-            raise ValidationError("Sorry bud, your mentee doesn't feel comfortable going there. "
-                                   "In the interest of their well-being, please pick another area!")
 
 
 class ApproveMeeting(FlaskForm):
