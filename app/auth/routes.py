@@ -212,8 +212,7 @@ def location_form(applicant_type, applicant_id):
             db.session.commit()
 
             if applicant_type == 'mentor':
-                return redirect(url_for('main.pairing', applicant_type=applicant_type, applicant_id=applicant_id,
-                                    location=new_location.city))
+                return redirect(url_for('main.pairing', applicant_type=applicant_type, applicant_id=applicant_id, user_id=applicant_id))
             elif applicant_type == 'mentee':
                 flash("You have successfully completed the signing up process! Please for our admins to verify this "
                       "and approve. You will receive an email when this is done.")
