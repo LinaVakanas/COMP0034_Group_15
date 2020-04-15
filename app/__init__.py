@@ -4,7 +4,6 @@ from flask import Flask, render_template
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 
-
 from config import DevConfig
 
 db = SQLAlchemy()
@@ -32,17 +31,17 @@ def create_app(config_class=DevConfig):
     db.init_app(app)
     login_manager.init_app(app)
     #
-    from populate_db import populate_db
-    from functions import create_admin
+    from app.util.functions import create_admin
 
-    # The following is needed if you want to map classes to an existing database
+    # If a populated database is required, please comment out create_admin(),
+    # and un-comment db.drop_all() and populate_db()
     from app.models2_backup import User, Mentee, Mentor, Admin, Teacher, School, Report, Message, Chatroom, Pair, PersonalIssues, \
         PersonalInfo, Hobbies, Location, OccupationalField, StudentReview
     with app.app_context():
         db.drop_all()
         db.create_all()
         # create_admin()
-        populate_db()
+        # populate_db()
 
     # Register Blueprints
     from app.main.routes import bp_main

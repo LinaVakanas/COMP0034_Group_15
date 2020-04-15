@@ -1,11 +1,7 @@
 from functools import wraps
-from textwrap import wrap
 
 from flask import url_for, request, redirect, session, flash
 from flask_login import current_user
-
-# from app.auth.routes import personal_form, location_form, school_signup, login
-
 
 def requires_admin(user_type):
     def decorator(f):

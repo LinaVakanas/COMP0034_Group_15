@@ -392,7 +392,7 @@ class TestAuth(BaseTest):
         BaseTest.SetUp(self)
         count = Pair.query.count()
         response = self.client.get(url_for('main.pairing', applicant_type=self.user4.user_type,
-                                            applicant_id=self.user4.user_id, location=self.mentee2_location.city),
+                                            user_id=self.user4.user_id, location=self.mentee2_location.city),
                                    follow_redirects=True)
         count2 = Pair.query.count()
         self.assertEqual(count2 - count, 1)
