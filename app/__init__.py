@@ -1,13 +1,13 @@
+# code for error pages taken from Flask documentation: https://flask.palletsprojects.com/en/1.1.x/patterns/errorpages/
+
 from flask import Flask, render_template
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
-from flask_mail import Mail
 
 
 from config import DevConfig
 
 db = SQLAlchemy()
-mail = Mail()
 login_manager = LoginManager()
 
 def page_not_found(e):
@@ -30,10 +30,10 @@ def create_app(config_class=DevConfig):
     app.config.from_object(config_class)
 
     db.init_app(app)
-    mail.init_app(app)
     login_manager.init_app(app)
     #
     from populate_db import populate_db
+    from functions import create_admin
 
     # The following is needed if you want to map classes to an existing database
     from app.models2_backup import User, Mentee, Mentor, Admin, Teacher, School, Report, Message, Chatroom, Pair, PersonalIssues, \
@@ -41,8 +41,8 @@ def create_app(config_class=DevConfig):
     with app.app_context():
         db.drop_all()
         db.create_all()
+        # create_admin()
         populate_db()
-
 
     # Register Blueprints
     from app.main.routes import bp_main

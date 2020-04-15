@@ -2,7 +2,7 @@ from datetime import datetime
 
 from flask import render_template, Blueprint, url_for, flash, redirect, request
 
-from flask_login import login_required
+from flask_login import login_required, current_user
 from sqlalchemy.exc import IntegrityError
 
 from app import db
@@ -188,7 +188,8 @@ def search_results(search, user_type):
     return render_template('admin/search_results/{}.html'.format(select_string), title='Search Results', results=results, user_type=user_type)
 
 
-@bp_main.route('/pairing/<applicant_type>/<applicant_id>//')
+@bp_main.route('/pairing/<applicant_type>/<applicant_id>/')
+@login_required
 def pairing(applicant_type, applicant_id):
     user = User.query.filter(User.user_id == applicant_id).first()
     location_form = Location.query.filter(Location.user_id == user.user_id).first()
@@ -267,6 +268,11 @@ def view_own_profile(applicant_type, user_id):
 @bp_main.route('/book-meeting/<applicant_type>/<user_id>/<type_id>/', methods=['POST', 'GET'])
 @login_required
 def book_meeting(applicant_type, user_id, type_id=''):
+    if user_id != current_user.user_id:
+        print(user_id)
+        print(current_user.user_id)
+        flash('Invalid link, please try again.')
+        return redirect(url_for('main.home', title='Home'))
     if applicant_type == 'mentor':
         mentee = Mentee.query.join(Pair, Pair.mentee_id == Mentee.mentee_id).join(Mentor,Pair.mentor_id == Mentor.mentor_id). \
             filter(Mentor.user_id == user_id).first()
@@ -277,9 +283,9 @@ def book_meeting(applicant_type, user_id, type_id=''):
         query = db.session.query(Mentee, Location, Pair).filter(Mentee.mentee_id == mentee.mentee_id). \
             join(Location, Location.user_id == Mentee.user_id).filter(Location.user_id == mentee.user_id).join(Pair, Pair.mentee_id == Mentee.mentee_id).first()
 
-    elif applicant_type == 'mentee':
-        query = db.session.query(Mentee, Location, Pair).filter(Mentee.mentee_id == type_id).\
-        join(Location, Location.user_id == Mentee.user_id).filter(Location.user_id == user_id).join(Pair, Pair.mentee_id==Mentee.mentee_id).first()
+    # elif applicant_type == 'mentee':
+    #     query = db.session.query(Mentee, Location, Pair).filter(Mentee.mentee_id == type_id).\
+    #     join(Location, Location.user_id == Mentee.user_id).filter(Location.user_id == user_id).join(Pair, Pair.mentee_id==Mentee.mentee_id).first()
 
     mentee = query[0]
     mentee_form = query[1]
@@ -319,6 +325,7 @@ def book_meeting(applicant_type, user_id, type_id=''):
 
 
 @bp_main.route('/confirm-meeting/<meeting_id>/', methods=['POST', 'GET'])
+@login_required
 def confirm_meeting(meeting_id):
     form = ApproveMeeting(request.form)
     meeting = Meeting.query.filter_by(meeting_id=meeting_id).first()

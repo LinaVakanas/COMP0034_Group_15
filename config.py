@@ -19,10 +19,6 @@ class Config(object):
     SQLALCHEMY_DATABASE_URI = 'sqlite:///'+join(CWD, 'webapp_sqlite.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-    MAIL_DEFAULT_SENDER = 'valikanas@yahoo.fr'
-    ### do rest ###
-
-
 
 class TestConfig(Config):
     DEBUG = True
@@ -31,6 +27,7 @@ class TestConfig(Config):
     SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
     WTF_CSRF_ENABLED = False
     PRESERVE_CONTEXT_ON_EXCEPTION = False
+    LOGIN_DISABLED = True
 
 
 class ProductConfig(Config):
