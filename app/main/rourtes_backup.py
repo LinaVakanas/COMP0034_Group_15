@@ -11,7 +11,7 @@ from app.auth.forms import PersonalForm, SignUpForm, LocationForm, ApproveForm, 
     ApproveMeeting, LoginForm
 from app.models2_backup import User, OccupationalField, Hobbies, School, Pair, PersonalInfo, PersonalIssues, Mentee, Mentor, Location, Meeting
 from app.util.decorators import requires_admin
-from functions import is_unique, approve
+from app.util.functions import is_unique, approve
 from sqlalchemy.exc import IntegrityError
 
 bp_main = Blueprint('main', __name__)

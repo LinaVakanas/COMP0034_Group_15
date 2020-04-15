@@ -5,7 +5,7 @@
 {% block name%}{{ mentee.first_name.capitalize() }} {{ mentee.last_name.capitalize() }}{% endblock %}
 {% block content %}
     <div class="row mt-3">
-        <a href="{{ url_for('main.book_meeting', applicant_type='mentor', type_id='none', user_id=current_user.user_id) }}" >
+        <a href="{{ url_for('main.book_meeting', applicant_type='mentor', user_id=current_user.user_id) }}" >
             <input type="button" value="Book Meeting" class="btn btn-primary">
         </a>
     </div>
