@@ -3,7 +3,6 @@ from wtforms import StringField, PasswordField, Form, SelectField, BooleanField,
 from wtforms.validators import DataRequired, EqualTo, Email, AnyOf, ValidationError
 import json
 
-from app.util.validators import correct_date
 from datetime import datetime
 from flask import current_app as app
 
