@@ -262,10 +262,10 @@ def search_results(search, user_type):
                            results=results, user_type=user_type)
 
 
-@bp_main.route('/pairing/<applicant_type>/<user_id>/')
+@bp_main.route('/pairing/<user_type>/<user_id>/')
 @login_required
 @requires_correct_id
-def pairing(applicant_type, user_id):
+def pairing(user_type, user_id):
     """Function to pair mentors to unpaired mentees from the same city and vice versa.
 
     Queries Location table to retrieve the user to be paired's city. Checks that the user is active (and so permitted to
@@ -282,7 +282,7 @@ def pairing(applicant_type, user_id):
         flash("You need to be approved by an admin before you can be paired.")
         return redirect(url_for('main.home', title='Home'))
     else:
-        if applicant_type == 'mentee':
+        if user_type == 'mentee':
             pair_with = db.session.query(Mentor, User).filter(Mentor.paired == False).\
                 join(User, User.user_id == Mentor.user_id). \
                 filter(User.is_active == True).join(Location, Mentor.user_id == Location.user_id).\
@@ -297,7 +297,7 @@ def pairing(applicant_type, user_id):
                 return redirect(url_for('main.home', title='Home'))
             mentee = Mentee.query.filter_by(user_id=user_id).first()
 
-        elif applicant_type == 'mentor':
+        elif user_type == 'mentor':
             pair_with = db.session.query(Mentee, User).filter(Mentee.paired == False).\
                 join(User, User.user_id == Mentee.user_id). \
                 filter(User.is_active == True).join(Location, Mentee.user_id == Location.user_id).filter(
@@ -317,18 +317,18 @@ def pairing(applicant_type, user_id):
         db.session.add(new_pair)
         db.session.commit()
 
-        if applicant_type == 'mentor':
+        if user_type == 'mentor':
             return render_template('profiles/mentee_profile.html', mentee=mentee, title='Mentee Profile')
-        elif applicant_type == 'mentee':
+        elif user_type == 'mentee':
             return render_template('profiles/mentor_profile.html', mentor=mentor, title='Mentor Profile')
 
         return render_template('home.html', title='Home')
 
 
-@bp_main.route('/<applicant_type>/<user_id>/view_paired_profile/')
+@bp_main.route('/<user_type>/<user_id>/view_paired_profile/')
 @login_required
 @requires_correct_id
-def view_paired_profile(applicant_type, user_id):
+def view_paired_profile(user_type, user_id):
     """Function to view user's pair partner's profile.
 
     Obtains the pair partner's object by querying the user type table and joining with the Pair and current user's user
@@ -337,7 +337,7 @@ def view_paired_profile(applicant_type, user_id):
     A user must be signed in to access this page (@login_required), with the correct ID - the ID from the URL
     (@requires_correct_id).
     """
-    if applicant_type == 'mentor':
+    if user_type == 'mentor':
         mentee = Mentee.query.join(Pair, Pair.mentee_id == Mentee.mentee_id).\
             join(Mentor,Pair.mentor_id == Mentor.mentor_id).filter(Mentor.user_id == user_id).first()
 
@@ -346,7 +346,7 @@ def view_paired_profile(applicant_type, user_id):
         else:
             return render_template('profiles/mentee_profile.html', mentee=mentee, title='Mentee Profile')
 
-    elif applicant_type == 'mentee':
+    elif user_type == 'mentee':
         mentor = Mentor.query.join(Pair, Pair.mentor_id == Mentor.mentor_id).\
             join(Mentee, Pair.mentee_id == Mentee.mentee_id).filter(Mentee.user_id == user_id).first()
 
@@ -356,10 +356,10 @@ def view_paired_profile(applicant_type, user_id):
         return render_template('profiles/mentor_profile.html', mentor=mentor, title='Mentor Profile')
 
 
-@bp_main.route('/<applicant_type>/<user_id>/profile/')
+@bp_main.route('/<user_type>/<user_id>/profile/')
 @login_required
 @requires_correct_id
-def view_own_profile(applicant_type, user_id):
+def view_own_profile(user_type, user_id):
     """Function to view user's own profile.
 
         Obtains the user object by querying the User table.
@@ -367,17 +367,17 @@ def view_own_profile(applicant_type, user_id):
         A user must be signed in to access this page (@login_required), with the correct ID - the ID from the URL
         (@requires_correct_id).
         """
-    if applicant_type == 'mentee':
+    if user_type == 'mentee':
         user = Mentee.query.filter(Mentee.user_id == user_id).first()
-    elif applicant_type == 'mentor':
+    elif user_type == 'mentor':
         user = Mentor.query.filter(Mentor.user_id == user_id).first()
     return render_template('profiles/own_profile.html', user=user, title='My Profile')
 
 
-@bp_main.route('/book-meeting/<applicant_type>/<user_id>/', methods=['POST', 'GET'])
+@bp_main.route('/book-meeting/<user_type>/<user_id>/', methods=['POST', 'GET'])
 @login_required
 @requires_correct_id
-def book_meeting(applicant_type, user_id):
+def book_meeting(user_type, user_id):
     """Function for mentor to book meeting.
 
     Obtains the mentee object by querying the user type table and joining with the Pair and current user's user
@@ -391,7 +391,7 @@ def book_meeting(applicant_type, user_id):
     A user must be signed in to access this page (@login_required), with the correct ID - the ID from the URL
     (@requires_correct_id).
     """
-    if applicant_type == 'mentor':
+    if user_type == 'mentor':
         mentee = Mentee.query.join(Pair, Pair.mentee_id == Mentee.mentee_id).\
             join(Mentor, Pair.mentor_id == Mentor.mentor_id).filter(Mentor.user_id == user_id).first()
 
@@ -414,17 +414,17 @@ def book_meeting(applicant_type, user_id):
 
         if date_validation is not True:
             flash(date_validation)
-            return redirect(url_for('main.book_meeting', applicant_type='mentor', user_id=user_id))
+            return redirect(url_for('main.book_meeting', user_type='mentor', user_id=user_id))
 
         if form.address.data == avoid_area:
             flash("Sorry bud, your mentee doesn't feel comfortable going there. "
                   "In the interest of their well-being, please pick another area!")
-            return redirect(url_for('main.book_meeting', applicant_type='mentor', user_id=user_id))
+            return redirect(url_for('main.book_meeting', user_type='mentor', user_id=user_id))
 
         elif form.postcode.data == avoid_area:
             flash("Sorry bud, your mentee doesn't feel comfortable going there. "
                   "In the interest of their well-being, please pick another area!")
-            return redirect(url_for('main.book_meeting', applicant_type='mentor', user_id=user_id))
+            return redirect(url_for('main.book_meeting', user_type='mentor', user_id=user_id))
 
         date = '{day}/{month}/{year}'.format(day=form.day.data, month=form.month.data, year=str(form.year.data))
         time = '{hour}:{minute}'.format(hour=form.hour.data, minute=form.minute.data)
@@ -436,7 +436,7 @@ def book_meeting(applicant_type, user_id):
 
         except IntegrityError:
             flash("Hm... looks like you've already booked a meeting on {date}.".format(date=date))
-            return redirect(url_for('main.book_meeting', applicant_type='mentor', user_id=user_id))
+            return redirect(url_for('main.book_meeting', user_type='mentor', user_id=user_id))
         return render_template('meeting/meeting_confirmation.html', title="Meeting Confirmation", approval="1",
                                user="mentor")
 
