@@ -81,7 +81,7 @@ def get_stats():
     Creates all the totals and individal counts and places them in a dictionary.
 
     Returns:
-         dictionary
+         stats_dict: dictionary with all user types and totals
     """
     search = SearchByForm(request.form)
 
@@ -126,9 +126,10 @@ def get_school_stats(schools):
     """Function used to retrieve the number of mentees in each school.
 
     Keyword arguments:
-    schools -- pass in the list of schools in the database
+        schools -- pass in the list of schools in the database
 
-    return dictionary
+    Returns:
+        schools_dict: dictionary with all school ID and their number of mentees
     """
     schools_dict = dict()
     for school in schools:
@@ -142,11 +143,12 @@ def search_by_type(user_type, search_type, search_string):
     """Function used to filter search results.
 
     Keyword arguments:
-    user_type -- Mentee or Mentor
-    search_type -- City or School, filters database query to chosen table
-    search_string -- Searches for this string within the chosen table
+        user_type -- Mentee or Mentor
+        search_type -- City or School, filters database query to chosen table
+        search_string -- Searches for this string within the chosen table
 
-    return results
+    Returns:
+        results: search results
     """
     if user_type == 'Mentee':
         UserType = Mentee
@@ -168,12 +170,13 @@ def get_data_from_user(UserType, DataType, user_field, data):
     """Function used to retrieve different data from users.
 
     Keyword arguments:
-    UserType -- Mentee or Mentor
-    DataType -- Determines what information to retrieve.
-    user_field -- filter what tables to search in e.g city
-    data -- search terms to search for in the table e.g name of city
+        UserType -- Mentee or Mentor model
+        DataType -- model of information to retrieve
+        user_field -- filter what tables to search in e.g city
+        data -- search terms to search for in the table e.g name of city
 
-    return results
+    Results:
+        results: search results
     """
 
     if UserType == Mentee:
@@ -228,6 +231,7 @@ def initial_set_up():
 
     Checks if admin and school already exists to prevent errors.
     """
+
     check1 = is_unique(User, User.user_id, 0)
     check2 = is_unique(School, School.school_id, 0)
     if check1 is True:

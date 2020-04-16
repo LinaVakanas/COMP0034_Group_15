@@ -402,12 +402,12 @@ def view_paired_profile():
 def view_own_profile():
     """Function to view user's own profile.
 
-        Obtains the user object by querying the User table. A user must be signed in to access this page
-        (@login_required).
+    Obtains the user object by querying the User table. A user must be signed in to access this page
+    (@login_required).
 
-        Returns:
-            render_template: own profile
-        """
+    Returns:
+        render_template: own profile
+    """
 
     user_type = current_user.user_type
     user_id = current_user.user_id
@@ -498,19 +498,19 @@ def book_meeting():
 def confirm_meeting(meeting_id, user_id):
     """Function for mentee to confirm a booked meeting.
 
-        Obtains the meeting object by querying the Meeting table.
-        Instantiates the ApproveMeeting object, and retrieves form data upon POST. Sets the meeting's 'approval', saves
-        to database. A user must be signed in to access this page (@login_required).
+    Obtains the meeting object by querying the Meeting table.
+    Instantiates the ApproveMeeting object, and retrieves form data upon POST. Sets the meeting's 'approval', saves
+    to database. A user must be signed in to access this page (@login_required).
 
-        Keyword arguments:
-            user_id -- the mentee's user ID
-            meeting_id -- the ID of the meeting awaiting mentee approval
+    Keyword arguments:
+        user_id -- the mentee's user ID
+        meeting_id -- the ID of the meeting awaiting mentee approval
 
-        Returns:
-            render_template(): meeting confirmation page upon POST
-                or
-            render_template(): meeting approval page upon GET
-        """
+    Returns:
+        render_template(): meeting confirmation page upon POST
+            or
+        render_template(): meeting approval page upon GET
+    """
 
     form = ApproveMeeting(request.form)
     meeting = Meeting.query.filter_by(meeting_id=meeting_id).first()
