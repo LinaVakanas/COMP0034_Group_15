@@ -84,7 +84,7 @@ def populate_db():
 
     db.session.add_all([user1, mentor, mentor_personal_info, mentor_location])
     db.session.add_all([user2, mentor2, mentor2_personal_info, mentor2_location])
-    db.session.add_all([user3, mentee3, mentor3_personal_info])
+    db.session.add_all([user3, mentor3, mentor3_personal_info])
     db.session.add_all([user4, mentor4, mentor4_personal_info])
 
     db.session.add_all([user5, mentee, mentee_personal_info, mentee_location])

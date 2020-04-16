@@ -264,7 +264,6 @@ def search_results(search, user_type):
 
 @bp_main.route('/pairing/')
 @login_required
-# @requires_correct_id
 def pairing():
     """Function to pair mentors to unpaired mentees from the same city and vice versa.
 
@@ -325,7 +324,6 @@ def pairing():
 
 @bp_main.route('/view_paired_profile/')
 @login_required
-# @requires_correct_id
 def view_paired_profile():
     """Function to view user's pair partner's profile.
 
@@ -358,7 +356,6 @@ def view_paired_profile():
 
 @bp_main.route('/profile/')
 @login_required
-# @requires_correct_id
 def view_own_profile():
     """Function to view user's own profile.
 
@@ -378,7 +375,6 @@ def view_own_profile():
 
 @bp_main.route('/book-meeting/', methods=['POST', 'GET'])
 @login_required
-# @requires_correct_id
 def book_meeting():
     """Function for mentor to book meeting.
 

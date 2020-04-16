@@ -215,7 +215,7 @@ class TestMain(BaseTest):
     def test_confirm_meeting_success(self):
         BaseTest.SetUp(self)
         self.login(email=self.user2.email, password="password2")
-        response = self.client.post(url_for('main.confirm_meeting', meeting_id=self.meeting.meeting_id), data=dict(
+        response = self.client.post(url_for('main.confirm_meeting', meeting_id=self.meeting.meeting_id, user_id=self.mentee.user_id), data=dict(
             approval="1",
         ), follow_redirects=True)
         meeting = Meeting.query.first()
@@ -245,7 +245,7 @@ class TestMain(BaseTest):
     def test_view_profile_fail(self):
         BaseTest.SetUp(self)
         self.login(email=self.user4.email, password='password4')
-        response = self.client.get(url_for('main.view_own_profile', applicant_type=self.user7.user_type, user_id=self.user7.user_id),
+        response = self.client.get(url_for('main.view_own_profile'),
                                    follow_redirects=True)
         self.assertIn(b'You do not have access', response.data)
 
