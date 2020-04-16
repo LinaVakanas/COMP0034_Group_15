@@ -85,13 +85,13 @@ and BootStrap official website: https://getbootstrap.com/docs/4.0/components/nav
                                 My Account</a>
                         {% endif %}
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="{{ url_for('main.view_own_profile', user_id=current_user.user_id, applicant_type=current_user.user_type) }}" >My Profile</a>
+                            <a class="dropdown-item" href="{{ url_for('main.view_own_profile', user_id=current_user.user_id, user_type=current_user.user_type) }}" >My Profile</a>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="{{url_for('main.view_paired_profile', applicant_type=current_user.user_type, user_id=current_user.user_id)}}">Pair Profile</a>
+                            <a class="dropdown-item" href="{{url_for('main.view_paired_profile', user_type=current_user.user_type, user_id=current_user.user_id)}}">Pair Profile</a>
 
                             {% if current_user.user_type == 'mentor' %}
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="{{ url_for('main.book_meeting', applicant_type=current_user.user_type, user_id=current_user.user_id) }}" >Book Meeting</a>
+                                <a class="dropdown-item" href="{{ url_for('main.book_meeting', user_type=current_user.user_type, user_id=current_user.user_id) }}" >Book Meeting</a>
                             {% endif %}
                         </div>
                     </li>
