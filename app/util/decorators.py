@@ -3,7 +3,7 @@
 
 from functools import wraps
 
-from flask import url_for, request, redirect, session, flash
+from flask import url_for, redirect, flash
 from flask_login import current_user
 
 
