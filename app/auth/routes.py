@@ -74,6 +74,7 @@ def login():
             flash('Logged in successfully as {} {}'.format(type_obj.first_name, type_obj.last_name))
         elif user.user_type == 'admin':
             flash('Logged in successfully as System Admin')
+            return redirect(url_for('main.controlpanel_home'))
 
         if not is_safe_url(next):
             return abort(400)

@@ -155,9 +155,6 @@ c.execute('''
           FOREIGN KEY (user_id) REFERENCES user(user_id))
           ''')
 
-# sql = "INSERT INTO school (is_approved, school_id, school_name, school_email, ofsted_ranking) VALUES(?, ?, ?, ?,?)"
-# values = (1, 0, '', '', 0)
-# c.execute(sql, values)
 
 conn.commit()
 conn.close()
