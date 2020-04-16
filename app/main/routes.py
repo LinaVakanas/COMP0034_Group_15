@@ -51,7 +51,7 @@ def controlpanel_home():
 @login_required
 @requires_admin('admin')
 def controlpanel_view_schools():
-    schools = School.query.filter(School.is_approved is True, School.school_id != 0).all()
+    schools = School.query.filter(School.is_approved == True, School.school_id != 0).all()
     schools_dict = get_school_stats(schools)
     stats_dict = get_stats()
     return render_template('admin/admin_view_schools.html', schools=schools, schools_dict=schools_dict,
@@ -64,7 +64,7 @@ def controlpanel_view_schools():
 def controlpanel_school():
     form = ApproveForm(request.form)
     stats_dict = get_stats()
-    schools = School.query.filter(School.is_approved is False, School.school_id != 0).all()
+    schools = School.query.filter(School.is_approved == False, School.school_id != 0).all()
 
     if request.method == 'POST' and form.validate_on_submit():
         approved_list = request.form.getlist('approve')
