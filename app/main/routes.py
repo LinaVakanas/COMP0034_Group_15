@@ -16,6 +16,7 @@ bp_main = Blueprint('main', __name__)
 
 @bp_main.route('/')
 def home():
+    """Returns user to the home page, renders home page."""
     return render_template('home.html', title="Home")
 
 
@@ -23,6 +24,14 @@ def home():
 @login_required
 @requires_admin('admin')
 def controlpanel_home():
+    """Function to view admin control panel home and search for specific user types in the selected 'search_type'
+    tables, by search term.
+
+    Instantiates SearchByForm object. Upon POST, retrieves data from form fields. Retrieves filtered search results by
+    calling on the imported function 'search_by_type'.
+    Returns the rendered corresponding search_results page.
+    A user must be signed in to access this page (@login_required), which is an admin (@requires_admin).
+    """
     search = SearchByForm(request.form)
     stats_dict = get_stats()
 
@@ -47,10 +56,17 @@ def controlpanel_home():
                            title='Administrator Control Panel')
 
 
-@bp_main.route('/admin/view_schools', methods=['POST', 'GET'])
+@bp_main.route('/admin/view_schools/')
 @login_required
 @requires_admin('admin')
 def controlpanel_view_schools():
+    """Function to view all approved school, and school statistics.
+
+    Queries School table to retrieve all approved schools. Instantiates statistics dictionary with all approved schools
+    and users via the imported get_school_stats and get_stats functions.
+    Returns rendered page with the dictionaries.
+    A user must be signed in to access this page (@login_required), which is an admin (@requires_admin).
+    """
     schools = School.query.filter(School.is_approved == True, School.school_id != 0).all()
     schools_dict = get_school_stats(schools)
     stats_dict = get_stats()
@@ -62,6 +78,13 @@ def controlpanel_view_schools():
 @login_required
 @requires_admin('admin')
 def controlpanel_school():
+    """Function to view all pending (unapproved) schools and user statistics, and to approve schools.
+
+    Instantiates ApproveForm object, retrieves statistics dictionary via imported get_stats function. Queries
+    School table to retrieve all unapproved schools. Upon POST, sets the checked schools to 'approved'.
+    Returns to admin home after form is submitted.
+    A user must be signed in to access this page (@login_required), which is an admin (@requires_admin).
+    """
     form = ApproveForm(request.form)
     stats_dict = get_stats()
     schools = School.query.filter(School.is_approved == False, School.school_id != 0).all()
@@ -82,6 +105,13 @@ def controlpanel_school():
 @login_required
 @requires_admin('admin')
 def controlpanel_mentor():
+    """Function to view all pending (unapproved) mentors and user statistics, and to approve mentors.
+
+    Instantiates ApproveForm object, retrieves statistics dictionary via imported get_stats function.
+    Queries Mentor table to retrieve all unapproved mentors. Upon POST, sets the checked mentors to 'approved'.
+    Returns to admin home after form is submitted.
+    A user must be signed in to access this page (@login_required), which is an admin (@requires_admin).
+    """
     form = ApproveForm(request.form)
     user_type = 'Mentor'
     stats_dict = get_stats()
@@ -102,22 +132,35 @@ def controlpanel_mentor():
 @login_required
 @requires_admin('admin')
 def controlpanel_view_mentors():
+    """Function to view all approved mentors and user statistics, and to search mentor data.
+
+    Instantiates SearchForm object. Upon POST, retrieves data from search form.
+    Returns search form variable to search_results function after form is submitted (to render results page).
+    A user must be signed in to access this page (@login_required), which is an admin (@requires_admin).
+    """
     search = SearchForm(request.form)
     user_type = 'Mentor'
     stats_dict = get_stats()
     queries = db.session.query(User, Mentor).filter(Mentor.is_approved == True).\
         join(Mentor, User.user_id == Mentor.user_id).all()
 
-    if request.method == 'POST':
+    if request.method == 'POST' and search.validate_on_submit():
         return search_results(search, 'mentor')
     return render_template('admin/admin_view_users.html', queries=queries, search=search, user_type=user_type,
                            stats_dict=stats_dict, type='mentors', title="Mentors")
 
 
-@bp_main.route('/admin/pending_mentees', methods=['POST', 'GET'])
+@bp_main.route('/admin/pending_mentees')
 @login_required
 @requires_admin('admin')
 def controlpanel_mentee():
+    """Function to view all pending (inactive) mentees and user statistics, and to activate mentees.
+
+    Instantiates ApproveForm object, retrieves statistics dictionary via imported get_stats function. Queries
+    Mentee and User table to retrieve all inactive mentees. Upon POST, sets the checked users to 'active'.
+    Returns to admin home after form is submitted.
+    A user must be signed in to access this page (@login_required), which is an admin (@requires_admin).
+    """
     form = ApproveForm(request.form)
     user_type = 'Mentee'
     stats_dict = get_stats()
@@ -137,6 +180,12 @@ def controlpanel_mentee():
 @login_required
 @requires_admin('admin')
 def controlpanel_view_mentees():
+    """Function to view all approved mentees and user statistics, and to search mentee data.
+
+    Instantiates SearchForm object. Upon POST, retrieves data from search form.
+    Returns search form variable to search_results function after form is submitted (to render results page).
+    A user must be signed in to access this page (@login_required), which is an admin (@requires_admin).
+    """
     search = SearchForm(request.form)
     user_type = 'Mentee'
     stats_dict = get_stats()
@@ -153,6 +202,14 @@ def controlpanel_view_mentees():
 @login_required
 @requires_admin('admin')
 def search_results(search, user_type):
+    """Function to view results from admin searches.
+
+    Retrieves selected user type's (mentor or mentee) selected data type information via the imported
+    'get_data_from_user' function. SearchType model is set by checking the select_string from SelectField.Leaving the
+     SelectField blank returns all data types.
+     Returns corresponding search results page. If no results found, returns back to the view user type page.
+     A user must be signed in to access this page (@login_required), which is an admin (@requires_admin).
+     """
     # set strings to data from form
     search_string = search.search.data.lower()
     select_string = search.select.data
@@ -209,6 +266,15 @@ def search_results(search, user_type):
 @login_required
 @requires_correct_id
 def pairing(applicant_type, user_id):
+    """Function to pair mentors to unpaired mentees from the same city and vice versa.
+
+    Queries Location table to retrieve the user to be paired's city. Checks that the user is active (and so permitted to
+    be paired), redirects home if not. Queries user type to be paired with's table while filtering by the user's city.
+    If no mentor/mentee is found to be paired with, redirects home. If is found, sets their 'paired' status to True,
+    creates a Pair object and redirects to their profile page.
+    A user must be signed in to access this page (@login_required), with the correct ID - the ID from the URL
+    (@requires_correct_id).
+    """
     user = User.query.filter(User.user_id == user_id).first()
     location_form = Location.query.filter(Location.user_id == user.user_id).first()
     location = location_form.city
@@ -263,6 +329,14 @@ def pairing(applicant_type, user_id):
 @login_required
 @requires_correct_id
 def view_paired_profile(applicant_type, user_id):
+    """Function to view user's pair partner's profile.
+
+    Obtains the pair partner's object by querying the user type table and joining with the Pair and current user's user
+    type table.
+    If no object is found, redirects to 'pair_me' page. If object is found, redirects to their profile.
+    A user must be signed in to access this page (@login_required), with the correct ID - the ID from the URL
+    (@requires_correct_id).
+    """
     if applicant_type == 'mentor':
         mentee = Mentee.query.join(Pair, Pair.mentee_id == Mentee.mentee_id).\
             join(Mentor,Pair.mentor_id == Mentor.mentor_id).filter(Mentor.user_id == user_id).first()
@@ -286,6 +360,13 @@ def view_paired_profile(applicant_type, user_id):
 @login_required
 @requires_correct_id
 def view_own_profile(applicant_type, user_id):
+    """Function to view user's own profile.
+
+        Obtains the user object by querying the User table.
+        Redirects to rendered profile page.
+        A user must be signed in to access this page (@login_required), with the correct ID - the ID from the URL
+        (@requires_correct_id).
+        """
     if applicant_type == 'mentee':
         user = Mentee.query.filter(Mentee.user_id == user_id).first()
     elif applicant_type == 'mentor':
@@ -297,6 +378,19 @@ def view_own_profile(applicant_type, user_id):
 @login_required
 @requires_correct_id
 def book_meeting(applicant_type, user_id):
+    """Function for mentor to book meeting.
+
+    Obtains the mentee object by querying the user type table and joining with the Pair and current user's user
+    type table. If no mentee found, redirects to home page.
+    If mentee found, queries their Location form to obtain required data for booking process.
+    Instantiates the BookMeeting object, and retrieves form data upon POST. Checks date is valid via the imported
+    date_validation function.
+    Checks area is valid. If all are valid, tries instantiating a Meeting object and adding it to the database.
+    If successful, redirects to a confirmation page. If not, redirects to the 'book_meeting' page.
+    Redirects to rendered profile page.
+    A user must be signed in to access this page (@login_required), with the correct ID - the ID from the URL
+    (@requires_correct_id).
+    """
     if applicant_type == 'mentor':
         mentee = Mentee.query.join(Pair, Pair.mentee_id == Mentee.mentee_id).\
             join(Mentor, Pair.mentor_id == Mentor.mentor_id).filter(Mentor.user_id == user_id).first()
@@ -352,6 +446,14 @@ def book_meeting(applicant_type, user_id):
 @bp_main.route('/confirm-meeting/<meeting_id>/', methods=['POST', 'GET'])
 @login_required
 def confirm_meeting(meeting_id):
+    """Function for mentee to confirm a booked meeting.
+
+        Obtains the meeting object by querying the Meeting table.
+        Instantiates the ApproveMeeting object, and retrieves form data upon POST. Sets the meeting's 'approval', saves
+        to database.
+        Redirects to confirmation page.
+        A user must be signed in to access this page (@login_required).
+        """
     form = ApproveMeeting(request.form)
     meeting = Meeting.query.filter_by(meeting_id=meeting_id).first()
 

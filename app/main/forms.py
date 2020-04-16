@@ -6,6 +6,11 @@ from wtforms.validators import DataRequired
 
 
 class SearchByForm(FlaskForm):
+    """Admin control panel search form to search by city or school and filter by user type.
+
+    Inherits FlaskForm methods.
+    """
+
     choices = [('School', 'School'),
                ('City', 'City')]
     select = SelectField('In:', choices=choices)
@@ -17,6 +22,10 @@ class SearchByForm(FlaskForm):
 
 
 class SearchForm(FlaskForm):
+    """Admin control panel search form to search by user email and filter by database tables.
+    Inherits FlaskForm methods.
+    """
+
     choices = [('AllInfo', 'All Info'),
                ('User&Type', 'User & Type'),
                ('PersonalInfo', 'Personal Info'),
@@ -28,14 +37,20 @@ class SearchForm(FlaskForm):
 
 
 class ApproveForm(FlaskForm):
+    """Form for a checkbox which sets the variable to true when ticked.
+    Inherits FlaskForm methods."""
+
     approve = BooleanField("", default="unchecked")
 
 
 class BookMeeting(FlaskForm):
-    days = []
-    for i in range(1, 32, 1):
-        days.append(('{}'.format(i), '{}'.format(i)))
-    day = SelectField(choices=days, validators=[DataRequired()])
+    """Form for mentors to book meetings. Allows selecting the day, month and year of the meeting, time of the meeting
+     by hour and minute, duration in hours of meeting, the type of area, address and postcode of the location.
+
+     Inherits FlaskForm methods.
+     """
+
+    day = SelectField(validators=[DataRequired()])
     months = [('1', 'Jan'), ('2', 'Feb'), ('3', 'Mar'), ('4', 'Apr'), ('5', 'May'), ('6', 'Jun'),
               ('7', 'Jul'), ('8', 'Augu'), ('9', 'Sept'), ('10', 'Oct'), ('11', 'Nov'), ('12', 'Dec')]
     month = SelectField(choices=months, validators=[DataRequired()])
@@ -55,7 +70,18 @@ class BookMeeting(FlaskForm):
     address = StringField('Address:', validators=[DataRequired()])
     postcode = StringField('Postcode:', validators=[DataRequired()])
 
+    def __init__(self, *args, **kwargs):
+        super(BookMeeting, self).__init__(*args, **kwargs)
+        days = []
+        for i in range(1, 32, 1):
+            days.append(('{}'.format(i), '{}'.format(i)))
+        self.day.choices = days
+
 
 class ApproveMeeting(FlaskForm):
+    """Form to approve meeting, for a checkbox which sets the variable to true when ticked.
+    Inherits FlaskForm methods.
+    """
+
     choices = [("1", 'I can make it'), ("0", "I can't make it")]
     approval = RadioField(choices=choices, validators=[DataRequired()])
