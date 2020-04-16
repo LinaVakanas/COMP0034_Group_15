@@ -34,15 +34,16 @@ def create_app(config_class=DevConfig):
     from app.util.functions import initial_set_up
     from populate_db import populate_db
 
-    # If a populated database is required, please uncomment populate_db(),
-    # if you have already populated the database please ensure drop_all is uncommented as well
+    # When running the program normally, please uncomment only db.create_all() and initial_set_up()
+    # If you would like to conduct manual tests, please uncomment all lines
+    # If you would like to use the automated unittests, please uncomment only db.drop_all() and db.create_all()
     from app.models import User, Mentee, Mentor, Admin, School, Pair, PersonalIssues, PersonalInfo, Hobbies, Location, \
         OccupationalField
     with app.app_context():
         db.drop_all()
         db.create_all()
         initial_set_up()
-        # populate_db()
+        populate_db()
 
     # Register Blueprints
     from app.main.routes import bp_main

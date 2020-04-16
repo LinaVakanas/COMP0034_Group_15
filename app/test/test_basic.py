@@ -107,13 +107,6 @@ class BaseTest(TestCase):
         db.session.remove()
         db.drop_all()
 
-    def signup(self, first_name, last_name, email, user_type, school_id, password):
-        return self.client.post(
-            'personal_form/{applicant}/{school_id}/'.format(applicant=user_type, school_id=school_id),
-            data=dict(first_name=first_name, last_name=last_name, email=email, password=password),
-            follow_redirects=True
-        )
-
     def login(self, email, password):
         return self.client.post(
             '/login/',
@@ -242,12 +235,6 @@ class TestMain(BaseTest):
                                    follow_redirects=True)
         self.assertIn(b'Mentee Weasley', response.data)
 
-    def test_view_profile_fail(self):
-        BaseTest.SetUp(self)
-        self.login(email=self.user4.email, password='password4')
-        response = self.client.get(url_for('main.view_own_profile'),
-                                   follow_redirects=True)
-        self.assertIn(b'You do not have access', response.data)
 
 class TestAuth(BaseTest):
 
@@ -310,7 +297,6 @@ class TestAuth(BaseTest):
 
     def test_register_mentee_success(self):
         BaseTest.SetUp(self)
-        mentees = Mentee.query.with_entities(Mentee.first_name, Mentee.last_name).all()
         count = Mentee.query.count()
         response = self.client.post(url_for('auth.personal_form',
                                             applicant_type=self.mentee_data.get('user_type'),
