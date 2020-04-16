@@ -4,10 +4,10 @@ from app.models import User, Mentee, Mentor, Location, Meeting, Pair, School, Ad
 
 def populate_db():
     # DEFAULT REQUIRED DATA
-    school0 = School(is_approved=1, school_id=0, school_name="", school_email="", ofsted_ranking="")
-    user0 = User(user_id=0, user_type='admin', school_id=0, email="admin@admin.com", bio=None, is_active=True, profile_pic=None, creation_date=None)
-    user0.set_password('admin123')
-    admin = Admin(user_id=0)
+    # school0 = School(is_approved=1, school_id=0, school_name="", school_email="", ofsted_ranking="")
+    # user0 = User(user_id=0, user_type='admin', school_id=0, email="admin@admin.com", bio=None, is_active=True, profile_pic=None, creation_date=None)
+    # user0.set_password('admin123')
+    # admin = Admin(user_id=0)
 
     # --------- SCHOOLS ---------------
     # approved schools
@@ -79,8 +79,8 @@ def populate_db():
                             duration='1', address="Kilburn Road", postcode="WY4 5UU", type="Library")
 
     # UPDATING DATABASE
-    db.session.add_all([user0,admin])
-    db.session.add_all([school0, school1, school2, school3])
+    # db.session.add_all([user0,admin])
+    db.session.add_all([school1, school2, school3]) # Removed school 0
 
     db.session.add_all([user1, mentor, mentor_personal_info, mentor_location])
     db.session.add_all([user2, mentor2, mentor2_personal_info, mentor2_location])

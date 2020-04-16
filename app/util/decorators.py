@@ -12,7 +12,7 @@ def requires_admin(user_type):
         @wraps(f)
         def decorated_function(*args, **kwargs):
             if current_user.user_type != 'admin':
-                flash("You do not have access to that page. Sorry!")
+                flash("You do not have access to that page. Sorry! (Only system admins)")
                 return redirect(url_for('main.home'))
             return f(*args, **kwargs)
         return decorated_function

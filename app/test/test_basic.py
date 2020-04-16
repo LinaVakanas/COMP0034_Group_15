@@ -163,6 +163,92 @@ class TestMain(BaseTest):
         response = self.login(email=self.user2.email, password='password2')
         self.assertIn(b'Logged in successfully', response.data)
 
+    def test_user_logout_success(self):
+        BaseTest.SetUp(self)
+        self.login(email=self.user2.email, password='password2')
+        response = self.logout()
+        self.assertIn(b'You have been logged out.', response.data)
+
+    def test_admin_approve_mentee_success(self):
+        BaseTest.SetUp(self)
+        self.login(email=self.user0.email, password='admin123')
+        count = Mentee.query.join(User, User.user_id==Mentee.user_id).filter(User.is_active==False).count()
+        response = self.client.post(url_for('main.controlpanel_mentee'), data=dict(
+            approve=self.mentee3.mentee_id
+        ), follow_redirects=True)
+        count2 = Mentee.query.join(User, User.user_id==Mentee.user_id).filter(User.is_active==False).count()
+        self.assertEqual(count2 - count, -1)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Administrator Control Panel', response.data)
+
+    def test_admin_approve_mentor_success(self):
+        BaseTest.SetUp(self)
+        self.login(email=self.user0.email, password='admin123')
+        count = Mentor.query.join(User, User.user_id==Mentor.user_id).filter(Mentor.is_approved==False).count()
+        response = self.client.post(url_for('main.controlpanel_mentor'), data=dict(
+            approve=self.mentor3.mentor_id
+        ), follow_redirects=True)
+        count2 = Mentor.query.join(User, User.user_id==Mentor.user_id).filter(Mentor.is_approved==False).count()
+        self.assertEqual(count2 - count, -1)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Administrator Control Panel', response.data)
+
+    def test_book_meeting_success(self):
+        BaseTest.SetUp(self)
+        self.login(email=self.user1.email, password='password1')
+        count = Meeting.query.count()
+        response = self.client.post(url_for('main.book_meeting', user_id=self.mentor.user_id, applicant_type='mentor'), data=dict(
+            day=self.book_meeting.get('day'),
+            month=self.book_meeting.get('month'),
+            year=self.book_meeting.get('year'),
+            hour=self.book_meeting.get('hour'),
+            minute=self.book_meeting.get('minute'),
+            duration=self.book_meeting.get('duration'),
+            type=self.book_meeting.get('type'),
+            address=self.book_meeting.get('address'),
+            postcode=self.book_meeting.get('postcode'),
+        ), follow_redirects=True)
+        count2 = Meeting.query.count()
+        self.assertEqual(count2 - count, 1)
+        self.assertEqual(response.status_code, 200)
+
+    def test_confirm_meeting_success(self):
+        BaseTest.SetUp(self)
+        self.login(email=self.user2.email, password="password2")
+        response = self.client.post(url_for('main.confirm_meeting', meeting_id=self.meeting.meeting_id), data=dict(
+            approval="1",
+        ), follow_redirects=True)
+        meeting = Meeting.query.first()
+        self.assertTrue(meeting.mentee_approval)
+        self.assertEqual(response.status_code, 200)
+
+    def test_pair_mentee_mentor_success(self):
+        BaseTest.SetUp(self)
+        self.login(email=self.user4.email, password='password4')
+        count = Pair.query.count()
+        response = self.client.get(url_for('main.pairing', applicant_type=self.user4.user_type,
+                                            user_id=self.user4.user_id, location=self.mentee2_location.city),
+                                   follow_redirects=True)
+        count2 = Pair.query.count()
+        self.assertEqual(count2 - count, 1)
+        mentee = Mentee.query.filter(Mentee.user_id == self.user4.user_id).first()
+        self.assertTrue(mentee.paired)
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_profile_success(self):
+        BaseTest.SetUp(self)
+        self.login(email=self.user4.email, password='password4')
+        response = self.client.get(url_for('main.view_own_profile', applicant_type=self.user4.user_type, user_id=self.user4.user_id),
+                                   follow_redirects=True)
+        self.assertIn(b'Mentee Weasley', response.data)
+
+    def test_view_profile_fail(self):
+        BaseTest.SetUp(self)
+        self.login(email=self.user4.email, password='password4')
+        response = self.client.get(url_for('main.view_own_profile', applicant_type=self.user7.user_type, user_id=self.user7.user_id),
+                                   follow_redirects=True)
+        self.assertIn(b'You do not have access', response.data)
+
 class TestAuth(BaseTest):
 
     def test_mentee_personal_info_form_saved(self):
@@ -351,71 +437,7 @@ class TestAuth(BaseTest):
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'Pending Approval', response.data)
 
-    def test_admin_approve_mentee_success(self):
-        BaseTest.SetUp(self)
-        self.login(email=self.user0.email, password='admin123')
-        count = Mentee.query.join(User, User.user_id==Mentee.user_id).filter(User.is_active==False).count()
-        response = self.client.post(url_for('main.controlpanel_mentee'), data=dict(
-            approve=self.mentee3.mentee_id
-        ), follow_redirects=True)
-        count2 = Mentee.query.join(User, User.user_id==Mentee.user_id).filter(User.is_active==False).count()
-        self.assertEqual(count2 - count, -1)
-        self.assertEqual(response.status_code, 200)
-        self.assertIn(b'Administrator Control Panel', response.data)
 
-    def test_admin_approve_mentor_success(self):
-        BaseTest.SetUp(self)
-        self.login(email=self.user0.email, password='admin123')
-        count = Mentor.query.join(User, User.user_id==Mentor.user_id).filter(Mentor.is_approved==False).count()
-        response = self.client.post(url_for('main.controlpanel_mentor'), data=dict(
-            approve=self.mentor3.mentor_id
-        ), follow_redirects=True)
-        count2 = Mentor.query.join(User, User.user_id==Mentor.user_id).filter(Mentor.is_approved==False).count()
-        self.assertEqual(count2 - count, -1)
-        self.assertEqual(response.status_code, 200)
-        self.assertIn(b'Administrator Control Panel', response.data)
-
-    def test_book_meeting_success(self):
-        BaseTest.SetUp(self)
-        self.login(email=self.user1.email, password='password1')
-        count = Meeting.query.count()
-        response = self.client.post(url_for('main.book_meeting', user_id=self.mentor.user_id, applicant_type='mentor'), data=dict(
-            day=self.book_meeting.get('day'),
-            month=self.book_meeting.get('month'),
-            year=self.book_meeting.get('year'),
-            hour=self.book_meeting.get('hour'),
-            minute=self.book_meeting.get('minute'),
-            duration=self.book_meeting.get('duration'),
-            type=self.book_meeting.get('type'),
-            address=self.book_meeting.get('address'),
-            postcode=self.book_meeting.get('postcode'),
-        ), follow_redirects=True)
-        count2 = Meeting.query.count()
-        self.assertEqual(count2 - count, 1)
-        self.assertEqual(response.status_code, 200)
-
-    def test_confirm_meeting_success(self):
-        BaseTest.SetUp(self)
-        self.login(email=self.user2.email, password="password2")
-        response = self.client.post(url_for('main.confirm_meeting', meeting_id=self.meeting.meeting_id), data=dict(
-            approval="1",
-        ), follow_redirects=True)
-        meeting = Meeting.query.first()
-        self.assertTrue(meeting.mentee_approval)
-        self.assertEqual(response.status_code, 200)
-
-    def test_pair_mentee_mentor_success(self):
-        BaseTest.SetUp(self)
-        self.login(email=self.user4.email, password='password4')
-        count = Pair.query.count()
-        response = self.client.get(url_for('main.pairing', applicant_type=self.user4.user_type,
-                                            user_id=self.user4.user_id, location=self.mentee2_location.city),
-                                   follow_redirects=True)
-        count2 = Pair.query.count()
-        self.assertEqual(count2 - count, 1)
-        mentee = Mentee.query.filter(Mentee.user_id == self.user4.user_id).first()
-        self.assertTrue(mentee.paired)
-        self.assertEqual(response.status_code, 200)
 
 
 if __name__ == '__main__':

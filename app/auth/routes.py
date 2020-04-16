@@ -47,7 +47,7 @@ login_manager.login_view = 'auth.login'
 def login():
     """Function used to login the user (implemented from Flask-Login).
 
-    Checks input details against stored details in the database. Checks whether users have been approved.
+    Checks login details against stored details in the database. Checks whether users have been approved.
     Also stores 'next' param for redirects.
     Users must be anonymous to access this route (requires_anonymous decorator).
     """
@@ -55,6 +55,7 @@ def login():
     next = request.args.get('next')
 
     if request.method == 'POST' and form.validate():
+        ### get_user_from_email()
         user = User.query.filter_by(email=form.email.data).first()
         if user is None or not user.check_password(form.password.data):
             flash('Invalid email or password')
@@ -62,7 +63,7 @@ def login():
         if user.is_active is False:
             flash('Sorry, your account has not been approved yet.')
             return redirect(url_for('main.home'))
-        login_user(user, remember=form.remember_me.data, duration=timedelta(minutes=5))
+        login_user(user, remember=form.remember_me.data, duration=timedelta(minutes=1))
 
         if user.user_type == 'mentee' or user.user_type == 'mentor':
             if user.user_type == 'mentee':
@@ -82,7 +83,7 @@ def login():
     return render_template('login.html', form=form, title="Login")
 
 
-@bp_auth.route('/logout')
+@bp_auth.route('/logout/')
 @login_required
 def logout():
     """Function used to log out the user (implemented from Flask-Login).
@@ -93,7 +94,7 @@ def logout():
     return redirect(url_for('main.home'))
 
 
-@bp_auth.route('/school_signup', methods=['POST', 'GET'])
+@bp_auth.route('/school_signup/', methods=['POST', 'GET'])
 @requires_anonymous
 def school_signup():
     """Function used to sign up a school.

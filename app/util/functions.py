@@ -20,6 +20,16 @@ def is_unique(model, field, data, model2=None, field2=None, data2=None):
 
 
 def approve(user_type, id, approve_type):
+    """Function used when admin approves users.
+
+    Mentees are set to active.
+    Mentors are set to approved, once they complete location form they will be activated.
+
+    Keyword arguments:
+    user_type -- Mentee or Mentor
+    id -- ID of user to be approved
+    approve_type -- activated or approved
+    """
     if user_type == 'mentor':
         UserType = Mentor
         user_type_id = UserType.mentor_id
@@ -43,6 +53,15 @@ def approve(user_type, id, approve_type):
 
 
 def validate_date(day, month, year):
+    """Function used to validate the date chosen for a meeting booking.
+
+    Chosen date must be 1 day after.
+
+    Keyword arguments:
+    day -- chosen day
+    month -- chosen month
+    year -- chosen year
+    """
     today = datetime.now().date()
     date = datetime(int(year), int(month), int(day)).date()
 
@@ -57,6 +76,11 @@ def validate_date(day, month, year):
 
 
 def get_stats():
+    """Function used to retrieve all the user statistics.
+
+    Creates all the totals and individal counts and places them in a dictionary.
+    return dictionary
+    """
     search = SearchByForm(request.form)
 
     # SCHOOLS
@@ -99,6 +123,13 @@ def get_stats():
 
 
 def get_school_stats(schools):
+    """Function used to retrieve the number of mentees in each school.
+
+    Keyword arguments:
+    schools -- pass in the list of schools in the database
+
+    return dictionary
+    """
     schools_dict = dict()
     for school in schools:
         school_id = school.school_id
@@ -108,6 +139,15 @@ def get_school_stats(schools):
 
 
 def search_by_type(user_type, search_type, search_string):
+    """Function used to filter search results.
+
+    Keyword arguments:
+    user_type -- Mentee or Mentor
+    search_type -- City or School, filters database query to chosen table
+    search_string -- Searches for this string within the chosen table
+
+    return results
+    """
     if user_type == 'Mentee':
         UserType = Mentee
     elif user_type == 'Mentor':
@@ -125,6 +165,16 @@ def search_by_type(user_type, search_type, search_string):
 
 
 def get_data_from_user(UserType, DataType, user_field, data):
+    """Function used to retrieve different data from users.
+
+    Keyword arguments:
+    UserType -- Mentee or Mentor
+    DataType -- Determines what information to retrieve.
+    user_field -- filter what tables to search in e.g city
+    data -- search terms to search for in the table e.g name of city
+
+    return results
+    """
 
     if UserType == Mentee:
         # id's and class of user PAIRED WITH the user searching for
@@ -174,6 +224,10 @@ def get_data_from_user(UserType, DataType, user_field, data):
 
 
 def create_admin():
+    """Function used to create the admin user.
+
+    Checks if admin already exists to prevent errors.
+    """
     check = is_unique(User, User.user_id, 0)
     if check is True:
         user0 = User(user_id=0, email='admin@admin.com', user_type='admin', school_id=0, bio="",
