@@ -45,6 +45,12 @@ login_manager.login_view = 'auth.login'
 @bp_auth.route('/login/', methods=['GET', 'POST'])
 @requires_anonymous
 def login():
+    """Function used to login the user (implemented from Flask-Login).
+
+    Checks input details against stored details in the database. Checks whether users have been approved.
+    Also stores 'next' param for redirects.
+    Users must be anonymous to access this route (requires_anonymous decorator).
+    """
     form = LoginForm()
     next = request.args.get('next')
 
@@ -79,6 +85,9 @@ def login():
 @bp_auth.route('/logout')
 @login_required
 def logout():
+    """Function used to log out the user (implemented from Flask-Login).
+
+    Users must be logged in to access this route (login_required decorator)"""
     logout_user()
     flash('You have been logged out.')
     return redirect(url_for('main.home'))
@@ -87,6 +96,11 @@ def logout():
 @bp_auth.route('/school_signup', methods=['POST', 'GET'])
 @requires_anonymous
 def school_signup():
+    """Function used to sign up a school.
+
+    Instantiates a SchoolSignupForm object and retrieves data from form fields.
+    Users must be anonymous to access this route (requires_anonymous decorator)
+    """
     form = SchoolSignupForm(request.form)
 
     if request.method == 'POST' and form.validate_on_submit():
@@ -105,6 +119,19 @@ def school_signup():
 @bp_auth.route('/personal_form/<applicant_type>/<school_id>/', methods=['POST', 'GET'])
 @requires_anonymous
 def personal_form(applicant_type, school_id):
+    """Function used to begin registration process for a user.
+
+    Instantiates a PersonalForm and SignUpForm object and retrieves data from form fields.
+    School ID is validated and checked if it exists in database with is_approved == True.
+    Mentors must have school_ID == 0. All users must use a unique email to signup, duplicate emails will not
+    be accepted.
+    Users must be anonymous to access this route (requires_anonymous decorator).
+    Mentees will be passed to location form route while mentors must wait for admin approval.
+
+    Keyword arguments:
+    applicant_type -- mentee or mentor
+    school ID -- Unique ID belonging to user's school (default 0 for Mentors)
+    """
     school = School.query.filter(School.school_id == school_id).first()
 
     if is_unique(School, School.school_id, school_id) is True:
@@ -197,6 +224,18 @@ def personal_form(applicant_type, school_id):
 @bp_auth.route('/location_form/<applicant_type>/<applicant_id>/', methods=['POST', 'GET'])
 @requires_anonymous
 def location_form(applicant_type, applicant_id):
+    """Function used to complete registration process for a user.
+
+    Instantiates a LocationForm object and retrieves data from form fields.
+    Applicant ID is validated to verify identity of applicant.
+    Users must be anonymous to access this route (requires_anonymous decorator).
+    Mentees are redirected to home page to wait for admin approval.
+    Mentors are logged in and redirected to pairing page.
+
+    Keyword arguments:
+    Applicant_type -- mentee or mentor
+    Applicant ID -- Unique User ID belonging to user
+    """
     form = LocationForm(request.form)
 
     if applicant_type == 'mentor':
@@ -234,6 +273,8 @@ def location_form(applicant_type, applicant_id):
             db.session.commit()
 
             if applicant_type == 'mentor':
+                user = user_loader(applicant_id)
+                login_user(user)
                 return redirect(url_for('main.pairing', applicant_type=applicant_type, user_id=applicant_id))
 
             elif applicant_type == 'mentee':

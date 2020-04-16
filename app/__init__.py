@@ -39,10 +39,10 @@ def create_app(config_class=DevConfig):
     from app.models import User, Mentee, Mentor, Admin, School, Pair, PersonalIssues, PersonalInfo, Hobbies, Location, \
         OccupationalField
     with app.app_context():
-        db.drop_all()
+        # db.drop_all()
         db.create_all()
         # create_admin()
-        populate_db()
+        # populate_db()
 
     # Register Blueprints
     from app.main.routes import bp_main

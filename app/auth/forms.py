@@ -1,24 +1,36 @@
-from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SelectField, BooleanField, RadioField
-from wtforms.validators import DataRequired, Email, ValidationError
 import json
 
-from datetime import datetime
 from flask import current_app as app
+from flask_wtf import FlaskForm
+from wtforms import StringField, PasswordField, SelectField, BooleanField
+from wtforms.validators import DataRequired, Email, ValidationError
 
 
 class SignUpForm(FlaskForm):
+    """Creates a SignUpForm object which inherits methods from FlaskForm
+
+    Contains variables which store the signup details of the user in the database.
+    """
     first_name = StringField("First name:", id="first name")
     last_name = StringField("Last name:", id="last name")
     email = StringField('Email address', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
 
     def validate_password(self, password):
+        """Validates the form passwords
+
+        Keyword arguments:
+        password -- users password
+        """
         if len(password.data) < 8:
             raise ValidationError("Your password must be more than 8 characters.")
 
 
 class PersonalForm(FlaskForm):
+    """Creates a PersonalForm object which inherits methods from FlaskForm.
+
+    Contains variables which store the personal information of the user in the database.
+    """
     carer_name = StringField("Carer's full name:", validators=[DataRequired()])
     carer_email = StringField("Carer's email address:", validators=[DataRequired(), Email()])
     football = BooleanField('Football', default="unchecked")
@@ -57,6 +69,10 @@ class PersonalForm(FlaskForm):
 
 
 class LocationForm(FlaskForm):
+    """Creates a LocationForm object which inherits methods from FlaskForm.
+
+    Contains variables which store the location information of the user in the database.
+    """
     address = StringField('Address:', validators=[DataRequired()])
     city = SelectField('City:', validators=[DataRequired()])
     postcode = StringField('Postcode:', validators=[DataRequired()])
@@ -73,12 +89,20 @@ class LocationForm(FlaskForm):
 
 
 class SchoolSignupForm(FlaskForm):
+    """Creates a SchoolSignUpForm object which inherits methods from FlaskForm.
+
+    Contains variables which store the information of the school in the database.
+    """
     name = StringField('Name:', validators=[DataRequired()])
     email = StringField('School Email:', validators=[DataRequired(), Email()])
     ofsted_ranking = StringField('Ofsted Ranking:', validators=[DataRequired()])
 
 
 class LoginForm(FlaskForm):
+    """Creates a LoginForm object which inherits methods from FlaskForm.
+
+    Contains variables which are compared to the stored information of the user in the database.
+    """
     email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
     remember_me = BooleanField()
