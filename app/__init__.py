@@ -31,7 +31,7 @@ def create_app(config_class=DevConfig):
     db.init_app(app)
     login_manager.init_app(app)
     #
-    from app.util.functions import create_admin
+    from app.util.functions import initial_set_up
     from populate_db import populate_db
 
     # If a populated database is required, please uncomment populate_db(),
@@ -41,8 +41,8 @@ def create_app(config_class=DevConfig):
     with app.app_context():
         db.drop_all()
         db.create_all()
-        # create_admin()
-        populate_db()
+        initial_set_up()
+        # populate_db()
 
     # Register Blueprints
     from app.main.routes import bp_main

@@ -276,11 +276,11 @@ def location_form(applicant_type, applicant_id):
             if applicant_type == 'mentor':
                 user = user_loader(applicant_id)
                 login_user(user)
-                return redirect(url_for('main.pairing', applicant_type=applicant_type, user_id=applicant_id))
+                return redirect(url_for('main.pairing'))
 
             elif applicant_type == 'mentee':
-                flash("You have successfully completed the signing up process! Please for our admins to verify this "
-                      "and approve. You will receive an email when this is done.")
+                flash("You have successfully completed the signing up process! Please wait for "
+                      "our admins to verify this and approve. You will receive an email when this is done.")
                 return redirect(url_for('main.home'))
         else:
             return render_template('forms/LocationForm.html', title='Signup', form=form, applicant_type=applicant_type)

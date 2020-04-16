@@ -47,21 +47,21 @@
                     <td>{{stats_dict['approved_schools_total']}}</td>
                     <td>{{ stats_dict['approved_mentees_total'] }}</td>
                     <td>{{stats_dict['approved_mentors_total']}}</td>
-                    <td>{{ stats_dict['users_total'] }}</td>
+                    <td>{{ stats_dict['approved_total'] }}</td>
                 </tr>
                 <tr>
                     <th scope="row">Unapproved Total</th>
                     <td>{{stats_dict['unapproved_schools_total']}}</td>
                     <td>{{ stats_dict['unapproved_mentees_total'] }}</td>
                     <td>{{stats_dict['unapproved_mentors_total']}}</td>
-                    <td>{{ stats_dict['approved_total'] }}</td>
+                    <td>{{stats_dict['unapproved_total']}}</td>
                 </tr>
                 <tr>
                     <th scope="row">Total</th>
                     <td>{{stats_dict['schools_total']}}</td>
                     <td>{{ stats_dict['mentees_total'] }}</td>
                     <td>{{stats_dict['mentors_total']}}</td>
-                    <td>{{stats_dict['unapproved_total']}}</td>
+                    <td>{{ stats_dict['users_total'] }}</td>
                 </tr>
                 </tbody>
             </table>
@@ -95,7 +95,9 @@
                     </table>
                 </div>
                 <div class=" row justify-content-center">
-                    <input type="button" value="Return Home" class="btn btn-primary">
+                    <a href="{{ url_for('main.home') }}" >
+                        <input type="button" value="Return Home" class="btn btn-primary">
+                    </a>
                 </div>
 
             </div>

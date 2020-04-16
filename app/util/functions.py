@@ -96,10 +96,8 @@ def get_stats():
     mentees_total = approved_mentees_total + unapproved_mentees_total
 
     # MENTORS
-    approved_mentors_total = Mentor.query.join(User, User.user_id == Mentor.user_id).filter(
-        Mentor.is_approved == True).count()
-    unapproved_mentors_total = Mentor.query.join(User, User.user_id == Mentor.user_id).filter(
-        Mentor.is_approved == False).count()
+    approved_mentors_total = Mentor.query.filter(Mentor.is_approved == True).count()
+    unapproved_mentors_total = Mentor.query.filter(Mentor.is_approved == False).count()
     mentors_total = approved_mentors_total + unapproved_mentors_total
 
     # TOTAL
@@ -223,17 +221,22 @@ def get_data_from_user(UserType, DataType, user_field, data):
     return results
 
 
-def create_admin():
-    """Function used to create the admin user.
+def initial_set_up():
+    """Function used to create the admin user and school 0.
 
-    Checks if admin already exists to prevent errors.
+    Checks if admin and school already exists to prevent errors.
     """
-    check = is_unique(User, User.user_id, 0)
-    if check is True:
+    check1 = is_unique(User, User.user_id, 0)
+    check2 = is_unique(School, School.school_id, 0)
+    if check1 is True:
         user0 = User(user_id=0, email='admin@admin.com', user_type='admin', school_id=0, bio="",
                      is_active=True, creation_date='')
         admin = Admin(user_id=0)
         user0.set_password('admin123')
 
         db.session.add_all([user0, admin])
+        db.session.commit()
+    if check2 is True:
+        school = School(is_approved=1, school_id=0, school_name="", school_email="")
+        db.session.add(school)
         db.session.commit()

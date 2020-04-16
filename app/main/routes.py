@@ -150,7 +150,7 @@ def controlpanel_view_mentors():
                            stats_dict=stats_dict, type='mentors', title="Mentors")
 
 
-@bp_main.route('/admin/pending_mentees/')
+@bp_main.route('/admin/pending_mentees/', methods=['POST', 'GET'])
 @login_required
 @requires_admin('admin')
 def controlpanel_mentee():
@@ -280,31 +280,26 @@ def pairing():
     location_form = Location.query.filter(Location.user_id == user.user_id).first()
     location = location_form.city
     if user_type == 'mentee':
-        pair_with = db.session.query(Mentor, User).filter(Mentor.paired == False).\
-            join(User, User.user_id == Mentor.user_id). \
-            filter(User.is_active == True).join(Location, Mentor.user_id == Location.user_id).\
-            filter(Location.city == location).first()
-        Mentor.query.join(User, User.user_id == Mentor.user_id).filter(Mentor.paired)
-        mentor = pair_with[0]
+        mentor = Mentor.query.join(User, Mentor.user_id == User.user_id). \
+            filter(Mentor.paired == False, User.is_active == True). \
+            join(Location, Mentor.user_id == Location.user_id).filter(Location.city == location).first()
 
         if not mentor:
             flash("Unfortunately there are no mentors signed up in {} just yet! Sorry for the inconvenience, "
                   "you'll be put on a waiting list and we'll let you know as soon as a mentor is found".
                 format(location))
-            return redirect(url_for('main.home', title='Home'))
+            return redirect(url_for('main.home'))
         mentee = Mentee.query.filter_by(user_id=user_id).first()
 
     elif user_type == 'mentor':
-        pair_with = db.session.query(Mentee, User).filter(Mentee.paired == False).\
-            join(User, User.user_id == Mentee.user_id). \
-            filter(User.is_active == True).join(Location, Mentee.user_id == Location.user_id).filter(
-            Location.city == location).first()
-        if not pair_with:
+        mentee = Mentee.query.join(User, Mentee.user_id == User.user_id). \
+            filter(Mentee.paired == False, User.is_active == True). \
+            join(Location, Mentee.user_id == Location.user_id).filter(Location.city == location).first()
+        if not mentee:
             flash("Unfortunately there are no mentees signed up in {} yet. Sorry for the inconvenience, "
                   "you'll be put on a waiting list and we will let you know as soon as a mentee is found".
                   format(location))
-            return render_template('home.html', title='Home')
-        mentee = pair_with[0]
+            return redirect(url_for('main.home'))
         mentor = Mentor.query.filter_by(user_id=user_id).first()
 
     creation_date = str(datetime.date(datetime.now()))
@@ -315,8 +310,10 @@ def pairing():
     db.session.commit()
 
     if user_type == 'mentor':
+        flash("Pairing successful! Here is the profile of your mentee")
         return render_template('profiles/mentee_profile.html', mentee=mentee, title='Mentee Profile')
     elif user_type == 'mentee':
+        flash("Pairing successful! Here is the profile of your mentor")
         return render_template('profiles/mentor_profile.html', mentor=mentor, title='Mentor Profile')
 
     return render_template('home.html', title='Home')
