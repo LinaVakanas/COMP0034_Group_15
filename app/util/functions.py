@@ -79,7 +79,9 @@ def get_stats():
     """Function used to retrieve all the user statistics.
 
     Creates all the totals and individal counts and places them in a dictionary.
-    return dictionary
+
+    Returns:
+         dictionary
     """
     search = SearchByForm(request.form)
 

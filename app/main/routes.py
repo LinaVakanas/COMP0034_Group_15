@@ -28,10 +28,13 @@ def controlpanel_home():
     tables, by search term.
 
     Instantiates SearchByForm object. Upon POST, retrieves data from form fields. Retrieves filtered search results by
-    calling on the imported function 'search_by_type'.
-    Returns the rendered corresponding search_results page.
-    A user must be signed in to access this page (@login_required), which is an admin (@requires_admin).
+    calling on the imported function 'search_by_type'. A user must be signed in to access this page (@login_required),
+    which is an admin (@requires_admin).
+
+    Returns:
+        render_template(''): to corresponding search results page upon POST or home upon GET
     """
+
     search = SearchByForm(request.form)
     stats_dict = get_stats()
 
@@ -64,9 +67,13 @@ def controlpanel_view_schools():
 
     Queries School table to retrieve all approved schools. Instantiates statistics dictionary with all approved schools
     and users via the imported get_school_stats and get_stats functions.
-    Returns rendered page with the dictionaries.
-    A user must be signed in to access this page (@login_required), which is an admin (@requires_admin).
+    Returns rendered page with the dictionaries. A user must be signed in to access this page (@login_required),
+    which is an admin (@requires_admin).
+
+    Returns:
+        render_template(''): view schools page
     """
+
     schools = School.query.filter(School.is_approved == True, School.school_id != 0).all()
     schools_dict = get_school_stats(schools)
     stats_dict = get_stats()
@@ -81,10 +88,15 @@ def controlpanel_school():
     """Function to view all pending (unapproved) schools and user statistics, and to approve schools.
 
     Instantiates ApproveForm object, retrieves statistics dictionary via imported get_stats function. Queries
-    School table to retrieve all unapproved schools. Upon POST, sets the checked schools to 'approved'.
-    Returns to admin home after form is submitted.
-    A user must be signed in to access this page (@login_required), which is an admin (@requires_admin).
+    School table to retrieve all unapproved schools. Upon POST, sets the checked schools to 'approved'. A user must be
+    signed in to access this page (@login_required), which is an admin (@requires_admin).
+
+    Returns:
+        url_for(): admin control panel home upon POST
+            or
+        render_template(): pending schools page upon GET
     """
+
     form = ApproveForm(request.form)
     stats_dict = get_stats()
     schools = School.query.filter(School.is_approved == False, School.school_id != 0).all()
@@ -109,9 +121,14 @@ def controlpanel_mentor():
 
     Instantiates ApproveForm object, retrieves statistics dictionary via imported get_stats function.
     Queries Mentor table to retrieve all unapproved mentors. Upon POST, sets the checked mentors to 'approved'.
-    Returns to admin home after form is submitted.
     A user must be signed in to access this page (@login_required), which is an admin (@requires_admin).
+
+    Returns:
+        url_for() admin control panel home page upon POST
+            or
+        render_template(): pending users page upon GET
     """
+
     form = ApproveForm(request.form)
     user_type = 'Mentor'
     stats_dict = get_stats()
@@ -134,10 +151,15 @@ def controlpanel_mentor():
 def controlpanel_view_mentors():
     """Function to view all approved mentors and user statistics, and to search mentor data.
 
-    Instantiates SearchForm object. Upon POST, retrieves data from search form.
-    Returns search form variable to search_results function after form is submitted (to render results page).
-    A user must be signed in to access this page (@login_required), which is an admin (@requires_admin).
+    Instantiates SearchForm object. Upon POST, retrieves data from search form. A user must be signed in to access this
+    page (@login_required), which is an admin (@requires_admin).
+
+    Returns:
+        search_results(): function to return search results page upon POST
+            or
+        render_template(): view users page upon GET
     """
+
     search = SearchForm(request.form)
     user_type = 'Mentor'
     stats_dict = get_stats()
@@ -157,10 +179,15 @@ def controlpanel_mentee():
     """Function to view all pending (inactive) mentees and user statistics, and to activate mentees.
 
     Instantiates ApproveForm object, retrieves statistics dictionary via imported get_stats function. Queries
-    Mentee and User table to retrieve all inactive mentees. Upon POST, sets the checked users to 'active'.
-    Returns to admin home after form is submitted.
-    A user must be signed in to access this page (@login_required), which is an admin (@requires_admin).
+    Mentee and User table to retrieve all inactive mentees. Upon POST, sets the checked users to 'active'. A user must
+     be signed in to access this page (@login_required), which is an admin (@requires_admin).
+
+     Returns:
+         url_for(): control panel home upon POST
+            or
+        render_template(): pending users page upon GET
     """
+
     form = ApproveForm(request.form)
     user_type = 'Mentee'
     stats_dict = get_stats()
@@ -182,10 +209,15 @@ def controlpanel_mentee():
 def controlpanel_view_mentees():
     """Function to view all approved mentees and user statistics, and to search mentee data.
 
-    Instantiates SearchForm object. Upon POST, retrieves data from search form.
-    Returns search form variable to search_results function after form is submitted (to render results page).
-    A user must be signed in to access this page (@login_required), which is an admin (@requires_admin).
+    Instantiates SearchForm object. Upon POST, retrieves data from search form. A user must be signed in to access this
+     page (@login_required), which is an admin (@requires_admin).
+
+     Returns:
+         search_results(): function to return search results page upon POST
+            or
+        render_template(): view users page upon GET
     """
+
     search = SearchForm(request.form)
     user_type = 'Mentee'
     stats_dict = get_stats()
@@ -206,10 +238,18 @@ def search_results(search, user_type):
 
     Retrieves selected user type's (mentor or mentee) selected data type information via the imported
     'get_data_from_user' function. SearchType model is set by checking the select_string from SelectField.Leaving the
-     SelectField blank returns all data types.
-     Returns corresponding search results page. If no results found, returns back to the view user type page.
-     A user must be signed in to access this page (@login_required), which is an admin (@requires_admin).
+     SelectField blank returns all data types. A user must be signed in to access this page (@login_required), which is
+     an admin (@requires_admin).
+
+     Keyword arguments:
+         user_type -- mentor or mentee
+         search -- filled search form object
+
+     Returns:
+         redirect(): view user type page if no search results found
+            or
      """
+
     # set strings to data from form
     search_string = search.search.data.lower()
     select_string = search.select.data
@@ -268,12 +308,15 @@ def pairing():
     """Function to pair mentors to unpaired mentees from the same city and vice versa.
 
     Queries Location table to retrieve the user to be paired's city. Checks that the user is active (and so permitted to
-    be paired), redirects home if not. Queries user type to be paired with's table while filtering by the user's city.
-    If no mentor/mentee is found to be paired with, redirects home. If is found, sets their 'paired' status to True,
-    creates a Pair object and redirects to their profile page.
-    A user must be signed in to access this page (@login_required), with the correct ID - the ID from the URL
-    (@requires_correct_id).
+    be paired), redirects home if not. Queries user type to be paired with's table while filtering by the user's city. A
+    user must be signed in to access this page (@login_required).
+
+    Returns:
+        url_for(): home, if no user to pair with is found
+            or
+        render_template(): profile of user paired with
     """
+
     user = current_user
     user_type = current_user.user_type
     user_id = current_user.user_id
@@ -325,11 +368,14 @@ def view_paired_profile():
     """Function to view user's pair partner's profile.
 
     Obtains the pair partner's object by querying the user type table and joining with the Pair and current user's user
-    type table.
-    If no object is found, redirects to 'pair_me' page. If object is found, redirects to their profile.
-    A user must be signed in to access this page (@login_required), with the correct ID - the ID from the URL
-    (@requires_correct_id).
+    type table. A user must be signed in to access this page (@login_required).
+
+    Returns:
+        render_template: 'pair_me' page if no paired user found
+            or
+        render_template(): paired if paired user found
     """
+
     user_type = current_user.user_type
     user_id = current_user.user_id
     if user_type == 'mentor':
@@ -356,11 +402,13 @@ def view_paired_profile():
 def view_own_profile():
     """Function to view user's own profile.
 
-        Obtains the user object by querying the User table.
-        Redirects to rendered profile page.
-        A user must be signed in to access this page (@login_required), with the correct ID - the ID from the URL
-        (@requires_correct_id).
+        Obtains the user object by querying the User table. A user must be signed in to access this page
+        (@login_required).
+
+        Returns:
+            render_template: own profile
         """
+
     user_type = current_user.user_type
     user_id = current_user.user_id
     if user_type == 'mentee':
@@ -376,16 +424,20 @@ def book_meeting():
     """Function for mentor to book meeting.
 
     Obtains the mentee object by querying the user type table and joining with the Pair and current user's user
-    type table. If no mentee found, redirects to home page.
-    If mentee found, queries their Location form to obtain required data for booking process.
-    Instantiates the BookMeeting object, and retrieves form data upon POST. Checks date is valid via the imported
-    date_validation function.
-    Checks area is valid. If all are valid, tries instantiating a Meeting object and adding it to the database.
-    If successful, redirects to a confirmation page. If not, redirects to the 'book_meeting' page.
-    Redirects to rendered profile page.
-    A user must be signed in to access this page (@login_required), with the correct ID - the ID from the URL
-    (@requires_correct_id).
+    type table. If mentee found, queries their Location form to obtain required data for booking process.
+    Instantiates the BookMeeting object, retrieves form data upon POST. Checks date is valid via the imported
+    date_validation function. Checks area is valid. A user must be signed in to access this page (@login_required)
+
+    Returns:
+        url_for: home if not paired yet
+            or
+        url_for(): book meeting upon POST if form data is invalid
+            or
+        render_template(): meeting confirmation page upon POST and valid form data
+            or
+        render_template(): book meeting page upon GET
     """
+
     user_type = current_user.user_type
     user_id = current_user.user_id
     if user_type == 'mentor':
@@ -448,10 +500,18 @@ def confirm_meeting(meeting_id, user_id):
 
         Obtains the meeting object by querying the Meeting table.
         Instantiates the ApproveMeeting object, and retrieves form data upon POST. Sets the meeting's 'approval', saves
-        to database.
-        Redirects to confirmation page.
-        A user must be signed in to access this page (@login_required).
+        to database. A user must be signed in to access this page (@login_required).
+
+        Keyword arguments:
+            user_id -- the mentee's user ID
+            meeting_id -- the ID of the meeting awaiting mentee approval
+
+        Returns:
+            render_template(): meeting confirmation page upon POST
+                or
+            render_template(): meeting approval page upon GET
         """
+
     form = ApproveMeeting(request.form)
     meeting = Meeting.query.filter_by(meeting_id=meeting_id).first()
 
