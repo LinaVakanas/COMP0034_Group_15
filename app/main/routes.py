@@ -128,7 +128,7 @@ def controlpanel_mentor():
                            stats_dict=stats_dict, title="Pending Mentors")
 
 
-@bp_main.route('/admin/view_mentors', methods=['POST', 'GET'])
+@bp_main.route('/admin/view_mentors/', methods=['POST', 'GET'])
 @login_required
 @requires_admin('admin')
 def controlpanel_view_mentors():
@@ -150,7 +150,7 @@ def controlpanel_view_mentors():
                            stats_dict=stats_dict, type='mentors', title="Mentors")
 
 
-@bp_main.route('/admin/pending_mentees')
+@bp_main.route('/admin/pending_mentees/')
 @login_required
 @requires_admin('admin')
 def controlpanel_mentee():
@@ -176,7 +176,7 @@ def controlpanel_mentee():
                            stats_dict=stats_dict, title="Pending Mentees")
 
 
-@bp_main.route('/admin/view_mentees', methods=['POST', 'GET'])
+@bp_main.route('/admin/view_mentees/', methods=['POST', 'GET'])
 @login_required
 @requires_admin('admin')
 def controlpanel_view_mentees():
