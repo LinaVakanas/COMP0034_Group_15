@@ -12,7 +12,7 @@ class Config(object):
     TESTING = False
 
     #forms config
-    WTF_CSRF_SECRET_KEY = 'this-is-not-random-but-should-be'
+    WTF_CSRF_SECRET_KEY = 'bcd471dde8f8bb966fe9dd6c5d284b74'
 
     # Database config
     CWD = dirname(abspath(__file__))

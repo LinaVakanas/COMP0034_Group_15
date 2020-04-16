@@ -1,14 +1,10 @@
-import os
 import unittest
 
 from flask import url_for
-from flask_login import current_user, login_manager, login_user, AnonymousUserMixin
-from flask_login._compat import unicode
 from flask_testing import TestCase
 
 from app import create_app, db
-from app.models2_backup import Mentor, Mentee, User, PersonalInfo, PersonalIssues, Pair, Location, Meeting, School, \
-    Admin
+from app.models import Mentor, Mentee, User, PersonalInfo, Pair, Location, Meeting, School, Admin
 
 
 class BaseTest(TestCase):
@@ -22,49 +18,65 @@ class BaseTest(TestCase):
         # Called at start of every test
         db.create_all()
 
-        # create dummy data for tests
+        # Create dummy data for tests
+
+        # ------ DEFAULT REQUIRED DATA -----------
         self.school0 = School(is_approved=True, school_id=0, school_name="", school_email="", ofsted_ranking="")
         self.user0 = User(user_id=0, user_type='admin', school_id=0, email="admin@admin.com", bio=None, is_active=True,
                      profile_pic=None, creation_date=None)
         self.user0.set_password('admin123')
         self.admin = Admin(user_id=0)
+
+        # --------- SCHOOLS -----------
+        self.school1 = School(is_approved=1, school_id=1, school_name='Hogwarts', school_email="hogwarts@howarts.ac.uk",
+                              ofsted_ranking="1")
+
+        # ------- PAIRED MENTEE/MENTOR -------------
+        # MENTOR - Active, approved, paired
         self.user1 = User(user_type='mentor', school_id=0, email='harrypj@ucl.ac.uk', is_active=True)
         self.user1.set_password('password1')
         self.mentor = Mentor(user_id=1, school_id=0, first_name='Harry', last_name='Potter', paired=True, is_approved=True)
-        self.school1 = School(is_approved=1, school_id=1, school_name='Hogwarts', school_email="hogwarts@howarts.ac.uk",
-                         ofsted_ranking="1")
-
+        # MENTEE -Active, paired
         self.user2 = User(user_type='mentee', school_id=1, email='lily@ucl.ac.uk', is_active=True)
         self.user2.set_password('password2')
         self.mentee = Mentee(user_id=2, school_id=1, first_name='Lily', last_name='Weasley', paired=True)
         self.mentee_location = Location(user_id=2, address="Hogmeade", city="London",
                                         postcode="XR4 5AQ", avoid_area="Neasden")
+        # PAIR
+        self.pair = Pair(mentor_id=self.mentor.mentor_id, mentee_id=self.mentee.mentee_id)
+        # MEETING
+        self.meeting = Meeting(pair_id=1, date='5/5/2020', time='1700',
+                               duration='1', address="Kilburn Road", postcode="XY4 5UU", type="Library",
+                               mentee_approval=False)
 
-        # UNPAIRED MENTEE MENTOR
+        # --------TO BE PAIRED MENTEE/MENTOR --------
+        # MENTOR - Active, approved, location form only, unpaired
         self.user3 = User(user_type='mentor', school_id=0, email='mentor@ucl.ac.uk', is_active=True)
         self.user3.set_password('password3')
         self.mentor2 = Mentor(user_id=3, school_id=0, first_name='Mentor', last_name='Potter', paired=False,
                              is_approved=True)
         self.mentor2_location = Location(user_id=3, address="Hogmeade", city="London",
                                         postcode="XR4 5AQ", avoid_area="Neasden")
-
+        # MENTEE - Active, location form only, unpaired
         self.user4 = User(user_type='mentee', school_id=1, email='mentee@ucl.ac.uk', is_active=True)
         self.user4.set_password('password4')
         self.mentee2 = Mentee(user_id=4, school_id=1, first_name='Mentee', last_name='Weasley', paired=False)
         self.mentee2_location = Location(user_id=4, address="Blop", city="London",
                                         postcode="XR4 5AQ", avoid_area="Neasden")
 
-        # INACTIVE MENTOR AND MENTEES
+
+        # ------ INACTIVE MENTORS AND MENTEES --------
+        # MENTOR - Inactive, unapproved, no forms completed
         self.user5 = User(user_type='mentor', school_id=0, email='mentor1@ucl.ac.uk', is_active=False)
         self.user5.set_password('password3')
         self.mentor3 = Mentor(user_id=5, school_id=0, first_name='Mahdi', last_name='Shah', paired=False,
                               is_approved=False)
-
+        # MENTEE - Inactive, no forms completed
         self.user6 = User(user_type='mentee', school_id=1, email='mentee1@ucl.ac.uk', is_active=False)
         self.user6.set_password('password4')
         self.mentee3 = Mentee(user_id=6, school_id=1, first_name='Mahir', last_name='Shah', paired=False)
 
-
+        # MENTOR - Active, approved, both forms filled, unpaired
         self.user7 = User(user_type='mentor', school_id=0, email='harley@quin.uk', is_active=True)
         self.user7.set_password('password3')
         self.mentor4 = Mentor(user_id=7, school_id=0, first_name='Harley', last_name='Quinn', paired=False,
@@ -85,11 +97,6 @@ class BaseTest(TestCase):
         db.session.add_all([self.user7, self.mentor4, self.mentor4_personal_info])
         db.session.add_all([self.user0, self.admin])
         db.session.flush()
-
-        self.pair = Pair(mentor_id=self.mentor.mentor_id, mentee_id=self.mentee.mentee_id)
-        self.meeting = Meeting(pair_id=1, date='5/5/2020', time='1700',
-                               duration='1', address="Kilburn Road", postcode="XY4 5UU", type="Library",
-                               mentee_approval=False)
         db.session.add_all([self.pair, self.meeting])
         db.session.commit()
 
@@ -119,25 +126,25 @@ class BaseTest(TestCase):
         )
 
     # test mentee and mentor details:
-    mentee_data = dict(user_id=4, user_type='mentee', first_name='Hermione', last_name='Granger', school_id=1,
+    mentee_data = dict(user_id=8, user_type='mentee', first_name='Hermione', last_name='Granger', school_id=1,
                        password='password3', email='test@mail.com')
-    mentee_personal_issues_data = dict(user_id=4, depression=False, self_harm=True, family=True, drugs=False, ed=True,
-                                       )
+    mentee_personal_issues_data = dict(user_id=8, depression=False, self_harm=True, family=True, drugs=False, ed=True,)
     mentee_personal_info = dict(carer_email='emma@gmail.com', carer_name='Emma Granger', share_performance=False,
-                                user_id=4, share_personal_issues=True)
-    mentee_hobbies = dict(user_id=4, football=True, drawing=False)
+                                user_id=8, share_personal_issues=True)
+    mentee_hobbies = dict(user_id=8, football=True, drawing=False)
 
-    mentor_data = dict(user_id=5, user_type='mentor', first_name='Ron', last_name='Weasley', school_id=0,
+    mentor_data = dict(user_id=9, user_type='mentor', first_name='Ron', last_name='Weasley', school_id=0,
                        password='password4', email='test2@mail.com')
-
-    mentor_personal_issues_data = dict(user_id=5, depression=True, self_harm=True, drugs=True, ed=True)
+    mentor_personal_issues_data = dict(user_id=9, depression=True, self_harm=True, drugs=True, ed=True)
     mentor_personal_info = dict(carer_email='', carer_name='', status='W', xperience='>=2', user_id=5, share_personal_issues=True)
-    mentor_hobbies = dict(user_id=5, football=True)
+    mentor_hobbies = dict(user_id=9, football=True)
+    mentor4_location_data = dict(user_id=9, address="Oxford Street", city="London",
+                                 postcode="XR4 5AQ", avoid_area="Kilburn")
+
     book_meeting = dict(pair_id=1, day='3', month='5', year=2020, date='3/5/2020', hour='17', minute='00', time='1700',
                         duration='1', address="Kilburn Road", postcode="WY4 5UU", type="Library")
 
-    mentor4_location_data = dict(user_id=7, address="Oxford Street", city="London",
-                                     postcode="XR4 5AQ", avoid_area="Kilburn")
+
 
 
 class TestMain(BaseTest):
@@ -201,7 +208,7 @@ class TestAuth(BaseTest):
             avoid_area=self.mentor4_location_data.get('avoid_area')
         ), follow_redirects=True)
         count2 = Location.query.count()
-        self.assertIn(b"Please log out first.", response.data)
+        self.assertIn(b"You cannot sign up", response.data)
         self.assertEqual(count2 - count, 0)
         self.assertEqual(response.status_code, 200)
 

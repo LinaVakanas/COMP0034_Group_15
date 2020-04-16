@@ -1,6 +1,6 @@
 import sqlite3
 
-# Step 1: Create a connection object that represents the database
+# Create a connection object that represents the database
 conn = sqlite3.connect('webapp_sqlite.db')
 
 # Step 2: Create a cursor object
@@ -16,9 +16,7 @@ c.execute('''
           user_type TEXT NOT NULL,
           school_id INTEGER NOT NULL,
           password TEXT NOT NULL,
-          bio VARCHAR(300),
           is_active BOOLEAN,
-          profile_pic BLOB,
           creation_date TEXT)
           ''')
 
@@ -53,16 +51,6 @@ c.execute('''
           FOREIGN KEY (school_id) REFERENCES school(school_id))
           ''')
 
-c.execute('''
-          CREATE TABLE teacher
-          (teacher_id INTEGER PRIMARY KEY,
-          school_id INTEGER NOT NULL,
-          first_name TEXT NOT NULL, 
-          last_name TEXT NOT NULL,
-          user_id INTEGER NOT NULL,
-          email TEXT NOT NULL,
-          FOREIGN KEY (user_id) REFERENCES user(user_id))
-          ''')
 
 c.execute('''
           CREATE TABLE school
@@ -74,14 +62,6 @@ c.execute('''
           ofsted_report BLOB)
           ''')
 
-c.execute('''
-          CREATE TABLE report
-          (report_id INTEGER PRIMARY KEY,
-          content TEXT,
-          type BOOLEAN NOT NULL ,
-          creation_date TEXT NOT NULL,
-          user_id INTEGER NOT NULL )
-          ''')
 
 c.execute('''
           CREATE TABLE pair
@@ -94,25 +74,6 @@ c.execute('''
           )
           ''')
 
-c.execute('''
-          CREATE TABLE chatroom
-          (chatroom_id INTEGER PRIMARY KEY,
-          pair_id INTEGER NOT NULL,
-          creation_date TEXT NOT NULL,
-          user_id INTEGER NOT NULL,
-           FOREIGN KEY (pair_id) REFERENCES pair(id) )
-          ''')
-
-c.execute('''
-          CREATE TABLE message
-          (message_id INTEGER PRIMARY KEY,
-          time_sent TEXT NOT NULL,
-          content VARCHAR(300) NOT NULL,
-          attachments BLOB,
-          chatroom_id INTEGER NOT NULL,
-          user_id INTEGER NOT NULL,
-          FOREIGN KEY (chatroom_id) REFERENCES chatroom(chatroom_id))
-          ''')
 
 c.execute('''
           CREATE TABLE personal_info
@@ -158,16 +119,6 @@ c.execute('''
           FOREIGN KEY (user_id) REFERENCES user(user_id))
           ''')
 
-c.execute('''
-          CREATE TABLE student_review
-          (review_id INTEGER PRIMARY KEY,
-          content TEXT,
-          attachment BLOB NOT NULL,
-          teacher_id INTEGER NOT NULL REFERENCES teacher(teacher_id),
-          student_id INTEGER NOT NULL REFERENCES mentee(mentee_id),
-          user_id INTEGER NOT NULL,
-          FOREIGN KEY (user_id) REFERENCES user(user_id))
-          ''')
 
 c.execute('''
           CREATE TABLE location

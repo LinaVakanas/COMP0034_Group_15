@@ -36,8 +36,8 @@ def create_app(config_class=DevConfig):
 
     # If a populated database is required, please comment out create_admin(),
     # and un-comment db.drop_all() and populate_db()
-    from app.models2_backup import User, Mentee, Mentor, Admin, Teacher, School, Report, Message, Chatroom, Pair, PersonalIssues, \
-        PersonalInfo, Hobbies, Location, OccupationalField, StudentReview
+    from app.models import User, Mentee, Mentor, Admin, School, Pair, PersonalIssues, PersonalInfo, Hobbies, Location, \
+        OccupationalField
     with app.app_context():
         db.drop_all()
         db.create_all()

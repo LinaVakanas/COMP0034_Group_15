@@ -7,7 +7,7 @@ from sqlalchemy.exc import IntegrityError
 
 from app import db, login_manager
 from app.auth.forms import PersonalForm, SignUpForm, LocationForm, LoginForm, SchoolSignupForm
-from app.models2_backup import User, OccupationalField, Hobbies, School, PersonalInfo, PersonalIssues, \
+from app.models import User, OccupationalField, Hobbies, School, PersonalInfo, PersonalIssues, \
     Mentee, Mentor, Location
 from app.util.decorators import requires_anonymous
 from app.util.functions import is_unique, approve

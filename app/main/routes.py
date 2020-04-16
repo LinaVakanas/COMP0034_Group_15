@@ -7,7 +7,7 @@ from sqlalchemy.exc import IntegrityError
 from app import db
 from app.main.forms import ApproveForm, BookMeeting, \
     ApproveMeeting, SearchForm, SearchByForm
-from app.models2_backup import User, School, Pair, PersonalInfo, Mentee, Mentor, Location, Meeting
+from app.models import User, School, Pair, PersonalInfo, Mentee, Mentor, Location, Meeting
 from app.util.decorators import requires_admin, requires_correct_id
 from app.util.functions import approve, get_stats, search_by_type, get_data_from_user, get_school_stats, validate_date
 
@@ -85,7 +85,7 @@ def controlpanel_mentor():
     form = ApproveForm(request.form)
     user_type = 'Mentor'
     stats_dict = get_stats()
-    queries = db.session.query(User, Mentor).filter(Mentor.is_approved is False).\
+    queries = db.session.query(User, Mentor).filter(Mentor.is_approved == False).\
         join(Mentor, User.user_id == Mentor.user_id).all()
 
     if request.method == 'POST' and form.validate_on_submit():
@@ -105,7 +105,7 @@ def controlpanel_view_mentors():
     search = SearchForm(request.form)
     user_type = 'Mentor'
     stats_dict = get_stats()
-    queries = db.session.query(User, Mentor).filter(Mentor.is_approved is True).\
+    queries = db.session.query(User, Mentor).filter(Mentor.is_approved == True).\
         join(Mentor, User.user_id == Mentor.user_id).all()
 
     if request.method == 'POST':
@@ -121,7 +121,7 @@ def controlpanel_mentee():
     form = ApproveForm(request.form)
     user_type = 'Mentee'
     stats_dict = get_stats()
-    queries = db.session.query(User, Mentee).filter(User.is_active is False).\
+    queries = db.session.query(User, Mentee).filter(User.is_active == False).\
         join(Mentee, User.user_id == Mentee.user_id).all()
 
     if request.method == 'POST' and form.validate_on_submit():
@@ -140,7 +140,7 @@ def controlpanel_view_mentees():
     search = SearchForm(request.form)
     user_type = 'Mentee'
     stats_dict = get_stats()
-    queries = db.session.query(User, Mentee).filter(User.is_active is True).\
+    queries = db.session.query(User, Mentee).filter(User.is_active == True).\
         join(Mentee,  User.user_id == Mentee.user_id).all()
 
     if request.method == 'POST':
@@ -217,9 +217,9 @@ def pairing(applicant_type, user_id):
         return redirect(url_for('main.home', title='Home'))
     else:
         if applicant_type == 'mentee':
-            pair_with = db.session.query(Mentor, User).filter(Mentor.paired is False).\
+            pair_with = db.session.query(Mentor, User).filter(Mentor.paired == False).\
                 join(User, User.user_id == Mentor.user_id). \
-                filter(User.is_active is True).join(Location, Mentor.user_id == Location.user_id).\
+                filter(User.is_active == True).join(Location, Mentor.user_id == Location.user_id).\
                 filter(Location.city == location).first()
             Mentor.query.join(User, User.user_id == Mentor.user_id).filter(Mentor.paired)
             mentor = pair_with[0]
@@ -232,9 +232,9 @@ def pairing(applicant_type, user_id):
             mentee = Mentee.query.filter_by(user_id=user_id).first()
 
         elif applicant_type == 'mentor':
-            pair_with = db.session.query(Mentee, User).filter(Mentee.paired is False).\
+            pair_with = db.session.query(Mentee, User).filter(Mentee.paired == False).\
                 join(User, User.user_id == Mentee.user_id). \
-                filter(User.is_active is True).join(Location, Mentee.user_id == Location.user_id).filter(
+                filter(User.is_active == True).join(Location, Mentee.user_id == Location.user_id).filter(
                 Location.city == location).first()
             if not pair_with:
                 flash("Unfortunately there are no mentees signed up in {} yet. Sorry for the inconvenience, "

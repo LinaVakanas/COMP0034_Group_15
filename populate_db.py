@@ -1,5 +1,5 @@
 from app import db
-from app.models2_backup import User, Mentee, Mentor, Location, Meeting, Pair, School, Admin, PersonalInfo
+from app.models import User, Mentee, Mentor, Location, Meeting, Pair, School, Admin, PersonalInfo
 
 
 def populate_db():

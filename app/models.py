@@ -10,13 +10,13 @@ class User(UserMixin, db.Model):
     user_type = db.Column(db.String, nullable=False)
     user_id = db.Column(db.Integer,autoincrement=True, primary_key=True)
     school_id = db.Column(db.Integer, nullable=False)
-    password = db.Column(db.String) #we can look at how Miss did that hash thing in her example
+    password = db.Column(db.String)
     bio = db.Column(db.String(300))
     is_active = db.Column(db.Boolean)
-    profile_pic = db.Column(db.BLOB) #don't know if its acc blob
+    profile_pic = db.Column(db.BLOB)
     creation_date = db.Column(db.String)
 
-    def get_id(self): #################### If we rename user_id to id we can remove this
+    def get_id(self):
         return self.user_id
 
     def set_password(self, password):
@@ -43,8 +43,6 @@ class Mentor(db.Model):
     user = db.relationship("User", backref='mentor')
     paired = db.Column(db.Boolean)
     is_approved = db.Column(db.Boolean)
-    # email = db.Column(db.Text, db.ForeignKey('user.email'), nullable=False)
-    # user_email = db.relationship("User", foreign_keys=[email])
 
 
 class Mentee(db.Model):
@@ -56,20 +54,6 @@ class Mentee(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
     user = db.relationship("User", backref='mentee')
     paired = db.Column(db.Boolean)
-    # email = db.Column(db.Text, db.ForeignKey('user.email'), nullable=False)
-    # user_email = db.relationship("User", foreign_keys=[email])
-
-
-class Teacher(db.Model):
-    __tablename__ = 'teacher'
-    teacher_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    school_id = db.Column(db.Integer, nullable=False)
-    first_name = db.Column(db.String, nullable=False)
-    last_name = db.Column(db.String, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
-    # unique_id = db.relationship("User", foreign_keys=[user_id])
-    # email = db.Column(db.Text, db.ForeignKey('user.email'), nullable=False)
-    # user_email = db.relationship("User", foreign_keys=[email])
 
 
 class School(db.Model):
@@ -80,36 +64,6 @@ class School(db.Model):
     school_email = db.Column(db.Text, nullable=False)
     ofsted_ranking = db.Column(db.Integer)
     ofsted_report = db.Column(db.BLOB) #not sure about how blob works
-
-
-class Report(db.Model):
-    __tablename__ = 'report'
-    report_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
-    # unique_id = db.relationship("User", foreign_keys=[user_id])
-    content = db.Column(db.Text)
-    type = db.Column(db.Boolean, nullable=False)
-    creation_date = db.Column(db.String, nullable=False)
-
-
-class Message(db.Model):
-    __tablename__ = 'message'
-    message_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    time_sent = db.Column(db.String, nullable=False)
-    content = db.Column(db.String(300), nullable=False)
-    attachments = db.Column(db.BLOB)
-    chatroom_id = db.Column(db.Integer, db.ForeignKey('chatroom.chatroom_id'), nullable=False)
-    chatroom = db.relationship("Chatroom", foreign_keys=[chatroom_id])
-    user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
-    # unique_id = db.relationship("User", foreign_keys=[user_id])
-
-
-class Chatroom(db.Model):
-    __tablename__ = 'chatroom'
-    chatroom_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    creation_date = db.Column(db.String, nullable=False)
-    pair_id = db.Column(db.Integer, db.ForeignKey('pair.id'), nullable=False)
-    # pair = db.relationship("Pair", foreign_keys=[id])
 
 
 class Pair(db.Model):
@@ -160,8 +114,6 @@ class Hobbies(db.Model):
 class OccupationalField(db.Model):
     __tablename__ = 'occupational_field'
     occupation_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    # form_id = db.Column(db.Integer, db.ForeignKey('personalinfo.form_id'), nullable=False)
-    # form = db.relationship("PersonalInfo", foreign_keys=[form_id])
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
     user = db.relationship("User", backref='occupational_field')
     eng = db.Column(db.Boolean)
@@ -176,17 +128,6 @@ class OccupationalField(db.Model):
     hist = db.Column(db.Boolean)
     geo = db.Column(db.Boolean)
     engl = db.Column(db.Boolean)
-
-
-class StudentReview(db.Model):
-    __tablename__ = 'student_review'
-    review_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    content = db.Column(db.String)
-    attachment = db.Column(db.BLOB, nullable=False)
-    teacher_id = db.Column(db.Integer, db.ForeignKey('teacher.teacher_id'), nullable=False)
-    teacher = db.relationship("Teacher", foreign_keys=[teacher_id])
-    student_id = db.Column(db.Integer, db.ForeignKey('mentee.mentee_id'), nullable=False)
-    student = db.relationship("Mentee", foreign_keys=[student_id])
 
 
 class Location(db.Model):

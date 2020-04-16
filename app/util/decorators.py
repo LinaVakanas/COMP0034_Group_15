@@ -1,7 +1,11 @@
+# requires_anonymous, requires_correct_id structure based off Julian Nash's code on decorators on pythonise,
+# reference: https://pythonise.com/series/learning-flask/custom-flask-decorators
+
 from functools import wraps
 
 from flask import url_for, request, redirect, session, flash
 from flask_login import current_user
+
 
 def requires_admin(user_type):
     def decorator(f):
@@ -30,8 +34,19 @@ def requires_anonymous(f):
     def wrap(*args, **kwargs):
         if current_user.is_anonymous is True:
             return f(*args, **kwargs)
+
         else:
-            flash("You can't do this while logged in. Please log out first.")
-            return redirect(url_for('main.home'))
+            if f.__name__ == 'location_form' or f.__name__ == 'personal_form':
+                flash("You cannot sign up while logged in. If this isn't your account and you wish to create one, "
+                      "please log out first.")
+                return redirect(url_for('main.home'))
+
+            elif f.__name__ == 'login':
+                flash('You are already logged in, please log out first if you would like to change users.')
+                return redirect(url_for('main.home'))
+
+            else:
+                flash("You can't do this while logged in. Please log out first.")
+                return redirect(url_for('main.home'))
 
     return wrap
