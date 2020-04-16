@@ -55,7 +55,6 @@ def login():
     next = request.args.get('next')
 
     if request.method == 'POST' and form.validate():
-        ### get_user_from_email()
         user = User.query.filter_by(email=form.email.data).first()
         if user is None or not user.check_password(form.password.data):
             flash('Invalid email or password')
@@ -88,7 +87,8 @@ def login():
 def logout():
     """Function used to log out the user (implemented from Flask-Login).
 
-    Users must be logged in to access this route (login_required decorator)"""
+    Users must be logged in to access this route (login_required decorator).
+    """
     logout_user()
     flash('You have been logged out.')
     return redirect(url_for('main.home'))
@@ -100,7 +100,7 @@ def school_signup():
     """Function used to sign up a school.
 
     Instantiates a SchoolSignupForm object and retrieves data from form fields.
-    Users must be anonymous to access this route (requires_anonymous decorator)
+    Users must be anonymous to access this route (requires_anonymous decorator).
     """
     form = SchoolSignupForm(request.form)
 
@@ -167,7 +167,7 @@ def personal_form(applicant_type, school_id):
                     db.session.flush()
                 except IntegrityError:
                     flash("Hm... looks like you've already signed up with this email. You can sign in.")
-                    return redirect(url_for('auth.login', title='Login'))
+                    return redirect(url_for('auth.login'))
 
                 if applicant_type == 'mentee':
                     new_user.mentee.append(Mentee(school_id=school_id, first_name=form2.first_name.data,
@@ -212,8 +212,8 @@ def personal_form(applicant_type, school_id):
 
                 if applicant_type == 'mentee':
                     return redirect(
-                        url_for('auth.location_form', applicant_type=applicant_type, applicant_id=new_user.user_id,
-                                title='Location Form'))
+                        url_for('auth.location_form', applicant_type=applicant_type, applicant_id=new_user.user_id)
+                    )
 
                 elif applicant_type == 'mentor':
                     return render_template('home_mentor_pending.html', title='Pending Approval', mentor=new_m)
@@ -243,23 +243,23 @@ def location_form(applicant_type, applicant_id):
         mentor = Mentor.query.filter(Mentor.user_id == applicant_id).first()
         if mentor.is_approved is False:
             flash("Sorry, you haven't been approved yet. Please wait until an admin approves you.")
-            return redirect(url_for('main.home', title='Home'))
+            return redirect(url_for('main.home'))
 
     if is_unique(PersonalInfo, PersonalInfo.user_id, applicant_id) is True:
         flash(
             "Sorry you have entered an invalid registration link, as you haven't completed the section before this in "
             "the registration process. If you have and you think it's a mistake, please contact a system admin.")
-        return redirect(url_for('main.home', title='Home'))
+        return redirect(url_for('main.home'))
 
     elif is_unique(User, User.user_id, applicant_id) is True:
         flash(
             "Sorry, you can't access this page because we don't have you down as a user. Please contact a system admin"
             " if you think this is a mistake.")
-        return redirect(url_for('main.home', title='Home'))
+        return redirect(url_for('main.home'))
 
     elif is_unique(Location, Location.user_id, applicant_id) is False:
         flash("Hm... looks like you've already signed up. You can sign in.")
-        return redirect(url_for('auth.login', title='Login'))
+        return redirect(url_for('auth.login'))
 
     else:
         if request.method == 'POST' and form.validate_on_submit():
@@ -281,6 +281,6 @@ def location_form(applicant_type, applicant_id):
             elif applicant_type == 'mentee':
                 flash("You have successfully completed the signing up process! Please for our admins to verify this "
                       "and approve. You will receive an email when this is done.")
-                return redirect(url_for('main.home', title='Home'))
+                return redirect(url_for('main.home'))
         else:
             return render_template('forms/LocationForm.html', title='Signup', form=form, applicant_type=applicant_type)
