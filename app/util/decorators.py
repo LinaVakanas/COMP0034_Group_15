@@ -1,3 +1,7 @@
+# requires_admin decorator based off Jose Salvatierra's code written on tecladocode,
+# reference: https://blog.tecladocode.com/learn-python-defining-user-access-roles-in-flask/
+# date of retrieval: 12/04/2020
+
 # requires_anonymous, requires_correct_id structure based off Julian Nash's code on decorators on pythonise,
 # reference: https://pythonise.com/series/learning-flask/custom-flask-decorators
 
