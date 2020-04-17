@@ -1,3 +1,5 @@
+# Authors: Mahdi Shah & Lina Vakanas
+
 import sqlite3
 
 # Create a connection object that represents the database

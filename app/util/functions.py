@@ -1,3 +1,5 @@
+# Authors: Mahdi Shah & Lina Vakanas
+
 import datetime
 from datetime import datetime
 
@@ -26,10 +28,11 @@ def approve(user_type, id, approve_type):
     Mentors are set to approved, once they complete location form they will be activated.
 
     Keyword arguments:
-    user_type -- Mentee or Mentor
-    id -- ID of user to be approved
-    approve_type -- activated or approved
+        user_type -- Mentee or Mentor
+        id -- ID of user to be approved
+        approve_type -- activated or approved
     """
+
     if user_type == 'mentor':
         UserType = Mentor
         user_type_id = UserType.mentor_id
@@ -58,10 +61,16 @@ def validate_date(day, month, year):
     Chosen date must be 1 day after.
 
     Keyword arguments:
-    day -- chosen day
-    month -- chosen month
-    year -- chosen year
+        day -- chosen day
+        month -- chosen month
+        year -- chosen year
+
+    Returns:
+        message: error message to be flashed if date is invalid
+            or
+        True: if date is valid
     """
+
     today = datetime.now().date()
     date = datetime(int(year), int(month), int(day)).date()
 
@@ -83,6 +92,7 @@ def get_stats():
     Returns:
          stats_dict: dictionary with all user types and totals
     """
+
     search = SearchByForm(request.form)
 
     # SCHOOLS
@@ -131,6 +141,7 @@ def get_school_stats(schools):
     Returns:
         schools_dict: dictionary with all school ID and their number of mentees
     """
+
     schools_dict = dict()
     for school in schools:
         school_id = school.school_id
@@ -150,6 +161,7 @@ def search_by_type(user_type, search_type, search_string):
     Returns:
         results: search results
     """
+
     if user_type == 'Mentee':
         UserType = Mentee
     elif user_type == 'Mentor':

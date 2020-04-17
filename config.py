@@ -1,3 +1,5 @@
+# Authors: Mahdi Shah & Lina Vakanas
+
 """Flask config class"""
 from os.path import dirname, abspath, join
 

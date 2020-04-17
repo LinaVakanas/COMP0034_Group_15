@@ -1,3 +1,5 @@
+# Authors: Mahdi Shah & Lina Vakanas
+
 import json
 
 from flask import current_app as app
@@ -98,7 +100,6 @@ class SchoolSignupForm(FlaskForm):
     ofsted_ranking = StringField('Ofsted Ranking:', validators=[DataRequired()])
 
     def is_int(self, ofsted_ranking):
-        print(ofsted_ranking.data)
         try:
             int(ofsted_ranking.data)
         except ValueError:

@@ -1,13 +1,10 @@
+# Authors: Mahdi Shah & Lina Vakanas
+
 from app import db
 from app.models import User, Mentee, Mentor, Location, Meeting, Pair, School, Admin, PersonalInfo
 
 
 def populate_db():
-    # DEFAULT REQUIRED DATA
-    # school0 = School(is_approved=1, school_id=0, school_name="", school_email="", ofsted_ranking="")
-    # user0 = User(user_id=0, user_type='admin', school_id=0, email="admin@admin.com", bio=None, is_active=True, profile_pic=None, creation_date=None)
-    # user0.set_password('admin123')
-    # admin = Admin(user_id=0)
 
     # --------- SCHOOLS ---------------
     # approved schools

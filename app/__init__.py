@@ -43,7 +43,7 @@ def create_app(config_class=DevConfig):
         db.drop_all()
         db.create_all()
         initial_set_up()
-        # populate_db()
+        populate_db()
 
     # Register Blueprints
     from app.main.routes import bp_main

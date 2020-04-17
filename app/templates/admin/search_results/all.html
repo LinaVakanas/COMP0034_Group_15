@@ -1,3 +1,5 @@
+{# Authors: Mahdi Shah & Lina Vakanas #}
+
 {% extends 'base.html' %}
 {% block title %}{{ user_type.capitalize() }} - {{ search_type }} Results{% endblock %}
 
@@ -44,9 +46,8 @@
             {% else %}
                 <p>Sorry, no {{ user_type }} with that email exists</p>
             {% endif %}
-{#            Make it flash a msg#}
+
         </div>
-{#            <div class="col-md-1"></div>#}
         </div>
     </div>
 

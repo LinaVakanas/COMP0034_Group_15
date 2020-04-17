@@ -1,3 +1,5 @@
+# Authors: Mahdi Shah & Lina Vakanas
+
 from datetime import datetime
 
 from flask_wtf import FlaskForm

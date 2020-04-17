@@ -1,3 +1,5 @@
+# Authors: Mahdi Shah & Lina Vakanas
+
 from datetime import datetime
 
 from flask import render_template, Blueprint, url_for, flash, redirect, request
