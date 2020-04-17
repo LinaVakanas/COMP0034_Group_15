@@ -347,13 +347,13 @@ fieldset {
     margin: 2px 0 0 2px;
   }
 
-  /*ul {*/
-  /*  list-style: none;*/
-  /*}*/
+  ul {
+    list-style: none;
+  }
 
-/*fieldset.form-group ul{*/
-/*  list-style: none;*/
-/*}*/
+fieldset.form-group ul{
+  list-style: none;
+}
 
 legend {
   display: block;

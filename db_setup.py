@@ -46,7 +46,7 @@ c.execute('''
           first_name TEXT NOT NULL, 
           last_name TEXT NOT NULL,
           user_id INTEGER NOT NULL,
-          paired BOOL,
+          paired BOOLEAN,
           FOREIGN KEY (user_id) REFERENCES user(user_id),
           FOREIGN KEY (school_id) REFERENCES school(school_id))
           ''')
