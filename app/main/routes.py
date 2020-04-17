@@ -224,7 +224,7 @@ def controlpanel_view_mentees():
     queries = db.session.query(User, Mentee).filter(User.is_active == True).\
         join(Mentee,  User.user_id == Mentee.user_id).all()
 
-    if request.method == 'POST':
+    if request.method == 'POST' and search.validate_on_submit():
         return search_results(search, 'mentee')
     return render_template('admin/admin_view_users.html', search=search, queries=queries, user_type=user_type,
                            stats_dict=stats_dict, type='mentees', title="Mentees")

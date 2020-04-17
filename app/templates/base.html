@@ -18,7 +18,7 @@
     <div class="flex-fill">
         <ul class="nav nav-pills">
             <li class="nav-item">
-                <a class="nav-link" href="{{url_for('main.home')}}">WEBSITE NAME</a>
+                <a class="nav-link" href="{{url_for('main.home')}}">SWiTCH</a>
             </li>
 
             {% if title == 'RAIN BLOG' or title == 'Home' %}
@@ -67,13 +67,13 @@
 
             {% else %}
                 {% if current_user.user_type == 'admin' %}
-                    {% if title == 'Control Panel' %}
+                    {% if title == 'Administrator Control Panel' %}
                         <li class="nav-item">
-                            <a class="nav-item active nav-link " href="{{url_for('main.controlpanel_home')}}">Control Panel</a>
+                            <a class="nav-item active nav-link " href="{{url_for('main.controlpanel_home')}}">Administrator Control Panel</a>
                         </li>
                     {% else %}
                         <li class="nav-item">
-                            <a class="nav-item nav-link " href="{{url_for('main.controlpanel_home')}}">Control Panel</a>
+                            <a class="nav-item nav-link " href="{{url_for('main.controlpanel_home')}}">Administrator Control Panel</a>
                         </li>
                     {% endif %}
                 {% endif %}

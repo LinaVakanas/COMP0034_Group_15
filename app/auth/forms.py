@@ -20,7 +20,7 @@ class SignUpForm(FlaskForm):
         """Validates the form passwords
 
         Keyword arguments:
-        password -- users password
+        password -- user's password
         """
         if len(password.data) < 8:
             raise ValidationError("Your password must be more than 8 characters.")
@@ -96,6 +96,13 @@ class SchoolSignupForm(FlaskForm):
     name = StringField('Name:', validators=[DataRequired()])
     email = StringField('School Email:', validators=[DataRequired(), Email()])
     ofsted_ranking = StringField('Ofsted Ranking:', validators=[DataRequired()])
+
+    def is_int(self, ofsted_ranking):
+        print(ofsted_ranking.data)
+        try:
+            int(ofsted_ranking.data)
+        except ValueError:
+            raise ValidationError("Ofsted ranking should be an integer.")
 
 
 class LoginForm(FlaskForm):
