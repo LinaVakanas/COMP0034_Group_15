@@ -60,8 +60,7 @@ c.execute('''
           is_approved BOOLEAN NOT NULL ,
           school_name TEXT NOT NULL,
           school_email TEXT NOT NULL,
-          ofsted_ranking INTEGER,
-          ofsted_report BLOB)
+          ofsted_ranking INTEGER)
           ''')
 
 

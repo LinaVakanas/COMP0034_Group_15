@@ -34,13 +34,18 @@ def create_app(config_class=DevConfig):
     from app.util.functions import initial_set_up
     from populate_db import populate_db
 
-    # When running the program normally, please uncomment only db.create_all() and initial_set_up()
-    # If you would like to conduct manual tests, please uncomment all lines
-    # If you would like to use the automated unittests, please uncomment only db.drop_all() and db.create_all()
+    # When running the app normally, please uncomment db.create_all() and initial_setup().
+    #
+    # If you would like to manually test the different features of the site, we recommend uncommenting db.drop_all() and
+    # populate_db() as well. populate_db() will fill the database with users at different stages of their applications.
+    # Please see populate_db.py for more information on the users.
+    #
+    # If you would like to run the unittests, please uncomment db.drop_all() and db.create_all(), and comment out
+    # populate_db() and initial_setup().
     from app.models import User, Mentee, Mentor, Admin, School, Pair, PersonalIssues, PersonalInfo, Hobbies, Location, \
         OccupationalField
     with app.app_context():
-        db.drop_all()
+        # db.drop_all()
         db.create_all()
         initial_set_up()
         populate_db()

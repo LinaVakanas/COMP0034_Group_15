@@ -65,7 +65,6 @@ class School(db.Model):
     school_name = db.Column(db.Text, nullable=False)
     school_email = db.Column(db.Text, nullable=False)
     ofsted_ranking = db.Column(db.Integer)
-    ofsted_report = db.Column(db.BLOB) #not sure about how blob works
 
 
 class Pair(db.Model):

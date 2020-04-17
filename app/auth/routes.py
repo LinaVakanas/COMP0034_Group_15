@@ -1,3 +1,5 @@
+# Authors: Mahdi Shah & Lina Vakanas
+
 from datetime import datetime, timedelta
 from urllib.parse import urlparse, urljoin
 
@@ -49,7 +51,17 @@ def login():
     Checks login details against stored details in the database. Checks whether users have been approved.
     Also stores 'next' param for redirects.
     Users must be anonymous to access this route (requires_anonymous decorator).
+
+    Returns:
+        redirect(): login page again upon incorrect details.
+            or
+        redirect(): home page if user.is_active is False.
+            or
+        redirect(): home page or next page, logged in if details correct.
+            or
+        redirect(): controlpanel_home page if user_type == 'admin'.
     """
+
     form = LoginForm()
     next = request.args.get('next')
 
@@ -88,7 +100,11 @@ def logout():
     """Function used to log out the user (implemented from Flask-Login).
 
     Users must be logged in to access this route (login_required decorator).
+
+    Returns:
+        redirect(): home page.
     """
+
     logout_user()
     flash('You have been logged out.')
     return redirect(url_for('main.home'))
@@ -101,7 +117,11 @@ def school_signup():
 
     Instantiates a SchoolSignupForm object and retrieves data from form fields.
     Users must be anonymous to access this route (requires_anonymous decorator).
+
+    Returns:
+        redirect(): home page.
     """
+
     form = SchoolSignupForm(request.form)
 
     if request.method == 'POST' and form.validate_on_submit():
@@ -132,7 +152,23 @@ def personal_form(applicant_type, school_id):
     Keyword arguments:
     applicant_type -- mentee or mentor
     school ID -- Unique ID belonging to user's school (default 0 for Mentors)
+
+    Returns:
+        redirect(): home page if school id is not in database.
+            or
+        redirect(): home page if school.is_approved == False.
+            or
+        redirect(): home page if user_type == mentor and school_id != 0.
+            or
+        redirect(): login page if new_user.email exists in database.
+            or
+        redirect(): home page if user_type == mentor and xperience < 2 years.
+            or
+        redirect(): location_form page if user_type == mentee.
+            or
+        redirect(): home_mentor_pending if user_type == mentor.
     """
+
     school = School.query.filter(School.school_id == school_id).first()
 
     if is_unique(School, School.school_id, school_id) is True:
@@ -236,7 +272,21 @@ def location_form(applicant_type, applicant_id):
     Keyword arguments:
     Applicant_type -- mentee or mentor
     Applicant ID -- Unique User ID belonging to user
+
+    Returns:
+        redirect(): home page if applicant_type == mentor and mentor.is_approved == False.
+            or
+        redirect(): home page if personal_form for user doesnt exist.
+            or
+        redirect(): home page if user doesnt exist.
+            or
+        redirect(): login page if location form corresponding to user id already exists.
+            or
+        redirect(): pairing page  if applicant_type == mentor.
+            or
+        redirect(): home page if applicant_type == mentee.
     """
+
     form = LocationForm(request.form)
 
     if applicant_type == 'mentor':
