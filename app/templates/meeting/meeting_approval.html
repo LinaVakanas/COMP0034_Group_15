@@ -34,10 +34,8 @@
                 <form action="" method="post" class="form-inline" novalidate>
                 {{ form.csrf_token }}
                     <div class="form-row">
-                        <div class="col custom-control-inline">
-                        <fieldset class="form-group">
-                            {{render_field(form.approval)}}
-                        </fieldset>
+                        <div class="col">
+                            {{ render_field(form.approval) }}
                         </div>
                     </div>
                     <div class="form-row">
