@@ -5,8 +5,8 @@ import unittest
 from flask import url_for
 from flask_testing import TestCase
 
-from app import create_app, db
-from app.models import Mentor, Mentee, User, PersonalInfo, Pair, Location, Meeting, School, Admin
+from switchapp import create_app, db
+from switchapp.models import Mentor, Mentee, User, PersonalInfo, Pair, Location, Meeting, School, Admin
 
 
 class BaseTest(TestCase):

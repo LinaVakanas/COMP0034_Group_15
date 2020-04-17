@@ -6,12 +6,12 @@ from flask import render_template, Blueprint, url_for, flash, redirect, request
 from flask_login import login_required, current_user
 from sqlalchemy.exc import IntegrityError
 
-from app import db
-from app.main.forms import ApproveForm, BookMeeting, \
+from switchapp import db
+from switchapp.main.forms import ApproveForm, BookMeeting, \
     ApproveMeeting, SearchForm, SearchByForm
-from app.models import User, School, Pair, PersonalInfo, Mentee, Mentor, Location, Meeting
-from app.util.decorators import requires_admin, requires_correct_id
-from app.util.functions import approve, get_stats, search_by_type, get_data_from_user, get_school_stats, validate_date
+from switchapp.models import User, School, Pair, PersonalInfo, Mentee, Mentor, Location, Meeting
+from switchapp.util.decorators import requires_admin, requires_correct_id
+from switchapp.util.functions import approve, get_stats, search_by_type, get_data_from_user, get_school_stats, validate_date
 
 bp_main = Blueprint('main', __name__)
 

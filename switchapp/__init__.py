@@ -31,10 +31,10 @@ def create_app(config_class=DevConfig):
     db.init_app(app)
     login_manager.init_app(app)
     #
-    from app.util.functions import initial_set_up
+    from switchapp.util.functions import initial_set_up
     from populate_db import populate_db
 
-    # When running the app normally, please uncomment db.create_all() and initial_setup().
+    # When running the switchapp normally, please uncomment db.create_all() and initial_setup().
     #
     # If you would like to manually test the different features of the site, we recommend uncommenting db.drop_all() and
     # populate_db() as well. populate_db() will fill the database with users at different stages of their applications.
@@ -42,7 +42,7 @@ def create_app(config_class=DevConfig):
     #
     # If you would like to run the unittests, please uncomment db.drop_all() and db.create_all(), and comment out
     # populate_db() and initial_setup().
-    from app.models import User, Mentee, Mentor, Admin, School, Pair, PersonalIssues, PersonalInfo, Hobbies, Location, \
+    from switchapp.models import User, Mentee, Mentor, Admin, School, Pair, PersonalIssues, PersonalInfo, Hobbies, Location, \
         OccupationalField
     with app.app_context():
         db.drop_all()
@@ -51,10 +51,10 @@ def create_app(config_class=DevConfig):
         # populate_db()
 
     # Register Blueprints
-    from app.main.routes import bp_main
+    from switchapp.main.routes import bp_main
     app.register_blueprint(bp_main)
 
-    from app.auth.routes import bp_auth
+    from switchapp.auth.routes import bp_auth
     app.register_blueprint(bp_auth)
 
     return app

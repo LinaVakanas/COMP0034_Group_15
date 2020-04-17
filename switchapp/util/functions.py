@@ -5,9 +5,9 @@ from datetime import datetime
 
 from flask import request
 
-from app import db
-from app.main.forms import SearchByForm
-from app.models import Mentor, User, Mentee, School, Location, Pair, Meeting, Admin
+from switchapp import db
+from switchapp.main.forms import SearchByForm
+from switchapp.models import Mentor, User, Mentee, School, Location, Pair, Meeting, Admin
 
 
 def is_unique(model, field, data, model2=None, field2=None, data2=None):

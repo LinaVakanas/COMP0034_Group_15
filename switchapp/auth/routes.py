@@ -7,11 +7,11 @@ from flask import render_template, Blueprint, url_for, flash, redirect, request,
 from flask_login import login_user, login_required, logout_user
 from sqlalchemy.exc import IntegrityError
 
-from app import db, login_manager
-from app.auth.forms import PersonalForm, SignUpForm, LocationForm, LoginForm, SchoolSignupForm
-from app.models import User, OccupationalField, Hobbies, School, PersonalInfo, PersonalIssues, Mentee, Mentor, Location
-from app.util.decorators import requires_anonymous
-from app.util.functions import is_unique, approve
+from switchapp import db, login_manager
+from switchapp.auth.forms import PersonalForm, SignUpForm, LocationForm, LoginForm, SchoolSignupForm
+from switchapp.models import User, OccupationalField, Hobbies, School, PersonalInfo, PersonalIssues, Mentee, Mentor, Location
+from switchapp.util.decorators import requires_anonymous
+from switchapp.util.functions import is_unique, approve
 
 bp_auth = Blueprint('auth', __name__)
 

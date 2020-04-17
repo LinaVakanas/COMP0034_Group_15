@@ -1,7 +1,7 @@
 # Authors: Mahdi Shah & Lina Vakanas
 
 # # These are models which had initially been made but could not be implemented due to a lack of time. They would be
-# # implemented as extensions if further time was to be given.
+# # implemented as xtensions if further time was to be given.
 #
 # class Teacher(db.Model):
 #     __tablename__ = 'teacher'

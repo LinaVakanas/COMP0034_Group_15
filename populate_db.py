@@ -1,7 +1,7 @@
 # Authors: Mahdi Shah & Lina Vakanas
 
-from app import db
-from app.models import User, Mentee, Mentor, Location, Meeting, Pair, School, Admin, PersonalInfo
+from switchapp import db
+from switchapp.models import User, Mentee, Mentor, Location, Meeting, Pair, School, Admin, PersonalInfo
 
 
 def populate_db():
