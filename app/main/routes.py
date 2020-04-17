@@ -465,12 +465,12 @@ def book_meeting():
             flash(date_validation)
             return redirect(url_for('main.book_meeting'))
 
-        if form.address.data == avoid_area:
+        if form.address.data == avoid_area and avoid_area != "":
             flash("Sorry bud, your mentee doesn't feel comfortable going there. "
                   "In the interest of their well-being, please pick another area!")
             return redirect(url_for('main.book_meeting'))
 
-        elif form.postcode.data == avoid_area:
+        elif form.postcode.data == avoid_area and avoid_area != "":
             flash("Sorry bud, your mentee doesn't feel comfortable going there. "
                   "In the interest of their well-being, please pick another area!")
             return redirect(url_for('main.book_meeting'))
@@ -515,7 +515,7 @@ def confirm_meeting(meeting_id, user_id):
     form = ApproveMeeting(request.form)
     meeting = Meeting.query.filter_by(meeting_id=meeting_id).first()
 
-    if request.method == 'POST':
+    if request.method == 'POST' and form.validate_on_submit():
         approval = form.approval.data
         meeting.mentee_approval = approval
         db.session.commit()
