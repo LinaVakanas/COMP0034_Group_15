@@ -39,7 +39,7 @@ def populate_db():
     user3 = User(user_type='mentor', school_id=0, email='larry_jake@gmail.com', is_active=False)
     user3.set_password('password3')
     mentor3 = Mentor(user_id=3, school_id=0, first_name='Larry', last_name='Jake', paired=False, is_approved=False)
-    mentor3_personal_info = PersonalInfo(carer_name='', carer_email='', xperience='>=2', status='S', user_id=4)
+    mentor3_personal_info = PersonalInfo(carer_name='', carer_email='', xperience='>=2', status='S', user_id=3)
 
     # Inactive, approved, personal info only completed, unpaired
     user4 = User(user_type='mentor', school_id=0, email='lauren@gmail.com', is_active=False)
@@ -53,7 +53,7 @@ def populate_db():
     user5.set_password('password5')
     mentee = Mentee(user_id=5, school_id=1, first_name='Lily', last_name='Weasley', paired=True)
     mentee_personal_info = PersonalInfo(carer_email='molly@weasley.com', carer_name='Molly Weasley',
-                                        share_performance=True, user_id=2, share_personal_issues=True)
+                                        share_performance=True, user_id=5, share_personal_issues=True)
     mentee_location = Location(user_id=5, address="Hogsmeade", city="London",
                                postcode="XR4 5AQ", avoid_area="Oxford Street")
 
