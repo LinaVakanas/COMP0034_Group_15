@@ -6,7 +6,7 @@
     {% block content %}
         <div class="row">
             <div class="col-2">
-                <img src="{{ url_for('static',filename='media/confirmation/1.gif') }}" class="img-fluid" alt="Confirmation Picture">
+                <img src="{{ url_for('static',filename='media/1.gif') }}" class="img-fluid" alt="Confirmation Picture">
             </div>
             <div class="col-10">
                 {% if user == 'mentor' and approval == '1'%}
@@ -14,7 +14,8 @@
             </div>
         </div>
         <div class="row">
-            <div>
+            <div class="col-2"></div>
+            <div class="col-10 text-justify mr-3">
                 <p>Thank you for completing the form, the booking process is now complete. We'll send off a
                     confirmation link to your mentee, which they must complete before the meeting. We'll let you
                     know their response, and you must only attend the meeting if they have replied that they can

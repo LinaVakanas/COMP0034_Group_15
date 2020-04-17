@@ -34,7 +34,6 @@ def requires_correct_id(f):
 
 
 def requires_anonymous(f):
-    """"""
     @wraps(f)
     def wrap(*args, **kwargs):
         if current_user.is_anonymous is True:

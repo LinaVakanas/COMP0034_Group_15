@@ -26,25 +26,27 @@
                 </tr>
                 </thead>
                 <tbody>
-                    <tr>
+
                     {% for meeting in results %}
-                        {% if user_type == 'mentee' %}
-                            <td>{{ meeting[1].mentee_id }}</td>
-                        {% elif user_type == 'mentor' %}
-                            <td>{{ meeting[1].mentor_id }}</td>
-                        {% endif %}
-                        <td>{{ meeting[2].pair_id }}</td>
-                        <td>{{ meeting[2].meeting_id }}</td>
-                        <td>{{ meeting[2].date}}</td>
-                        <td>{{ meeting[2].time }}</td>
-                        <td>{{ meeting[2].duration }}</td>
-                        <td>{{ meeting[2].address }}</td>
-                        <td>{{ meeting[2].postcode }}</td>
-                        <td>{{ meeting[2].type }}</td>
-                        <td>{{ meeting[2].mentee_approval }}</td>
-                        <td>{{ meeting[2].school_approval }}</td>
+                        <tr>
+                            {% if user_type == 'mentee' %}
+                                <td>{{ meeting[1].mentee_id }}</td>
+                            {% elif user_type == 'mentor' %}
+                                <td>{{ meeting[1].mentor_id }}</td>
+                            {% endif %}
+                            <td>{{ meeting[2].pair_id }}</td>
+                            <td>{{ meeting[2].meeting_id }}</td>
+                            <td>{{ meeting[2].date}}</td>
+                            <td>{{ meeting[2].time }}</td>
+                            <td>{{ meeting[2].duration }}</td>
+                            <td>{{ meeting[2].address }}</td>
+                            <td>{{ meeting[2].postcode }}</td>
+                            <td>{{ meeting[2].type }}</td>
+                            <td>{{ meeting[2].mentee_approval }}</td>
+                            <td>{{ meeting[2].school_approval }}</td>
+                        </tr>
                     {% endfor %}
-                    </tr>
+
                 </tbody>
             </table>
         {% else %}
